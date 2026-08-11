@@ -4,77 +4,163 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kunlik Hisobot — Nazorat Platformasi</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='28' fill='%232563EB'/><path d='M30 70V50M50 70V30M70 70V40' stroke='white' stroke-width='9' stroke-linecap='round'/></svg>">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='28' fill='%232E7CF6'/><path d='M30 70V50M50 70V30M70 70V40' stroke='white' stroke-width='9' stroke-linecap='round'/></svg>">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
+/* =========================================================
+   DIZAYN TIZIMI — "Nazorat" Premium Dashboard
+   Palette:  #0A0C11 fon / #2E7CF6 ko'k / #22C55E yashil
+             #F0475B qizil / #F5A623 amber / #8B6CF6 binafsha
+   Shrift:   Plus Jakarta Sans (UI)  ·  JetBrains Mono (raqam/kod)
+========================================================= */
 :root {
-  --kok: #0A84FF; --kok-och: rgba(10,132,255,0.15); --kok-rgb: 10,132,255;
-  --yashil: #30D158; --yashil-och: rgba(48,209,88,0.15);
-  --sariq: #FF9F0A; 
-  --qizil: #FF453A; --qizil-och: rgba(255,69,58,0.15);
-  --binafsha: #BF5AF2;
+  --kok: #2E7CF6; --kok-och: rgba(46,124,246,0.14); --kok-rgb: 46,124,246;
+  --yashil: #22C55E; --yashil-och: rgba(34,197,94,0.14);
+  --sariq: #F5A623; --sariq-och: rgba(245,166,35,0.14);
+  --qizil: #F0475B; --qizil-och: rgba(240,71,91,0.14);
+  --binafsha: #8B6CF6; --binafsha-och: rgba(139,108,246,0.14);
 
-  --bg-asosiy: #F2F4F7;
+  --bg-asosiy: #F3F4F8;
+  --bg-sidebar: #FFFFFF;
   --bg-kard: #FFFFFF;
-  --bg-kard-shaffof: rgba(255, 255, 255, 0.85);
-  --bg-kard-hover: #F9FAFB;
-  --bg-input: #F4F5F8;
-  --bg-header: rgba(255, 255, 255, 0.75);
-  --text-asosiy: #1C1C1E;
-  --text-ikkinchi: #86868B;
-  --chiziq: rgba(0, 0, 0, 0.08);
-  --chiziq-kard: rgba(0, 0, 0, 0.05);
-  --soya-kard: 0 10px 30px -10px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.03);
-  --soya-hover: 0 20px 40px -12px rgba(0,0,0,0.12);
-  --radius: 20px;
+  --bg-kard-shaffof: rgba(255, 255, 255, 0.9);
+  --bg-kard-hover: #F7F8FC;
+  --bg-input: #F3F4F8;
+  --bg-header: rgba(255, 255, 255, 0.8);
+  --text-asosiy: #14161C;
+  --text-ikkinchi: #767C8C;
+  --chiziq: rgba(15, 23, 42, 0.08);
+  --chiziq-kard: rgba(15, 23, 42, 0.06);
+  --soya-kard: 0 1px 2px rgba(15,23,42,0.04), 0 12px 28px -18px rgba(15,23,42,0.18);
+  --soya-hover: 0 30px 60px -20px rgba(15,23,42,0.28);
+  --radius: 18px;
+  --font-ui: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 [data-theme="dark"] {
-  --bg-asosiy: #0E1015;
-  --bg-kard: #1A1D24;
-  --bg-kard-shaffof: rgba(26, 29, 36, 0.85);
-  --bg-kard-hover: #22262F;
-  --bg-input: #13151A;
-  --bg-header: rgba(26, 29, 36, 0.75);
-  --text-asosiy: #F5F5F7;
-  --text-ikkinchi: #98989D;
-  --chiziq: rgba(255, 255, 255, 0.08);
+  --bg-asosiy: #0A0C11;
+  --bg-sidebar: #0D0F16;
+  --bg-kard: #12141C;
+  --bg-kard-shaffof: rgba(18, 20, 28, 0.88);
+  --bg-kard-hover: #181B25;
+  --bg-input: #0B0D13;
+  --bg-header: rgba(10, 12, 17, 0.72);
+  --text-asosiy: #F2F3F7;
+  --text-ikkinchi: #8A90A0;
+  --chiziq: rgba(255, 255, 255, 0.07);
   --chiziq-kard: rgba(255, 255, 255, 0.05);
-  --soya-kard: 0 10px 30px -10px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.2);
-  --soya-hover: 0 20px 40px -12px rgba(0,0,0,0.5);
+  --soya-kard: 0 1px 0 rgba(255,255,255,0.02) inset, 0 16px 34px -18px rgba(0,0,0,0.6);
+  --soya-hover: 0 30px 70px -20px rgba(0,0,0,0.7);
 }
 
+* { box-sizing: border-box; }
 html, body {
   margin: 0; padding: 0;
   height: 100vh; width: 100vw;
   overflow: hidden;
-  box-sizing: border-box;
 }
 
 body {
-  font-family: -apple-system,BlinkMacSystemFont,'SF Pro Display','Plus Jakarta Sans',system-ui,sans-serif;
+  font-family: var(--font-ui);
   background-color: var(--bg-asosiy);
   color: var(--text-asosiy); font-size: 14px; letter-spacing: -0.011em;
   -webkit-font-smoothing: antialiased;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-h1,h2,h3,.brand{font-weight:800;letter-spacing:-0.025em}
-button{font-family:inherit;cursor:pointer;border:none;transition:transform .16s ease,background .18s ease,box-shadow .18s ease,color .18s ease;-webkit-tap-highlight-color:transparent; display:flex; align-items:center; justify-content:center; gap:8px;}
+h1,h2,h3,.brand-name{font-weight:800;letter-spacing:-0.03em}
+button{font-family:inherit;cursor:pointer;border:none;transition:transform .15s ease,background .18s ease,box-shadow .18s ease,color .18s ease,border-color .18s ease;-webkit-tap-highlight-color:transparent; display:flex; align-items:center; justify-content:center; gap:8px;}
 button:active{transform:scale(0.96)}
-input,select,textarea{font-family:inherit;outline:none;transition:all .18s ease; box-sizing: border-box;}
+input,select,textarea{font-family:inherit;outline:none;transition:all .18s ease; box-sizing: border-box; color:var(--text-asosiy);}
+input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid var(--kok); outline-offset: 2px; }
 ::selection{background:var(--kok-och)}
 
-*{scrollbar-width:thin;scrollbar-color:var(--text-ikkinchi) transparent}
-*::-webkit-scrollbar{width:6px;height:6px}
+*{scrollbar-width:thin;scrollbar-color:rgba(140,146,166,.4) transparent}
+*::-webkit-scrollbar{width:7px;height:7px}
 *::-webkit-scrollbar-track{background:transparent}
-*::-webkit-scrollbar-thumb{background:rgba(150,150,150,0.3);border-radius:10px}
-*::-webkit-scrollbar-thumb:hover{background:rgba(150,150,150,0.6)}
+*::-webkit-scrollbar-thumb{background:rgba(140,146,166,0.28);border-radius:10px}
+*::-webkit-scrollbar-thumb:hover{background:rgba(140,146,166,0.55)}
 
 svg { flex-shrink: 0; }
+
+/* ============ LOGIN ============ */
+#loginEkran{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;
+  background:
+    radial-gradient(900px 500px at 12% -10%, rgba(46,124,246,0.16), transparent 60%),
+    radial-gradient(700px 500px at 100% 110%, rgba(139,108,246,0.14), transparent 60%),
+    var(--bg-asosiy);
+  z-index: 1000;
+}
+.loginCard{
+  position:relative; background: var(--bg-kard);
+  border-radius:28px; padding:44px 40px 40px; width:min(408px,92vw);
+  border:1px solid var(--chiziq-kard); box-shadow: var(--soya-hover);
+  animation:cardIn .5s cubic-bezier(.16,1,.3,1);
+}
+@keyframes cardIn{from{opacity:0;transform:translateY(24px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+.loginCard .logoMark{
+  width:52px; height:52px; border-radius:16px; margin-bottom:22px;
+  background: linear-gradient(135deg, var(--kok), #6AA3FF);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow: 0 14px 26px -10px rgba(var(--kok-rgb),0.55);
+}
+.loginCard .brand{font-size:23px; color:var(--text-asosiy); letter-spacing:-0.03em;}
+.loginCard .sub{color:var(--text-ikkinchi); font-size:13px; margin:5px 0 30px; font-weight:600}
+.loginCard label{display:block; font-weight:700; font-size:11px; margin:18px 0 7px; color:var(--text-ikkinchi); text-transform:uppercase; letter-spacing:0.08em}
+.loginCard input{width:100%; padding:14px 16px; border:1.5px solid var(--chiziq); border-radius:14px; font-size:14.5px; background:var(--bg-input); color:var(--text-asosiy)}
+.loginCard input:focus{border-color:var(--kok); box-shadow:0 0 0 4px var(--kok-och)}
+.loginCard .btn{width:100%; margin-top:30px; background:linear-gradient(135deg, var(--kok), #5B9BFF); color:#fff; padding:15px; border-radius:14px; font-weight:700; font-size:15px; box-shadow:0 14px 26px -8px rgba(var(--kok-rgb),0.5);}
+.loginCard .btn:hover{filter:brightness(1.06); transform:translateY(-1px);}
+.loginXato{color:var(--qizil); font-size:13px; margin-top:16px; display:none; background:var(--qizil-och); padding:11px 14px; border-radius:12px; font-weight:600; text-align:center}
+
+/* ============ APP SHELL ============ */
+#app{display:none; height:100vh; width:100%; overflow:hidden;}
+
+/* ---- SIDEBAR ---- */
+.sidebar{
+  width:252px; flex-shrink:0; height:100vh;
+  background:var(--bg-sidebar); border-right:1px solid var(--chiziq);
+  display:flex; flex-direction:column; padding:22px 16px;
+}
+.sidebar-brand{ display:flex; align-items:center; gap:12px; padding:4px 6px 22px; }
+.brand-mark{
+  width:38px; height:38px; border-radius:11px; flex-shrink:0;
+  background:linear-gradient(135deg, var(--kok), #6AA3FF);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 10px 20px -8px rgba(var(--kok-rgb),.55);
+}
+.brand-text{ line-height:1.25; min-width:0; }
+.brand-text .brand-name{ font-size:14.5px; color:var(--text-asosiy); white-space:nowrap; }
+.brand-text small{ color:var(--text-ikkinchi); font-weight:600; font-size:10.5px; letter-spacing:.02em; }
+
+.sidebar-label{ font-size:10.5px; font-weight:800; color:var(--text-ikkinchi); text-transform:uppercase; letter-spacing:.09em; padding:6px 10px 8px; }
+
+.navTabs{display:flex; flex-direction:column; gap:3px;}
+.navTabs button{
+  background:transparent; border-radius:12px; padding:11px 12px; font-weight:700; font-size:13.5px;
+  color:var(--text-ikkinchi); position:relative; justify-content:flex-start; width:100%;
+}
+.navTabs button svg{ flex-shrink:0; }
+.navTabs button:hover{ background:var(--bg-kard-hover); color:var(--text-asosiy); }
+.navTabs button.aktiv{ background:var(--kok-och); color:var(--kok); box-shadow:none; }
+.navTabs button .yangi-badge{ margin-left:auto; }
+
+.sidebar-spacer{ flex:1; }
+
+.sidebar-foot{ border-top:1px solid var(--chiziq); padding-top:14px; margin-top:10px; }
+.user-card{ display:flex; align-items:center; gap:11px; padding:8px 8px; border-radius:14px; }
+.user-avatar{
+  width:38px; height:38px; border-radius:11px; flex-shrink:0;
+  background:var(--bg-input); border:1px solid var(--chiziq);
+  display:flex; align-items:center; justify-content:center; color:var(--text-ikkinchi);
+}
+.user-meta{ min-width:0; display:flex; flex-direction:column; gap:5px; }
+.user-meta b{ font-size:13px; color:var(--text-asosiy); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:700; }
 
 .trafficLights{display:flex;gap:8px;align-items:center}
 .trafficLights span{width:12px;height:12px;border-radius:50%;display:block;position:relative;box-shadow:inset 0 0 0 0.5px rgba(0,0,0,0.12), 0 0.5px 0.5px rgba(255,255,255,0.4)}
@@ -83,62 +169,38 @@ svg { flex-shrink: 0; }
 .trafficLights .tl-yellow{background:#FEBC2E}
 .trafficLights .tl-green{background:#28C840}
 
-#loginEkran{
-  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;
-  background-color: var(--bg-asosiy);
-  z-index: 1000;
-}
-.loginCard{
-  position:relative; background: var(--bg-kard);
-  border-radius:26px; padding:24px 40px 40px; width:min(400px,92vw);
-  border:1px solid var(--chiziq-kard); box-shadow: var(--soya-hover);
-  animation:cardIn .4s ease;
-}
-@keyframes cardIn{from{opacity:0;transform:translateY(20px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
-.loginCard .trafficLights{margin-bottom: 20px;}
-.loginCard .brand{font-size:24px; color:var(--text-asosiy);}
-.loginCard .sub{color:var(--text-ikkinchi); font-size:13px; margin:4px 0 24px; font-weight:600}
-.loginCard label{display:block; font-weight:700; font-size:11px; margin:16px 0 6px; color:var(--text-ikkinchi); text-transform:uppercase; letter-spacing:0.07em}
-.loginCard input{width:100%; padding:14px 16px; border:1px solid var(--chiziq); border-radius:14px; font-size:14.5px; background:var(--bg-input); color:var(--text-asosiy)}
-.loginCard input:focus{border-color:var(--kok); box-shadow:0 0 0 3px var(--kok-och)}
-.loginCard .btn{width:100%; margin-top:28px; background:var(--kok); color:#fff; padding:15px; border-radius:14px; font-weight:700; font-size:15px; box-shadow:0 10px 20px -5px rgba(var(--kok-rgb),0.4)}
-.loginCard .btn:hover{background:#0071E3; transform:translateY(-1px);}
-.loginXato{color:var(--qizil); font-size:13px; margin-top:14px; display:none; background:var(--qizil-och); padding:10px 14px; border-radius:12px; font-weight:600; text-align:center}
-
-#app{display:none; height:100vh; flex-direction:column; overflow:hidden;}
+/* ---- CONTENT COLUMN ---- */
+.content-col{ display:flex; flex-direction:column; height:100vh; flex:1; min-width:0; overflow:hidden; }
 
 header.top{
-  background: var(--bg-header); backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--chiziq); padding:0 24px; height:64px; display:flex; align-items:center; gap:16px; z-index:20; flex-shrink: 0;
+  background: var(--bg-header); backdrop-filter:blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom:1px solid var(--chiziq); padding:0 26px; height:64px; display:flex; align-items:center; gap:14px; z-index:20; flex-shrink: 0;
 }
-.top .brand{font-weight:800; color:var(--text-asosiy); font-size:16px; display:flex; flex-direction:column; line-height:1.2}
-.top .brand small{color:var(--text-ikkinchi); font-weight:600; font-size:11px;}
-.rolBadge{border-radius:30px; padding:6px 14px; font-size:11px; font-weight:800; letter-spacing:0.04em}
-.rolBadge.superadmin{background:rgba(191,90,242,0.12); color:#BF5AF2;}
+.rolBadge{border-radius:20px; padding:4px 11px; font-size:10.5px; font-weight:800; letter-spacing:0.04em; width:fit-content;}
+.rolBadge.superadmin{background:var(--binafsha-och); color:var(--binafsha);}
 .rolBadge.admin{background:var(--yashil-och); color:var(--yashil);}
-.rolBadge.nazoratchi{background:rgba(255,159,10,0.12); color:var(--sariq);}
-
-.navTabs{display:flex; gap:4px; background:var(--bg-input); padding:4px; border-radius:12px; border:1px solid var(--chiziq)}
-.navTabs button{background:transparent; border-radius:8px; padding:8px 16px; font-weight:700; font-size:13px; color:var(--text-ikkinchi); position:relative;}
-.navTabs button.aktiv{background:var(--bg-kard); color:var(--text-asosiy); box-shadow:0 2px 6px rgba(0,0,0,0.06)}
+.rolBadge.nazoratchi{background:var(--sariq-och); color:var(--sariq);}
 
 .yangi-badge {
   background: var(--qizil); color: #fff;
   font-size: 10px; font-weight: 800;
   padding: 2px 6px; border-radius: 10px;
-  margin-left: 6px; display: inline-flex; align-items: center; justify-content: center;
-  box-shadow: 0 2px 6px rgba(255,69,58,0.4);
+  display: inline-flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(240,71,91,0.45);
 }
 
-.top-amallar { margin-left:auto; display:flex; gap:12px; align-items:center; }
-.theme-btn { background:var(--bg-input); color:var(--text-asosiy); border:1px solid var(--chiziq); width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
-.theme-btn:hover { background:var(--bg-kard-hover); }
-.top .cta{background:var(--text-asosiy); color:var(--bg-asosiy); border-radius:12px; padding:9px 16px; font-weight:700; font-size:13px;}
-.top .chiqishBtn{background:var(--qizil-och); color:var(--qizil); font-weight:700; font-size:13px; padding:9px 16px; border-radius:12px; border:1px solid rgba(255,69,58,0.1)}
+.top-amallar { margin-left:auto; display:flex; gap:10px; align-items:center; }
+.theme-btn { background:var(--bg-input); color:var(--text-asosiy); border:1px solid var(--chiziq); width:38px; height:38px; border-radius:12px; display:flex; align-items:center; justify-content:center; }
+.theme-btn:hover { background:var(--bg-kard-hover); border-color:var(--kok); color:var(--kok); }
+.top .cta{background:var(--text-asosiy); color:var(--bg-asosiy); border-radius:12px; padding:10px 16px; font-weight:700; font-size:13px;}
+.top .cta:hover{ filter:brightness(1.15); }
+.top .chiqishBtn{background:var(--qizil-och); color:var(--qizil); font-weight:700; font-size:13px; padding:10px 16px; border-radius:12px; border:1px solid transparent;}
+.top .chiqishBtn:hover{ border-color: rgba(240,71,91,0.35); }
+#mobilMenyu{display:none; background:var(--bg-input); border:1px solid var(--chiziq); border-radius:12px; width:38px; height:38px; color:var(--text-asosiy)}
 
 main{
   flex:1; display:flex; overflow:hidden;
-  padding:20px; gap:20px; max-width: 1600px; margin: 0 auto; width: 100%; box-sizing: border-box;
+  padding:22px; gap:20px; max-width: 1680px; margin: 0 auto; width: 100%;
 }
 
 .asosiy-kard {
@@ -147,182 +209,241 @@ main{
   border-radius: var(--radius);
   box-shadow: var(--soya-kard);
   display: flex; flex-direction: column;
-  overflow-y: auto; 
+  overflow-y: auto;
   position: relative;
 }
 
-#chap{ width:340px; flex-shrink: 0;}
-#chap .qidiruv{padding:20px; border-bottom:1px solid var(--chiziq); display:flex; flex-direction:column; gap:12px; position: sticky; top: 0; background: var(--bg-kard); z-index: 10;}
+#chap{ width:320px; flex-shrink: 0;}
+#chap .qidiruv{padding:18px; border-bottom:1px solid var(--chiziq); display:flex; flex-direction:column; gap:10px; position: sticky; top: 0; background: var(--bg-kard-shaffof); backdrop-filter:blur(10px); z-index: 10;}
 #chap .qidiruv input, #chap .qidiruv select{
-  width:100%; padding:12px 14px; border:1px solid var(--chiziq); border-radius:12px; font-size:13px; background:var(--bg-input); color:var(--text-asosiy);
+  width:100%; padding:11px 14px; border:1.5px solid var(--chiziq); border-radius:12px; font-size:13px; background:var(--bg-input); color:var(--text-asosiy)
 }
 #chap .qidiruv select {
   appearance: none; -webkit-appearance: none;
-  background-image: url('data:image/svg+xml;utf8,<svg fill="none" stroke="%2386868B" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>');
+  background-image: url('data:image/svg+xml;utf8,<svg fill="none" stroke="%23767C8C" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>');
   background-repeat: no-repeat; background-position: right 14px center; background-size: 16px; padding-right: 36px;
 }
 #chap .qidiruv input:focus, #chap .qidiruv select:focus{border-color:var(--kok); box-shadow:0 0 0 3px var(--kok-och);}
-#xodimlarList{flex:1; padding:12px;}
-.xodimRow{padding:12px; border-radius:14px; margin-bottom:6px; cursor:pointer; display:flex; gap:12px; align-items:center; border:1px solid transparent; background:transparent}
+#xodimlarList{flex:1; padding:10px;}
+.xodimRow{padding:11px; border-radius:14px; margin-bottom:5px; cursor:pointer; display:flex; gap:11px; align-items:center; border:1px solid transparent; background:transparent}
 .xodimRow:hover{background:var(--bg-kard-hover)}
-.xodimRow.aktiv{background:var(--kok-och); border-color:var(--kok); border-left: 4px solid var(--kok);}
-.nuqta{width:10px; height:10px; border-radius:50%; flex-shrink:0;}
+.xodimRow.aktiv{background:var(--kok-och); border-color:rgba(var(--kok-rgb),.35);}
+.nuqta{width:9px; height:9px; border-radius:50%; flex-shrink:0;}
 .nuqta.bor{background:var(--yashil); box-shadow:0 0 0 3px var(--yashil-och)}
-.nuqta.yoq{background:var(--text-ikkinchi)}
+.nuqta.yoq{background:var(--text-ikkinchi); opacity:.5;}
 .nuqta.flag{background:var(--qizil); box-shadow:0 0 0 3px var(--qizil-och)}
-.xodimRow .fio{font-weight:700; font-size:14px; color:var(--text-asosiy)}
-.xodimRow .meta{color:var(--text-ikkinchi); font-size:11.5px; margin-top:2px; font-weight:500}
-.xodimRow .son{margin-left:auto; background:var(--bg-input); border-radius:14px; padding:6px 10px; font-size:12px; font-weight:800; color:var(--text-asosiy); display:flex; align-items:center; gap:6px;}
+.xodimRow .fio{font-weight:700; font-size:13.5px; color:var(--text-asosiy)}
+.xodimRow .meta{color:var(--text-ikkinchi); font-size:11px; margin-top:2px; font-weight:500}
+.xodimRow .son{margin-left:auto; background:var(--bg-input); border:1px solid var(--chiziq); border-radius:14px; padding:5px 9px; font-size:11.5px; font-weight:800; color:var(--text-asosiy); display:flex; align-items:center; gap:6px; font-family:var(--font-mono);}
 
-#ong, #dashboardPanel, #boshqaruv { flex:1; padding:30px; display:none; }
+#ong, #dashboardPanel, #boshqaruv { flex:1; padding:28px; display:none; }
 .bosh-holat{text-align:center; color:var(--text-ikkinchi); margin-top:20vh; line-height:1.6; font-size: 15px;}
 .bosh-holat b{font-size:22px; color:var(--text-asosiy); display:block; margin-bottom:8px;}
 
-.bosh{display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid var(--chiziq)}
-.bosh h2{font-size:22px; color:var(--text-asosiy);}
-.filtr{display:flex; gap:10px; align-items:center;}
-.filtr input[type=date]{padding:10px 14px; border:1px solid var(--chiziq); border-radius:12px; font-size:13px; background:var(--bg-input); color:var(--text-asosiy)}
-.filtr button{background:var(--bg-input); border:1px solid var(--chiziq); border-radius:12px; padding:10px 16px; font-size:13px; font-weight:700; color:var(--text-asosiy)}
-.filtr button:hover{background:var(--bg-kard-hover)}
-.filtr button.excel{background:var(--yashil); color:#fff; border:none;}
-.filtr button.refreshBtn{background:var(--kok-och); color:var(--kok); border:1px solid rgba(var(--kok-rgb), 0.2);}
-.filtr button.refreshBtn:hover{background:rgba(var(--kok-rgb), 0.25);}
+.bosh{display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid var(--chiziq)}
+.bosh h2{font-size:21px; color:var(--text-asosiy); letter-spacing:-0.02em;}
+.filtr{display:flex; gap:9px; align-items:center; flex-wrap:wrap;}
+.filtr input[type=date]{padding:10px 13px; border:1.5px solid var(--chiziq); border-radius:12px; font-size:13px; background:var(--bg-input); color:var(--text-asosiy)}
+.filtr button{background:var(--bg-input); border:1.5px solid var(--chiziq); border-radius:12px; padding:10px 15px; font-size:13px; font-weight:700; color:var(--text-asosiy)}
+.filtr button:hover{background:var(--bg-kard-hover); border-color:var(--kok);}
+.filtr button.excel{background:var(--yashil); color:#fff; border:none; box-shadow:0 10px 20px -8px rgba(34,197,94,.5);}
+.filtr button.excel:hover{ filter:brightness(1.08); }
+.filtr button.refreshBtn{background:var(--kok-och); color:var(--kok); border:1px solid rgba(var(--kok-rgb), 0.25);}
+.filtr button.refreshBtn:hover{background:rgba(var(--kok-rgb), 0.22);}
 
-.oySarlavha{font-weight:800; font-size:12px; color:var(--text-ikkinchi); letter-spacing:0.05em; text-transform:uppercase; margin:30px 0 16px; display:flex; align-items:center; gap:16px}
+.oySarlavha{font-weight:800; font-size:11.5px; color:var(--text-ikkinchi); letter-spacing:0.08em; text-transform:uppercase; margin:32px 0 16px; display:flex; align-items:center; gap:16px}
 .oySarlavha::after{content:''; flex:1; height:1px; background:var(--chiziq)}
 .tRow{display:flex; position:relative}
-.tChap{width:110px; flex-shrink:0; text-align:right; padding:24px 20px 0 0; font-size:12px; color:var(--text-ikkinchi); font-weight:600; line-height:1.5}
+.tChap{width:104px; flex-shrink:0; text-align:right; padding:24px 18px 0 0; font-size:11.5px; color:var(--text-ikkinchi); font-weight:600; line-height:1.5}
 .tChap b{color:var(--text-asosiy); font-size:14px; display:block; font-weight:800}
-.tSpine{width:30px; flex-shrink:0; position:relative}
-.tSpine::before{content:''; position:absolute; left:14px; top:0; bottom:0; width:2px; background:var(--chiziq)}
-.tNode{position:absolute; left:7px; top:28px; width:16px; height:16px; border-radius:50%; border:4px solid var(--bg-kard); box-shadow:0 0 0 1px var(--chiziq)}
+.tSpine{width:28px; flex-shrink:0; position:relative}
+.tSpine::before{content:''; position:absolute; left:13px; top:0; bottom:0; width:2px; background:var(--chiziq)}
+.tNode{position:absolute; left:6px; top:28px; width:16px; height:16px; border-radius:50%; border:4px solid var(--bg-kard); box-shadow:0 0 0 1px var(--chiziq)}
 .tNode.YASHIL{background:var(--yashil)} .tNode.SARIQ{background:var(--sariq)} .tNode.QIZIL{background:var(--qizil)}
 .tCard{
-  flex:1; background:var(--bg-input); border:1px solid var(--chiziq-kard); border-radius:16px; padding:20px; margin:10px 0;
-  cursor:pointer; transition:transform .2s ease, box-shadow .2s ease; position:relative;
+  flex:1; background:var(--bg-input); border:1px solid var(--chiziq-kard); border-radius:16px; padding:20px; margin:9px 0;
+  cursor:pointer; transition:transform .2s ease, box-shadow .2s ease, background .2s ease; position:relative;
 }
-.tCard.unread { border-left: 4px solid var(--kok); }
-.tCard:hover{transform:translateY(-3px); box-shadow:var(--soya-hover); background:var(--bg-kard);}
+.tCard.unread { border-left: 3px solid var(--kok); }
+.tCard:hover{transform:translateY(-3px); box-shadow:var(--soya-hover); background:var(--bg-kard-hover);}
 .tTop{display:flex; gap:16px; align-items:center}
-.tTop img{width:64px; height:64px; border-radius:14px; object-fit:cover; background:var(--chiziq);}
+.tTop img{width:60px; height:60px; border-radius:14px; object-fit:cover; background:var(--chiziq);}
 .tTop .icim{flex:1; min-width:0}
-.tTop .tur{font-weight:800; font-size:16px; color:var(--text-asosiy);}
-.tTop .tsh{color:var(--text-ikkinchi); font-size:13px; font-weight:600; margin-top:4px}
-.tTop .tv{color:var(--text-asosiy); font-size:14px; margin-top:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+.tTop .tur{font-weight:800; font-size:15.5px; color:var(--text-asosiy);}
+.tTop .tsh{color:var(--text-ikkinchi); font-size:12.5px; font-weight:600; margin-top:4px}
+.tTop .tv{color:var(--text-asosiy); font-size:13.5px; margin-top:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; opacity:.85;}
 .bosqichlar{display:flex; gap:8px; margin-top:16px; flex-wrap:wrap}
-.bChip{font-size:12px; font-weight:700; border-radius:30px; padding:6px 14px; display:flex; align-items:center; gap:6px}
+.bChip{font-size:11.5px; font-weight:700; border-radius:30px; padding:6px 13px; display:flex; align-items:center; gap:6px}
 .bChip.bor{background:var(--yashil-och); color:var(--yashil);}
 .bChip.yoq{background:var(--chiziq); color:var(--text-ikkinchi);}
-.badge{font-size:12px; font-weight:800; border-radius:30px; padding:6px 14px;}
+.badge{font-size:11.5px; font-weight:800; border-radius:30px; padding:6px 13px;}
 .badge.kech{background:var(--qizil-och); color:var(--qizil);}
 
-.bTabs{display:flex; gap:6px; margin-bottom:24px; flex-wrap:wrap; background:var(--bg-input); padding:6px; border-radius:16px; width: fit-content;}
-.bTabs button{background:transparent; border-radius:12px; padding:10px 18px; font-weight:700; font-size:14px; color:var(--text-ikkinchi)}
-.bTabs button.aktiv{background:var(--bg-kard); color:var(--text-asosiy); box-shadow:0 4px 12px rgba(0,0,0,0.08)}
-.bPanel h3{font-size:20px; color:var(--text-asosiy); font-weight:800;}
-.bPanel .izoh{color:var(--text-ikkinchi); font-size:14px; margin:6px 0 24px; font-weight:500}
+.bTabs{display:flex; gap:5px; margin-bottom:24px; flex-wrap:wrap; background:var(--bg-input); padding:5px; border-radius:16px; width: fit-content; border:1px solid var(--chiziq);}
+.bTabs button{background:transparent; border-radius:12px; padding:10px 18px; font-weight:700; font-size:13.5px; color:var(--text-ikkinchi)}
+.bTabs button.aktiv{background:var(--bg-kard); color:var(--text-asosiy); box-shadow:0 4px 14px rgba(0,0,0,0.08)}
+.bPanel h3{font-size:19px; color:var(--text-asosiy); font-weight:800; letter-spacing:-0.02em;}
+.bPanel .izoh{color:var(--text-ikkinchi); font-size:13.5px; margin:6px 0 24px; font-weight:500}
 
-.dashGrid{display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:20px; margin-bottom:30px}
-.dashCard{background:var(--bg-input); border:1px solid var(--chiziq-kard); border-radius:20px; padding:24px; transition:transform .2s ease, box-shadow .2s ease;}
-.dashCard:hover{transform:translateY(-2px); box-shadow:var(--soya-kard);}
-.dashCard span{font-size:12px; font-weight:800; color:var(--text-ikkinchi); text-transform:uppercase; letter-spacing:0.05em}
-.dashCard b{font-size:32px; font-weight:800; color:var(--text-asosiy); display:block; margin-top:8px}
-.dashCard.green b{color:var(--yashil)} .dashCard.red b{color:var(--qizil)} .dashCard.blue b{color:var(--kok)}
-.dcIco{width:42px; height:42px; border-radius:13px; display:flex; align-items:center; justify-content:center; margin-bottom:14px;}
+/* ---- DASHBOARD HERO ---- */
+.dashHero{
+  display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;
+  background:
+    radial-gradient(480px 200px at 100% 0%, rgba(var(--kok-rgb),0.12), transparent 70%),
+    var(--bg-input);
+  border:1px solid var(--chiziq-kard); border-radius:20px; padding:26px 28px; margin-bottom:28px;
+}
+.dashHero h3{margin:0; font-size:21px;}
+.dashHero .izoh{margin:6px 0 0;}
+.dashHero .heroIco{
+  width:54px; height:54px; border-radius:16px; flex-shrink:0;
+  background:linear-gradient(135deg, var(--kok), #6AA3FF); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 16px 28px -10px rgba(var(--kok-rgb),.5);
+}
+
+.dashGrid{display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:18px; margin-bottom:32px}
+.dashCard{background:var(--bg-kard); border:1px solid var(--chiziq-kard); border-radius:20px; padding:24px; transition:transform .2s ease, box-shadow .2s ease; box-shadow:var(--soya-kard);}
+.dashCard:hover{transform:translateY(-3px); box-shadow:var(--soya-hover);}
+.dashCard span{font-size:11.5px; font-weight:800; color:var(--text-ikkinchi); text-transform:uppercase; letter-spacing:0.06em}
+.dashCard b{font-size:34px; font-weight:800; color:var(--text-asosiy); display:block; margin-top:8px; letter-spacing:-0.03em; font-family:var(--font-mono);}
+.dashCard.green b{color:var(--yashil)} .dashCard.red b{color:var(--qizil)} .dashCard.blue b{color:var(--kok)} .dashCard.amber b{color:var(--sariq)}
+.dcIco{width:44px; height:44px; border-radius:13px; display:flex; align-items:center; justify-content:center; margin-bottom:16px;}
 .dashCard.blue .dcIco{background:var(--kok-och); color:var(--kok);}
 .dashCard.green .dcIco{background:var(--yashil-och); color:var(--yashil);}
 .dashCard.red .dcIco{background:var(--qizil-och); color:var(--qizil);}
+.dashCard.amber .dcIco{background:var(--sariq-och); color:var(--sariq);}
 
-.jadval{width:100%; border-collapse:separate; border-spacing:0; font-size:14px}
-.jadval th{text-align:left; padding:14px 16px; background:var(--bg-input); font-size:12px; text-transform:uppercase; color:var(--text-ikkinchi); font-weight:800; border-bottom:1px solid var(--chiziq);}
+.jadval{width:100%; border-collapse:separate; border-spacing:0; font-size:13.5px}
+.jadval th{text-align:left; padding:13px 16px; background:var(--bg-input); font-size:11px; text-transform:uppercase; color:var(--text-ikkinchi); font-weight:800; letter-spacing:.05em; border-bottom:1px solid var(--chiziq);}
 .jadval th:first-child{border-radius:12px 0 0 12px} .jadval th:last-child{border-radius:0 12px 12px 0}
-.jadval td{padding:16px; border-bottom:1px solid var(--chiziq); color:var(--text-asosiy)}
+.jadval td{padding:15px 16px; border-bottom:1px solid var(--chiziq); color:var(--text-asosiy)}
+.jadval tr:last-child td{ border-bottom:none; }
 .jadval tr:hover td{background:var(--bg-kard-hover)}
 
-.mini{border-radius:10px; padding:8px 14px; font-size:12px; font-weight:700; margin:2px; display:inline-flex; align-items:center; border: none; gap:6px;}
+.mini{border-radius:9px; padding:7px 13px; font-size:11.5px; font-weight:700; margin:2px; display:inline-flex; align-items:center; border: none; gap:6px;}
 .mini.kok{background:var(--kok-och); color:var(--kok)}
 .mini.qizil{background:var(--qizil-och); color:var(--qizil)}
 .mini.yashil{background:var(--yashil-och); color:var(--yashil)}
-.mini.kul{background:var(--chiziq); color:var(--text-asosiy)}
-.qoshBtn{background:var(--kok); color:#fff; border-radius:14px; padding:12px 24px; font-weight:700; font-size:14px; margin-bottom:24px; display: inline-flex;}
-.holatTag{font-size:12px; font-weight:800; border-radius:20px; padding:6px 14px}
+.mini.kul{background:var(--chiziq); color:var(--text-ikkinchi)}
+.qoshBtn{background:linear-gradient(135deg, var(--kok), #5B9BFF); color:#fff; border-radius:13px; padding:12px 22px; font-weight:700; font-size:13.5px; margin-bottom:22px; display: inline-flex; box-shadow:0 14px 26px -10px rgba(var(--kok-rgb),.5);}
+.qoshBtn:hover{ filter:brightness(1.07); }
+.holatTag{font-size:11px; font-weight:800; border-radius:20px; padding:6px 13px}
 .holatTag.faol{background:var(--yashil-och); color:var(--yashil)}
 .holatTag.blok{background:var(--qizil-och); color:var(--qizil)}
 
-#formaFon, #modalFon, #customModalFon{position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); display:none; align-items:center; justify-content:center; z-index:999; padding:20px}
+/* ---- MODALS ---- */
+#formaFon, #modalFon, #customModalFon{position:fixed; inset:0; background:rgba(6,8,12,0.65); backdrop-filter:blur(12px); -webkit-backdrop-filter: blur(12px); display:none; align-items:center; justify-content:center; z-index:999; padding:20px}
 #forma, #customModal{background:var(--bg-kard); border-radius:24px; width:min(560px, 100%); padding:32px; box-shadow:var(--soya-hover); border:1px solid var(--chiziq-kard); max-height: 90vh; overflow-y:auto;}
-#modal{background:var(--bg-kard); border-radius:24px; width:min(900px, 100%); max-height:90vh; overflow-y:auto; box-shadow:var(--soya-hover); border:1px solid var(--chiziq-kard); display:flex; flex-direction:column;}
+#modal{background:var(--bg-kard); border-radius:24px; width:min(920px, 100%); max-height:90vh; overflow-y:auto; box-shadow:var(--soya-hover); border:1px solid var(--chiziq-kard); display:flex; flex-direction:column;}
 
-#forma h3, #modal h3{font-size:22px; color:var(--text-asosiy); margin-bottom:20px;}
-#forma label{display:block; font-weight:700; font-size:12px; margin:16px 0 8px; color:var(--text-ikkinchi);}
-#forma input, #forma select, #forma textarea{width:100%; padding:14px; border:1px solid var(--chiziq); border-radius:14px; font-size:14px; background:var(--bg-input); color:var(--text-asosiy)}
-#forma input:focus, #forma select:focus{border-color:var(--kok); background:var(--bg-kard);}
-.fAmallar{display:flex; gap:12px; margin-top:30px}
-.fAmallar button{flex:1; padding:14px; border-radius:14px; font-weight:700; font-size:15px}
-.saqlaB{background:var(--kok); color:#fff;}
-.bekorB{background:var(--bg-input); color:var(--text-asosiy);}
+#forma h3, #modal h3{font-size:21px; color:var(--text-asosiy); margin-bottom:20px; letter-spacing:-0.02em;}
+#forma label{display:block; font-weight:700; font-size:11.5px; margin:16px 0 8px; color:var(--text-ikkinchi); text-transform:uppercase; letter-spacing:.04em;}
+#forma input, #forma select, #forma textarea{width:100%; padding:13px 14px; border:1.5px solid var(--chiziq); border-radius:13px; font-size:14px; background:var(--bg-input); color:var(--text-asosiy)}
+#forma input:focus, #forma select:focus{border-color:var(--kok); background:var(--bg-kard); box-shadow:0 0 0 3px var(--kok-och);}
+.fAmallar{display:flex; gap:12px; margin-top:28px}
+.fAmallar button{flex:1; padding:14px; border-radius:14px; font-weight:700; font-size:14.5px}
+.saqlaB{background:linear-gradient(135deg, var(--kok), #5B9BFF); color:#fff; box-shadow:0 14px 26px -10px rgba(var(--kok-rgb),.5);}
+.saqlaB:hover{ filter:brightness(1.07); }
+.bekorB{background:var(--bg-input); color:var(--text-asosiy); border:1px solid var(--chiziq);}
+.bekorB:hover{ background:var(--bg-kard-hover); }
 
-#modal .mBosh{display:flex; justify-content:space-between; align-items:flex-start; padding:32px 32px 0}
-#modal .mSub{color:var(--text-ikkinchi); font-size:14px; margin-top:8px;}
-#modal .yop{background:var(--bg-input); border-radius:12px; width:40px; height:40px; font-size:16px; color:var(--text-asosiy); display:flex; align-items:center; justify-content:center; flex-shrink: 0;}
-#modal .yop:hover{background:var(--qizil-och); color:var(--qizil)}
-.stageBlok{margin:20px 32px; background:var(--bg-input); border-radius:20px; padding:24px; border:1px solid var(--chiziq-kard)}
-.stageBlok h4{font-size:16px; color:var(--text-asosiy); display:flex; align-items:center; gap:12px; margin-bottom:12px;}
-.stageBlok .stTag{font-size:11px; padding:6px 14px; border-radius:20px;}
-.mGaler{display:flex; gap:12px; overflow-x:auto; margin:16px 0; padding-bottom:10px;}
-.mGaler img{height:160px; max-width: 100%; border-radius:16px; cursor:zoom-in; border:1px solid var(--chiziq); object-fit: cover;}
-.stageBlok .tavsifTxt{background:var(--bg-kard); border-radius:14px; padding:16px; font-size:14px; line-height:1.6; color:var(--text-asosiy); border:1px solid var(--chiziq)}
+#modal .mBosh{display:flex; justify-content:space-between; align-items:flex-start; padding:30px 30px 0}
+#modal .mSub{color:var(--text-ikkinchi); font-size:13.5px; margin-top:8px;}
+#modal .yop{background:var(--bg-input); border:1px solid var(--chiziq); border-radius:12px; width:38px; height:38px; font-size:16px; color:var(--text-asosiy); display:flex; align-items:center; justify-content:center; flex-shrink: 0;}
+#modal .yop:hover{background:var(--qizil-och); color:var(--qizil); border-color:transparent;}
+.stageBlok{margin:18px 30px; background:var(--bg-input); border-radius:18px; padding:22px; border:1px solid var(--chiziq-kard)}
+.stageBlok h4{font-size:15px; color:var(--text-asosiy); display:flex; align-items:center; gap:12px; margin-bottom:12px;}
+.stageBlok .stTag{font-size:10.5px; padding:6px 13px; border-radius:20px; font-weight:800;}
+.mGaler{display:flex; gap:11px; overflow-x:auto; margin:15px 0; padding-bottom:8px;}
+.mGaler img{height:150px; max-width: 100%; border-radius:14px; cursor:zoom-in; border:1px solid var(--chiziq); object-fit: cover; transition:transform .2s ease;}
+.mGaler img:hover{ transform:scale(1.03); }
+.stageBlok .tavsifTxt{background:var(--bg-kard); border-radius:13px; padding:15px; font-size:13.5px; line-height:1.6; color:var(--text-asosiy); border:1px solid var(--chiziq)}
 
-.xarita-wrap { padding: 0 32px 32px; }
-#mXarita{width: 100%; height: 260px; border-radius: 20px; border: 1px solid var(--chiziq); z-index: 1; background: #e5e5e5;}
+.xarita-wrap { padding: 0 30px 30px; }
+#mXarita{width: 100%; height: 250px; border-radius: 18px; border: 1px solid var(--chiziq); z-index: 1; background: #e5e5e5;}
 
-#zoomFon { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; align-items: center; justify-content: center; cursor: zoom-out; }
-#zoomImg { max-width: 90vw; max-height: 90vh; border-radius: 12px; object-fit: contain; box-shadow: 0 30px 80px rgba(0,0,0,0.5); }
+#zoomFon { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 9999; display: none; align-items: center; justify-content: center; cursor: zoom-out; }
+#zoomImg { max-width: 90vw; max-height: 90vh; border-radius: 14px; object-fit: contain; box-shadow: 0 40px 90px rgba(0,0,0,0.6); }
 
 #customModal { display: flex; flex-direction: column; gap: 16px; width: 400px; }
-#customModal h4 { font-size: 16px; color: var(--text-asosiy); margin:0; }
-#cmInput { width: 100%; padding: 12px; box-sizing: border-box; }
-.cmAmallar { display: flex; gap: 12px; margin-top: 10px; justify-content: flex-end; }
-.cmAmallar button { padding: 12px 20px; border-radius: 12px; font-weight: 700; flex:none;}
+#customModal h4 { font-size: 16px; color: var(--text-asosiy); margin:0; font-weight:800; }
+#cmInput { width: 100%; padding: 13px; box-sizing: border-box; border:1.5px solid var(--chiziq); border-radius:13px; background:var(--bg-input); }
+#cmInput:focus{ border-color:var(--kok); box-shadow:0 0 0 3px var(--kok-och); }
+.cmAmallar { display: flex; gap: 12px; margin-top: 6px; justify-content: flex-end; }
+.cmAmallar button { padding: 12px 20px; border-radius: 13px; font-weight: 700; flex:none;}
 
-.yuklanmoqda{text-align:center; padding:60px; color:var(--text-ikkinchi); font-weight:600; font-size:15px;}
-.spinner{width:36px; height:36px; border:3px solid var(--chiziq); border-top-color:var(--kok); border-radius:50%; margin:0 auto 16px; animation:sp .8s linear infinite}
+.yuklanmoqda{text-align:center; padding:60px; color:var(--text-ikkinchi); font-weight:600; font-size:14px;}
+.spinner{width:34px; height:34px; border:3px solid var(--chiziq); border-top-color:var(--kok); border-radius:50%; margin:0 auto 16px; animation:sp .8s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
 
-.toast{background:var(--bg-kard); padding:16px 24px; border-radius:16px; box-shadow:var(--soya-hover); display:flex; align-items:center; gap:16px; font-weight:700; font-size:14px; color:var(--text-asosiy); border:1px solid var(--chiziq-kard); z-index: 9999;}
-.toast.muvaffaqiyat{border-left:4px solid var(--yashil)}
-.toast.xato{border-left:4px solid var(--qizil)}
-.toast.info{border-left:4px solid var(--kok)}
+.toast{background:var(--bg-kard); padding:15px 22px; border-radius:16px; box-shadow:var(--soya-hover); display:flex; align-items:center; gap:14px; font-weight:700; font-size:13.5px; color:var(--text-asosiy); border:1px solid var(--chiziq-kard); z-index: 9999; animation: toastIn .3s cubic-bezier(.16,1,.3,1);}
+@keyframes toastIn{ from{opacity:0; transform:translateX(30px);} to{opacity:1; transform:translateX(0);} }
+.toast.muvaffaqiyat{border-left:3px solid var(--yashil)}
+.toast.xato{border-left:3px solid var(--qizil)}
+.toast.info{border-left:3px solid var(--kok)}
 
 /* AVATAR */
 .avatarWrap{position:relative; flex-shrink:0;}
-.avatarDumaloq{width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:13px; flex-shrink:0; letter-spacing:0;}
-.avatarWrap .nuqta{position:absolute; bottom:-1px; right:-1px; border:2px solid var(--bg-kard); width:11px; height:11px;}
-.avatarDumaloq.katta{width:52px; height:52px; font-size:17px;}
+.avatarDumaloq{width:36px; height:36px; border-radius:11px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:12.5px; flex-shrink:0; letter-spacing:0;}
+.avatarWrap .nuqta{position:absolute; bottom:-2px; right:-2px; border:2px solid var(--bg-kard); width:11px; height:11px;}
+.avatarDumaloq.katta{width:52px; height:52px; font-size:17px; border-radius:15px;}
 
-/* RUXSATLAR (PERMISSIONS) GRID */
+/* ============ RUXSATLAR (PERMISSIONS) — premium checkbox grid ============ */
 .ruxsatSarlavha{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;}
-.ruxsatSarlavha .chap{font-weight:700; font-size:12px; color:var(--text-ikkinchi); text-transform:uppercase; letter-spacing:0.05em;}
+.ruxsatSarlavha .chap{font-weight:700; font-size:11.5px; color:var(--text-ikkinchi); text-transform:uppercase; letter-spacing:0.06em; display:flex; align-items:center; gap:8px;}
 .ruxsatAmallar{display:flex; gap:8px;}
-.ruxsatAmallar button{padding:7px 12px; font-size:11.5px; border-radius:10px; font-weight:700;}
-.ruxsatGrid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:10px; margin-top:12px;}
-.ruxsatItem{display:flex; gap:10px; align-items:flex-start; background:var(--bg-input); border:1.5px solid var(--chiziq); border-radius:14px; padding:12px; cursor:pointer; transition:all .15s ease;}
+.ruxsatAmallar button{padding:7px 12px; font-size:11px; border-radius:10px; font-weight:700;}
+.ruxsatGrid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:10px; margin-top:14px;}
+.ruxsatItem{display:flex; gap:11px; align-items:flex-start; background:var(--bg-input); border:1.5px solid var(--chiziq); border-radius:14px; padding:13px; cursor:pointer; transition:all .15s ease;}
 .ruxsatItem:hover{border-color:var(--kok); background:var(--bg-kard-hover);}
 .ruxsatItem.tanlangan{border-color:var(--kok); background:var(--kok-och);}
-.ruxsatItem input[type=checkbox]{margin-top:2px; width:17px; height:17px; accent-color:var(--kok); flex-shrink:0; cursor:pointer;}
 .ruxsatIco{width:26px; height:26px; border-radius:8px; background:var(--kok-och); color:var(--kok); display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;}
 .ruxsatItem .ruxsatMatn b{display:block; font-size:12.5px; color:var(--text-asosiy); font-weight:700;}
 .ruxsatItem .ruxsatMatn small{display:block; font-size:11px; color:var(--text-ikkinchi); margin-top:2px; line-height:1.4;}
-.ruxsatBlok{margin-top:22px; padding-top:18px; border-top:1px solid var(--chiziq);}
+.ruxsatBlok{margin-top:24px; padding-top:20px; border-top:1px solid var(--chiziq);}
+
+/* premium iOS-style checkbox — used by .ruxsatChk (permission grid) and .chk (employee multi-select) */
+input[type="checkbox"].ruxsatChk,
+input[type="checkbox"].chk {
+  appearance:none; -webkit-appearance:none; margin:0; margin-top:1px;
+  width:20px; height:20px; flex-shrink:0; border-radius:7px;
+  border:1.8px solid var(--chiziq); background:var(--bg-kard);
+  display:grid; place-content:center; cursor:pointer; position:relative;
+  transition: all .16s ease;
+}
+input[type="checkbox"].ruxsatChk::after,
+input[type="checkbox"].chk::after {
+  content:''; width:11px; height:7px; opacity:0; scale:.6;
+  border-left:2.4px solid #fff; border-bottom:2.4px solid #fff;
+  transform:rotate(-45deg) translateY(-1px);
+  transition: all .16s ease;
+}
+input[type="checkbox"].ruxsatChk:hover,
+input[type="checkbox"].chk:hover { border-color: var(--kok); }
+input[type="checkbox"].ruxsatChk:checked,
+input[type="checkbox"].chk:checked {
+  background: linear-gradient(135deg, var(--kok), #5B9BFF); border-color: transparent;
+}
+input[type="checkbox"].ruxsatChk:checked::after,
+input[type="checkbox"].chk:checked::after { opacity:1; scale:1; }
+input[type="checkbox"].chk{ width:18px; height:18px; border-radius:6px; }
 
 @media(max-width:900px){
+  .sidebar{ position:fixed; z-index:60; }
   #chap{width:100%; position:absolute; z-index:15; height:calc(100vh - 65px); display:none}
   #chap.ochiq{display:flex}
   main { padding: 10px; overflow-y:auto;}
   .jadval{font-size:12px}
+  #mobilMenyu{display:flex}
 }
-#mobilMenyu{display:none; background:var(--bg-input); border:1px solid var(--chiziq); border-radius:12px; padding:10px 14px; color:var(--text-asosiy)}
-@media(max-width:900px){#mobilMenyu{display:block}}
+@media(max-width:760px){
+  .sidebar{ width:76px; padding:20px 10px; }
+  .brand-text, .sidebar-label, .user-meta, .navTabs button span.navLabel { display:none; }
+  .sidebar-brand{ justify-content:center; }
+  .navTabs button{ justify-content:center; padding:12px; }
+  .user-card{ justify-content:center; }
+}
 </style>
 </head>
 <body>
@@ -331,128 +452,167 @@ main{
 
 <div id="loginEkran">
   <div class="loginCard">
-    <div class="trafficLights"><span class="tl-red"></span><span class="tl-yellow"></span><span class="tl-green"></span></div>
+    <div class="logoMark">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round"><path d="M6 18V13M12 18V6M18 18V10"/></svg>
+    </div>
     <div class="brand">KUNLIK HISOBOT</div>
     <div class="sub">Nazorat Platformasi</div>
     <label>Login</label>
     <input id="inLogin" placeholder="Kiriting">
     <label>Parol</label>
-    <input id="inParol" type="password" placeholder="***">
+    <input id="inParol" type="password" placeholder="***" onkeydown="if(event.key==='Enter')loginParol()">
     <button class="btn" onclick="loginParol()">Tizimga kirish</button>
     <div class="loginXato" id="loginXato"></div>
   </div>
 </div>
 
 <div id="app">
-  <header class="top">
-    <button id="mobilMenyu" onclick="document.getElementById('chap').classList.toggle('ochiq')">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
-    </button>
-    <div class="brand">KUNLIK HISOBOT<small id="brandSub">Nazorat Platformasi</small></div>
-    <span class="rolBadge" id="rolBadge"></span>
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-mark">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.6" stroke-linecap="round"><path d="M6 18V13M12 18V6M18 18V10"/></svg>
+      </div>
+      <div class="brand-text">
+        <div class="brand-name">Kunlik Hisobot</div>
+        <small>NAZORAT PLATFORMASI</small>
+      </div>
+    </div>
+
+    <div class="sidebar-label">Menyu</div>
     <nav class="navTabs" id="navTabs" style="display:none">
       <button id="navDashboard" class="aktiv" onclick="bolimKorsat('dashboard')">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg> Dashboard
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg> <span class="navLabel">Dashboard</span>
       </button>
       <button id="navNazorat" onclick="bolimKorsat('nazorat')">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Nazorat <span id="mainBadge" class="yangi-badge" style="display:none;">0</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> <span class="navLabel">Nazorat</span> <span id="mainBadge" class="yangi-badge" style="display:none;">0</span>
       </button>
       <button id="navBoshqaruv" onclick="bolimKorsat('boshqaruv')" style="display:none">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Boshqaruv
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> <span class="navLabel">Boshqaruv</span>
       </button>
     </nav>
-    <div class="top-amallar">
-      <button id="themeToggle" class="theme-btn" onclick="toggleTheme()" title="Tungi/Kunduzgi rejim">
-        <svg id="themeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-      </button>
-      <button class="cta" onclick="hammasiExcel()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Excel
-      </button>
-      <button class="chiqishBtn" onclick="chiqish()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Chiqish
-      </button>
-    </div>
-  </header>
 
-  <main>
-    <aside id="chap" class="asosiy-kard" style="display:none;">
-      <div class="qidiruv">
-        <input id="qidiruv" placeholder="Xodim qidirish..." oninput="xodimlarChiz()">
-        <select id="fMfy" onchange="xodimlarChiz()"><option value="">Barcha tashkilotlar</option></select>
-        <select id="fKategoriya" onchange="xodimlarChiz()"><option value="">Barcha kategoriya</option></select>
-      </div>
-      <div id="xodimlarList"><div class="yuklanmoqda"><div class="spinner"></div>Kuting...</div></div>
-      <div class="eslatmaPanel" id="eslatmaPanel" style="display:none; padding:16px; margin-top:auto; border-top:1px solid var(--chiziq);">
-        <button class="cta" style="width:100%" onclick="guruhEslatma()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> Eslatma yuborish
+    <div class="sidebar-spacer"></div>
+
+    <div class="sidebar-foot">
+      <div class="top-amallar" style="margin:0 0 14px; justify-content:flex-start;">
+        <button id="themeToggle" class="theme-btn" onclick="toggleTheme()" title="Tungi/Kunduzgi rejim">
+          <svg id="themeIcon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
+        <button class="cta" style="flex:1; padding:10px 14px;" onclick="hammasiExcel()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Excel
         </button>
       </div>
-    </aside>
-
-    <section id="ong" class="asosiy-kard" style="display:none;">
-      <div class="bosh-holat" id="boshHolat">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-ikkinchi)" stroke-width="1" style="margin-bottom:16px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        <b>Xodimni tanlang</b>
-        Chap paneldan xodim tanlansa, uning barcha hisobotlari<br>shu yerda ko'rinadi
+      <div class="user-card">
+        <div class="user-avatar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div class="user-meta">
+          <b id="brandSub">Foydalanuvchi</b>
+          <span class="rolBadge" id="rolBadge"></span>
+        </div>
       </div>
-      <div id="lentaWrap" style="display:none">
-        <div class="bosh">
-          <h2 id="lentaFio"></h2>
-          <div class="filtr">
-            <button class="refreshBtn" onclick="hisobotlarniYangila()" title="Yangi hisobotlarni tekshirish">
-              <svg id="refIco" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Yangilash
-            </button>
-            <input type="date" id="fDan"> <span style="color:var(--text-ikkinchi)">—</span> <input type="date" id="fGacha">
-            <button onclick="lentaYukla()">Filtrlash</button>
-            <button class="excel" onclick="xodimExcel()">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Excel
-            </button>
+      <button class="chiqishBtn" style="width:100%; margin-top:10px;" onclick="chiqish()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Chiqish
+      </button>
+    </div>
+  </aside>
+
+  <div class="content-col">
+    <header class="top">
+      <button id="mobilMenyu" onclick="document.getElementById('chap').classList.toggle('ochiq')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+      <div style="flex:1"></div>
+      <div class="top-amallar" id="topAmallarDesktop"></div>
+    </header>
+
+    <main>
+      <aside id="chap" class="asosiy-kard" style="display:none;">
+        <div class="qidiruv">
+          <input id="qidiruv" placeholder="Xodim qidirish..." oninput="xodimlarChiz()">
+          <select id="fMfy" onchange="xodimlarChiz()"><option value="">Barcha tashkilotlar</option></select>
+          <select id="fKategoriya" onchange="xodimlarChiz()"><option value="">Barcha kategoriya</option></select>
+        </div>
+        <div id="xodimlarList"><div class="yuklanmoqda"><div class="spinner"></div>Kuting...</div></div>
+        <div class="eslatmaPanel" id="eslatmaPanel" style="display:none; padding:16px; margin-top:auto; border-top:1px solid var(--chiziq);">
+          <button class="cta" style="width:100%; padding:12px;" onclick="guruhEslatma()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> Eslatma yuborish
+          </button>
+        </div>
+      </aside>
+
+      <section id="ong" class="asosiy-kard" style="display:none;">
+        <div class="bosh-holat" id="boshHolat">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-ikkinchi)" stroke-width="1" style="margin-bottom:16px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <b>Xodimni tanlang</b>
+          Chap paneldan xodim tanlansa, uning barcha hisobotlari<br>shu yerda ko'rinadi
+        </div>
+        <div id="lentaWrap" style="display:none">
+          <div class="bosh">
+            <h2 id="lentaFio"></h2>
+            <div class="filtr">
+              <button class="refreshBtn" onclick="hisobotlarniYangila()" title="Yangi hisobotlarni tekshirish">
+                <svg id="refIco" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Yangilash
+              </button>
+              <input type="date" id="fDan"> <span style="color:var(--text-ikkinchi)">—</span> <input type="date" id="fGacha">
+              <button onclick="lentaYukla()">Filtrlash</button>
+              <button class="excel" onclick="xodimExcel()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Excel
+              </button>
+            </div>
+          </div>
+          <div id="lenta"></div>
+        </div>
+      </section>
+
+      <section id="dashboardPanel" class="asosiy-kard" style="display:block">
+        <div class="bPanel">
+          <div class="dashHero">
+            <div>
+              <h3 id="dashSarlavha">Umumiy Ko'rsatkichlar</h3>
+              <div class="izoh" id="dashIzoh">Tizimdagi joriy kunlik hisobotlar va xodimlar statistikasi</div>
+            </div>
+            <div class="heroIco">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.1-2.8-2.8L7 14"/></svg>
+            </div>
+          </div>
+
+          <div class="dashGrid" id="dashGrid">
+            <div class="dashCard blue"><div class="dcIco"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><span>Jami Xodimlar</span><b id="dJamiXodim">0</b></div>
+            <div class="dashCard green"><div class="dcIco"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><span>Bugun Yuklaganlar</span><b id="dBugunYuklagan">0</b></div>
+            <div class="dashCard red"><div class="dcIco"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span>Yuklamaganlar</span><b id="dBugunYuklamagan">0</b></div>
+            <div class="dashCard amber"><div class="dcIco"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><span>Muammoli (Flag)</span><b id="dFlagSoni">0</b></div>
+          </div>
+
+          <h3 style="margin-top:8px">Xodimlar holati (Bugun)</h3>
+          <div class="izoh">Bugun hisobot topshirgan va topshirmagan xodimlar ro'yxati</div>
+          <div class="bTabs" style="margin-bottom: 20px;">
+            <button id="tabYuklamaganlar" class="aktiv" onclick="dashTab('yuklamaganlar')">Topshirmaganlar</button>
+            <button id="tabYuklaganlar" onclick="dashTab('yuklaganlar')">Topshirganlar</button>
+          </div>
+          <div style="overflow-x:auto; margin-bottom: 40px; border:1px solid var(--chiziq-kard); border-radius:16px;">
+            <table class="jadval" id="dashXodimlarJadval">
+              <tr><td class="yuklanmoqda"><div class="spinner"></div>Kuting...</td></tr>
+            </table>
+          </div>
+
+          <h3>Tashkilotlar kesimida bugungi holat</h3>
+          <div class="izoh">Qaysi tashkilot xodimlari faol ekanligi</div>
+          <div style="overflow-x:auto; border:1px solid var(--chiziq-kard); border-radius:16px;">
+            <table class="jadval" id="dashJadval">
+              <tr><th>Tashkilot</th><th>Jami Xodim</th><th>Bugun Yuklagan</th><th>Foiz</th></tr>
+              <tr><td colspan="4" class="yuklanmoqda"><div class="spinner"></div>Yuklanmoqda...</td></tr>
+            </table>
           </div>
         </div>
-        <div id="lenta"></div>
-      </div>
-    </section>
+      </section>
 
-    <section id="dashboardPanel" class="asosiy-kard" style="display:block">
-      <div class="bPanel">
-        <h3 id="dashSarlavha">Umumiy Ko'rsatkichlar</h3>
-        <div class="izoh" id="dashIzoh">Tizimdagi joriy kunlik hisobotlar va xodimlar statistikasi</div>
-        
-        <div class="dashGrid" id="dashGrid">
-          <div class="dashCard blue"><div class="dcIco"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><span>Jami Xodimlar</span><b id="dJamiXodim">0</b></div>
-          <div class="dashCard green"><div class="dcIco"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><span>Bugun Yuklaganlar</span><b id="dBugunYuklagan">0</b></div>
-          <div class="dashCard red"><div class="dcIco"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span>Yuklamaganlar</span><b id="dBugunYuklamagan">0</b></div>
-          <div class="dashCard red"><div class="dcIco"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><span>Muammoli (Flag)</span><b id="dFlagSoni">0</b></div>
-        </div>
-
-        <h3 style="margin-top:40px">Xodimlar holati (Bugun)</h3>
-        <div class="izoh">Bugun hisobot topshirgan va topshirmagan xodimlar ro'yxati</div>
-        <div class="bTabs" style="margin-bottom: 20px;">
-          <button id="tabYuklamaganlar" class="aktiv" onclick="dashTab('yuklamaganlar')">Topshirmaganlar</button>
-          <button id="tabYuklaganlar" onclick="dashTab('yuklaganlar')">Topshirganlar</button>
-        </div>
-        <div style="overflow-x:auto; margin-bottom: 40px;">
-          <table class="jadval" id="dashXodimlarJadval">
-            <tr><td class="yuklanmoqda"><div class="spinner"></div>Kuting...</td></tr>
-          </table>
-        </div>
-
-        <h3>Tashkilotlar kesimida bugungi holat</h3>
-        <div class="izoh">Qaysi tashkilot xodimlari faol ekanligi</div>
-        <div style="overflow-x:auto">
-          <table class="jadval" id="dashJadval">
-            <tr><th>Tashkilot</th><th>Jami Xodim</th><th>Bugun Yuklagan</th><th>Foiz</th></tr>
-            <tr><td colspan="4" class="yuklanmoqda"><div class="spinner"></div>Yuklanmoqda...</td></tr>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <section id="boshqaruv" class="asosiy-kard" style="display:none;">
-      <div class="bTabs" id="bTabsContainer"></div>
-      <div class="bPanel" id="bPanel"><div class="yuklanmoqda"><div class="spinner"></div></div></div>
-    </section>
-  </main>
+      <section id="boshqaruv" class="asosiy-kard" style="display:none;">
+        <div class="bTabs" id="bTabsContainer"></div>
+        <div class="bPanel" id="bPanel"><div class="yuklanmoqda"><div class="spinner"></div></div></div>
+      </section>
+    </main>
+  </div>
 </div>
 
 <!-- MODALS -->
@@ -530,7 +690,7 @@ let seenReports = new Set();
 let fetchedReportIds = new Set();
 
 // AVATAR YORDAMCHI FUNKSIYALARI
-const AVATAR_RANGLAR = ['#0A84FF','#30D158','#FF9F0A','#FF453A','#BF5AF2','#64D2FF','#FF6482','#5AC8FA'];
+const AVATAR_RANGLAR = ['#2E7CF6','#22C55E','#F5A623','#F0475B','#8B6CF6','#23C6D6','#F76C9F','#5AC8FA'];
 function avatarRang(matn) {
   matn = matn || '?';
   let hash = 0;
