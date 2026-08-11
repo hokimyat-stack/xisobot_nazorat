@@ -1490,7 +1490,8 @@ function adminForma(a) {
     if (parol && parol.length < 6) return toast('Parol kamida 6 belgidan iborat bo\'lishi kerak', 'xato');
 
     const ruxsatlar = Array.from(document.querySelectorAll('.ruxsatChk:checked')).map(c => c.value);
-    const qiymatlar = { fio, rol, mfyId, login, parol, ruxsatlar: JSON.stringify(ruxsatlar) };
+    // Backend "ruxsatlar" ustunini vergul bilan ajratilgan matn sifatida o'qiydi (data.ruxsatlar.split(','))
+    const qiymatlar = { fio, rol, mfyId, login, parol, ruxsatlar: ruxsatlar.join(',') };
 
     const r = a ? await apiPost('adminTahrir', { adminId:a.id, ...qiymatlar }) : await apiPost('adminQosh', qiymatlar);
     if (r.ok) { formaYop(); bYukla(); toast("Saqlandi!"); } else toast('Xato: ' + (r.xato || ''), 'xato');
