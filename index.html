@@ -507,6 +507,16 @@ function glassPrompt(sarlavha, defaultVal='', callback, isPrompt=true) {
   btnBekor.onclick = () => { fon.style.display = 'none'; if (callback) callback(null); };
 }
 
+// XATO EDI: dashboard va xodim ro'yxatida "bugun"gi sana new Date().toISOString().slice(0,10)
+// orqali UTC bo'yicha hisoblanardi, backend esa endi Toshkent vaqti (UTC+5) bo'yicha
+// hisoblaydi. Natijada soat 00:00–05:00 (Toshkent) oralig'ida bugun yuborilgan hisobot
+// "kechagi" sifatida ko'rinib, statistika noto'g'ri chiqardi. Endi ikkalasi bir xil usulda.
+function toshkentBugun() {
+  const hozir = new Date();
+  const toshkent = new Date(hozir.getTime() + 5 * 60 * 60 * 1000);
+  return toshkent.toISOString().slice(0, 10);
+}
+
 // BARQAROR RASM URL'LARI (Cloudflare R2 uchun to'g'ridan-to'g'ri qaytaradi)
 const rasmURL = (id, w=800) => {
   if (!id) return '';
@@ -518,19 +528,36 @@ const rasmFullURL = (id) => {
 };
 
 // Yangilangan API chaqiruv funksiyalari (REST formatiga moslangan)
+// XATO: avval try/catch yo'q edi — tarmoq uzilsa yoki server 500/404 qaytarsa,
+// fetch/json() xatosi "yutilib" ketardi va panel abadiy "Kuting..." holatida qolardi.
+// Endi har doim { ok:false, xato:'...' } qaytaramiz, hech qachon throw qilmaymiz.
 async function api(action, params={}) {
-  const q = new URLSearchParams({ kalit: SESSIYA?.kalit || '', ...params });
-  const r = await fetch(`${API}/${action}?${q}`);
-  return r.json();
+  try {
+    const q = new URLSearchParams({ kalit: SESSIYA?.kalit || '', ...params });
+    const r = await fetch(`${API}/${action}?${q}`);
+    let data;
+    try { data = await r.json(); } catch (e) { return { ok:false, xato: `Server noto'g'ri javob qaytardi (${r.status})` }; }
+    if (!r.ok && data.ok === undefined) return { ok:false, xato: `Server xatosi (${r.status})` };
+    return data;
+  } catch (e) {
+    return { ok:false, xato: "Serverga ulanib bo'lmadi. Internet aloqasini tekshiring." };
+  }
 }
 
 async function apiPost(action, data) {
-  const r = await fetch(`${API}/${action}`, { 
-    method:'POST', 
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ kalit: SESSIYA?.kalit || '', ...data }) 
-  });
-  return r.json();
+  try {
+    const r = await fetch(`${API}/${action}`, { 
+      method:'POST', 
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ kalit: SESSIYA?.kalit || '', ...data }) 
+    });
+    let res;
+    try { res = await r.json(); } catch (e) { return { ok:false, xato: `Server noto'g'ri javob qaytardi (${r.status})` }; }
+    if (!r.ok && res.ok === undefined) return { ok:false, xato: `Server xatosi (${r.status})` };
+    return res;
+  } catch (e) {
+    return { ok:false, xato: "Serverga ulanib bo'lmadi. Internet aloqasini tekshiring." };
+  }
 }
 
 async function superadminUrlTekshir() {
@@ -592,7 +619,11 @@ async function boshla() {
     document.getElementById('navBoshqaruv').style.display = 'inline-flex';
   }
 
-  if (SESSIYA.rol !== 'nazoratchi') document.getElementById('eslatmaPanel').style.display = 'block';
+  // XATO EDI: nazoratchiga 'eslatma_yuborish' ruxsati berilgan bo'lsa ham panel har doim
+  // yashirilardi (faqat rolga qarab). Endi ruxsatlar ro'yxati ham hisobga olinadi.
+  if (SESSIYA.rol !== 'nazoratchi' || (SESSIYA.ruxsatlar||[]).includes('eslatma_yuborish')) {
+    document.getElementById('eslatmaPanel').style.display = 'block';
+  }
 
   document.getElementById('chap').style.display = 'none';
   document.getElementById('ong').style.display = 'none';
@@ -693,9 +724,9 @@ async function dashboardYukla() {
   document.getElementById('dashSarlavha').textContent = (SESSIYA.rol === 'nazoratchi') ? 'Sizning tashkilotingiz statistikasi' : 'Umumiy Ko\'rsatkichlar';
   
   const [rx, rh] = await Promise.all([api('xodimlar'), api('hisobotlar')]);
-  if (!rx.ok || !rh.ok) return;
+  if (!rx.ok || !rh.ok) { toast("Ma'lumot yuklashda xato: " + (rx.xato || rh.xato || ''), 'xato'); return; }
 
-  const bugunStr = new Date().toISOString().slice(0,10);
+  const bugunStr = toshkentBugun();
   let xodims = rx.xodimlar;
   let hisobots = rh.hisobotlar;
 
@@ -762,8 +793,12 @@ async function xodimlarYukla() {
       xodimlar.forEach(x => {
         const xHisobotlari = kelganHisobotlar.filter(h => String(h.xodimId) === String(x.id));
         x.soni = xHisobotlari.length;
-        x.bugunBor = xHisobotlari.some(h => h.sana === new Date().toISOString().slice(0,10));
+        x.bugunBor = xHisobotlari.some(h => h.sana === toshkentBugun());
         x.unread = xHisobotlari.filter(h => !seenReports.has(h.id)).length;
+        // XATO EDI: x.flagBor hech qayerda hisoblanmasdi, shuning uchun chap paneldagi
+        // qizil "flag" nuqtasi hech qachon chiqmasdi. Endi bugungi SARIQ/QIZIL
+        // reytingli hisoboti bor xodimlar qizil nuqta bilan belgilanadi.
+        x.flagBor = xHisobotlari.some(h => h.sana === toshkentBugun() && h.reyting && h.reyting !== 'YASHIL');
         jamiOqilmagan += x.unread;
       });
     }
@@ -777,6 +812,9 @@ async function xodimlarYukla() {
     }
 
     xodimlarChiz();
+  } else {
+    toast("Xodimlarni yuklashda xato: " + (rx.xato || ''), 'xato');
+    document.getElementById('xodimlarList').innerHTML = `<div class="yuklanmoqda">Xato: ${rx.xato||''}</div>`;
   }
 }
 
@@ -805,7 +843,7 @@ function xodimlarChiz() {
     (x.fio.toLowerCase().includes(q) || (x.mfyNomi||'').toLowerCase().includes(q)) &&
     (!fMfy || x.mfyId === fMfy) && (!fKat || x.kategoriyaId === fKat));
   
-  const eslatmaKerak = SESSIYA.rol !== 'nazoratchi';
+  const eslatmaKerak = SESSIYA.rol !== 'nazoratchi' || (SESSIYA.ruxsatlar||[]).includes('eslatma_yuborish');
   
   document.getElementById('xodimlarList').innerHTML = list.map(x => `
     <div class="xodimRow ${tanlangan?.id===x.id?'aktiv':''}" onclick="xodimTanla('${x.id}')">
