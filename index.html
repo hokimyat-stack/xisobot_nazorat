@@ -11,50 +11,52 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
 /* =========================================================
-   DIZAYN TIZIMI — "Nazorat" Premium Dashboard
-   Palette:  #0A0C11 fon / #2E7CF6 ko'k / #22C55E yashil
-             #F0475B qizil / #F5A623 amber / #8B6CF6 binafsha
-   Shrift:   Plus Jakarta Sans (UI)  ·  JetBrains Mono (raqam/kod)
+   DIZAYN TIZIMI 2.0 — "Nazorat" Control-Room Dashboard
+   G'oya: real vaqtli monitoring markazi — signal ko'k asosiy rang,
+   semantik holat ranglari (yashil/amber/qizil), sokin grafit fon.
+   Palette:  #060810 fon (dark) / #2F6FEF signal-ko'k / #16A34A yashil
+             #EF4444 qizil / #F0A020 amber / #7C5CFC binafsha
+   Shrift:   Plus Jakarta Sans (UI)  ·  JetBrains Mono (raqam / GPS / kod)
 ========================================================= */
 :root {
-  --kok: #2E7CF6; --kok-och: rgba(46,124,246,0.14); --kok-rgb: 46,124,246;
-  --yashil: #22C55E; --yashil-och: rgba(34,197,94,0.14);
-  --sariq: #F5A623; --sariq-och: rgba(245,166,35,0.14);
-  --qizil: #F0475B; --qizil-och: rgba(240,71,91,0.14);
-  --binafsha: #8B6CF6; --binafsha-och: rgba(139,108,246,0.14);
+  --kok: #2F6FEF; --kok-och: rgba(47,111,239,0.12); --kok-rgb: 47,111,239;
+  --yashil: #17A34E; --yashil-och: rgba(23,163,78,0.12);
+  --sariq: #E7930A; --sariq-och: rgba(231,147,10,0.13);
+  --qizil: #E23F4E; --qizil-och: rgba(226,63,78,0.12);
+  --binafsha: #7C5CFC; --binafsha-och: rgba(124,92,252,0.13);
 
-  --bg-asosiy: #F3F4F8;
+  --bg-asosiy: #EEF1F7;
   --bg-sidebar: #FFFFFF;
   --bg-kard: #FFFFFF;
-  --bg-kard-shaffof: rgba(255, 255, 255, 0.9);
-  --bg-kard-hover: #F7F8FC;
-  --bg-input: #F3F4F8;
-  --bg-header: rgba(255, 255, 255, 0.8);
-  --text-asosiy: #14161C;
-  --text-ikkinchi: #767C8C;
-  --chiziq: rgba(15, 23, 42, 0.08);
-  --chiziq-kard: rgba(15, 23, 42, 0.06);
-  --soya-kard: 0 1px 2px rgba(15,23,42,0.04), 0 12px 28px -18px rgba(15,23,42,0.18);
-  --soya-hover: 0 30px 60px -20px rgba(15,23,42,0.28);
+  --bg-kard-shaffof: rgba(255, 255, 255, 0.92);
+  --bg-kard-hover: #F5F7FC;
+  --bg-input: #F1F3F9;
+  --bg-header: rgba(255, 255, 255, 0.82);
+  --text-asosiy: #12141C;
+  --text-ikkinchi: #6B7286;
+  --chiziq: rgba(20, 28, 51, 0.09);
+  --chiziq-kard: rgba(20, 28, 51, 0.07);
+  --soya-kard: 0 1px 2px rgba(23,31,58,0.04), 0 14px 32px -20px rgba(23,31,58,0.20);
+  --soya-hover: 0 34px 64px -22px rgba(23,31,58,0.30);
   --radius: 18px;
   --font-ui: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 [data-theme="dark"] {
-  --bg-asosiy: #0A0C11;
-  --bg-sidebar: #0D0F16;
-  --bg-kard: #12141C;
-  --bg-kard-shaffof: rgba(18, 20, 28, 0.88);
-  --bg-kard-hover: #181B25;
-  --bg-input: #0B0D13;
-  --bg-header: rgba(10, 12, 17, 0.72);
-  --text-asosiy: #F2F3F7;
-  --text-ikkinchi: #8A90A0;
-  --chiziq: rgba(255, 255, 255, 0.07);
-  --chiziq-kard: rgba(255, 255, 255, 0.05);
-  --soya-kard: 0 1px 0 rgba(255,255,255,0.02) inset, 0 16px 34px -18px rgba(0,0,0,0.6);
-  --soya-hover: 0 30px 70px -20px rgba(0,0,0,0.7);
+  --bg-asosiy: #06070C;
+  --bg-sidebar: #0A0C13;
+  --bg-kard: #10121B;
+  --bg-kard-shaffof: rgba(16, 18, 27, 0.9);
+  --bg-kard-hover: #161923;
+  --bg-input: #0B0D14;
+  --bg-header: rgba(6, 7, 12, 0.7);
+  --text-asosiy: #F3F4F9;
+  --text-ikkinchi: #868DA1;
+  --chiziq: rgba(255, 255, 255, 0.075);
+  --chiziq-kard: rgba(255, 255, 255, 0.055);
+  --soya-kard: 0 1px 0 rgba(255,255,255,0.025) inset, 0 18px 38px -20px rgba(0,0,0,0.65);
+  --soya-hover: 0 34px 76px -22px rgba(0,0,0,0.75);
 }
 
 * { box-sizing: border-box; }
