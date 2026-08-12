@@ -13,11 +13,6 @@
 <style>
 /* =========================================================
    DIZAYN TIZIMI 2.0 — "Nazorat" Control-Room Dashboard
-   G'oya: real vaqtli monitoring markazi — signal ko'k asosiy rang,
-   semantik holat ranglari (yashil/amber/qizil), sokin grafit fon.
-   Palette:  #060810 fon (dark) / #2F6FEF signal-ko'k / #16A34A yashil
-             #EF4444 qizil / #F0A020 amber / #7C5CFC binafsha
-   Shrift:   Plus Jakarta Sans (UI)  ·  JetBrains Mono (raqam / GPS / kod)
 ========================================================= */
 :root {
   --kok: #2F6FEF; --kok-och: rgba(47,111,239,0.12); --kok-rgb: 47,111,239;
@@ -78,7 +73,6 @@ body {
   position: relative;
 }
 
-/* ---- signature: ambient glow orbs behind the whole app (premium glass backdrop) ---- */
 body::before, body::after{
   content:''; position:fixed; z-index:0; pointer-events:none; border-radius:50%;
   filter: blur(90px); opacity:.55; transition: opacity .3s ease;
@@ -102,13 +96,11 @@ input,select,textarea{font-family:inherit;outline:none;transition:all .18s ease;
 input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid var(--kok); outline-offset: 2px; }
 ::selection{background:var(--kok-och)}
 
-/* ---- signature: live pulse dot (jonli monitoring belgisi) ---- */
 .liveDot{ position:relative; width:8px; height:8px; border-radius:50%; background:var(--yashil); flex-shrink:0; }
 .liveDot::after{ content:''; position:absolute; inset:-5px; border-radius:50%; border:1.5px solid var(--yashil); opacity:.55; animation:livePulse 2.2s ease-out infinite; }
 @keyframes livePulse{ 0%{transform:scale(.5); opacity:.7;} 100%{transform:scale(1.9); opacity:0;} }
 .livePill{ display:inline-flex; align-items:center; gap:8px; background:var(--yashil-och); color:var(--yashil); font-weight:800; font-size:11px; letter-spacing:.05em; padding:7px 13px 7px 11px; border-radius:20px; text-transform:uppercase; }
 
-/* ---- signature: subtle radar dot-grid background used on hero/login ---- */
 .dotGrid{ background-image: radial-gradient(rgba(var(--kok-rgb),0.28) 1px, transparent 1.6px); background-size: 16px 16px; }
 
 *{scrollbar-width:thin;scrollbar-color:rgba(140,146,166,.4) transparent}
@@ -276,7 +268,7 @@ main{
   box-shadow: var(--soya-kard);
   backdrop-filter: var(--blur-kard); -webkit-backdrop-filter: var(--blur-kard);
   display: flex; flex-direction: column;
-  overflow-y: auto;
+  overflow-y: auto; 
   position: relative;
 }
 
@@ -515,7 +507,7 @@ main{
 .avatarWrap .nuqta{position:absolute; bottom:-2px; right:-2px; border:2px solid var(--bg-kard); width:11px; height:11px;}
 .avatarDumaloq.katta{width:52px; height:52px; font-size:17px; border-radius:15px;}
 
-/* ============ RUXSATLAR (PERMISSIONS) — premium checkbox grid ============ */
+/* ============ RUXSATLAR (PERMISSIONS) ============ */
 .ruxsatSarlavha{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;}
 .ruxsatSarlavha .chap{font-weight:700; font-size:11.5px; color:var(--text-ikkinchi); text-transform:uppercase; letter-spacing:0.06em; display:flex; align-items:center; gap:8px;}
 .ruxsatAmallar{display:flex; gap:8px;}
@@ -529,7 +521,6 @@ main{
 .ruxsatItem .ruxsatMatn small{display:block; font-size:11px; color:var(--text-ikkinchi); margin-top:2px; line-height:1.4;}
 .ruxsatBlok{margin-top:24px; padding-top:20px; border-top:1px solid var(--chiziq);}
 
-/* premium iOS-style checkbox — used by .ruxsatChk (permission grid) and .chk (employee multi-select) */
 input[type="checkbox"].ruxsatChk,
 input[type="checkbox"].chk {
   appearance:none; -webkit-appearance:none; margin:0; margin-top:1px;
@@ -902,6 +893,18 @@ function toshkentBugun() {
   return toshkent.toISOString().slice(0, 10);
 }
 
+// ==== VAQT FORMATLASH FUNKSIYASI (UTC -> Local Time aylantirish uchun) ====
+function formatVaqt(isoStr) {
+  if (!isoStr) return '';
+  try {
+    const d = new Date(isoStr);
+    if (isNaN(d.getTime())) return isoStr.substring(11, 16);
+    return d.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit', hour12: false });
+  } catch (e) {
+    return isoStr.substring(11, 16);
+  }
+}
+
 const rasmURL = (id, w=800) => id || '';
 const rasmFullURL = (id) => id || '';
 
@@ -1174,8 +1177,6 @@ async function dashboardYukla() {
   document.getElementById('dashJadval').innerHTML = jHTML || '<tr><td colspan="4" class="yuklanmoqda">Ma\'lumot topilmadi</td></tr>';
 }
 
-// Xodimlar bo'yicha bugungi hisobot sonini ko'rsatuvchi ustunli diagramma.
-// Norma (threshold)dan past bo'lganlar qizil rangda, norma bajarilganlar ko'k rangda chiziladi.
 let dashChart = null;
 const DASH_NORMA = 1;
 function dashChartChiz(xodims, hisobots, bugunStr) {
@@ -1187,7 +1188,6 @@ function dashChartChiz(xodims, hisobots, bugunStr) {
   bugunHisobotlar.forEach(h => { const id = String(h.xodimId); sonlar[id] = (sonlar[id] || 0) + 1; });
 
   let ishtirokchilar = xodims.map(x => ({ fio: x.fio, soni: sonlar[String(x.id)] || 0 }));
-  // Eng ko'p hisobot yuklaganlar oldinda, so'ng eng ozlar — grafik yanada tushunarli bo'ladi
   ishtirokchilar.sort((a, b) => b.soni - a.soni);
   ishtirokchilar = ishtirokchilar.slice(0, 25);
 
@@ -1306,7 +1306,6 @@ async function xodimlarYukla() {
   }
 }
 
-// Yangi hisobotlarni fonda tekshirish va ovozli bildirishnoma
 async function checkNewReports() {
   const rh = await api('hisobotlar');
   if(!rh.ok || !Array.isArray(rh.hisobotlar)) return;
@@ -1329,7 +1328,6 @@ async function checkNewReports() {
   }
 }
 
-// Qo'lda yangilash funksiyasi ("Yangilash 🔄" tugmasi uchun)
 async function hisobotlarniYangila() {
   const ico = document.getElementById('refIco');
   if(ico) ico.style.animation = 'sp 0.6s linear infinite';
@@ -1361,7 +1359,6 @@ function xodimlarChiz() {
   if (nazoratFiltr === 'yuklagan') list = list.filter(x => x.bugunBor);
   else if (nazoratFiltr === 'yuklamagan') list = list.filter(x => !x.bugunBor);
 
-  // Bugun hisobot topshirgan xodimlar avtomatik ravishda ro'yxat boshiga chiqadi
   list = list.slice().sort((a, b) => (b.bugunBor === true) - (a.bugunBor === true));
   
   const eslatmaKerak = SESSIYA.rol !== 'nazoratchi' || (SESSIYA.ruxsatlar||[]).includes('eslatma_yuborish');
@@ -1431,7 +1428,7 @@ function lentaChiz() {
       html += `<div class="oySarlavha">${OYLAR[+m-1]} ${y} · ${oySoni} ta ish</div>`;
       oldingiOy = oy;
     }
-    const vaqt = (h.b_vaqt||'').slice(11,16);
+    const vaqt = formatVaqt(h.b_vaqt);
     const isNew = !seenReports.has(h.id);
 
     html += `<div class="tRow">
@@ -1494,9 +1491,9 @@ function modalOch(id) {
       <div><h3>${h.ishNomi || h.ishTuri}</h3><div class="mSub">${h.xodimFio} · ${h.mfyNomi||''} · ${h.kategoriyaNomi||''}</div></div>
       <button class="yop" onclick="modalYop()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
-    ${stage('1. Boshlandi', h.b_vaqt, h.b_tavsif, h.b_lat, h.b_lng, h.b_rasmlar)}
-    ${stage('2. Davom etmoqda', h.d_vaqt, h.d_tavsif, h.d_lat, h.d_lng, h.d_rasmlar)}
-    ${stage('3. Tugatildi', h.y_vaqt, h.y_tavsif, h.y_lat, h.y_lng, h.y_rasmlar)}
+    ${stage('1. Boshlandi', formatVaqt(h.b_vaqt), h.b_tavsif, h.b_lat, h.b_lng, h.b_rasmlar)}
+    ${stage('2. Davom etmoqda', formatVaqt(h.d_vaqt), h.d_tavsif, h.d_lat, h.d_lng, h.d_rasmlar)}
+    ${stage('3. Tugatildi', formatVaqt(h.y_vaqt), h.y_tavsif, h.y_lat, h.y_lng, h.y_rasmlar)}
     <div style="margin:16px 30px 20px; background:var(--bg-input); border:1px solid var(--chiziq); border-radius:16px; padding:16px 18px; color:var(--text-asosiy); display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
       <div style="flex:1; min-width:220px;"><b>Texnik ma'lumot:</b> GPS: ${h.b_lat ? (+h.b_lat).toFixed(5)+', '+(+h.b_lng).toFixed(5) : '—'} &nbsp;·&nbsp; Reyting: <b>${h.reyting}</b>
       ${h.flagSabab ? '<br><span style="color:var(--qizil);display:block;margin-top:8px;">⚠ '+h.flagSabab+'</span>' : ''}</div>
@@ -1533,9 +1530,9 @@ function hisobotSatr(h) {
   return {
     'Sana':h.sana,'Hafta kuni':h.haftaKuni,'Xodim':h.xodimFio,'Tashkilot':h.mfyNomi,'Kategoriya':h.kategoriyaNomi,
     'Ish nomi':h.ishNomi||h.ishTuri,
-    'Boshlandi vaqti':h.b_vaqt,'Boshlandi tavsif':h.b_tavsif,'Boshlandi GPS':(h.b_lat?h.b_lat+','+h.b_lng:''),
-    'Davom vaqti':h.d_vaqt,'Davom tavsif':h.d_tavsif,
-    'Yakun vaqti':h.y_vaqt,'Yakun tavsif':h.y_tavsif,
+    'Boshlandi vaqti':formatVaqt(h.b_vaqt),'Boshlandi tavsif':h.b_tavsif,'Boshlandi GPS':(h.b_lat?h.b_lat+','+h.b_lng:''),
+    'Davom vaqti':formatVaqt(h.d_vaqt),'Davom tavsif':h.d_tavsif,
+    'Yakun vaqti':formatVaqt(h.y_vaqt),'Yakun tavsif':h.y_tavsif,
     'Reyting':h.reyting,'Kechikkan':h.kechikkan
   };
 }
@@ -1569,14 +1566,12 @@ function bTab(nom, btn) {
   bYukla();
 }
 
-// RUXSATLARNI XAVFSIZ PARSE QILISH (massiv yoki JSON-string bo'lishi mumkin)
 function ruxsatlarniOlish(obj) {
   if (!obj) return [];
   if (Array.isArray(obj)) return obj;
   try { const p = JSON.parse(obj); return Array.isArray(p) ? p : []; } catch(e) { return []; }
 }
 
-// ADMINLAR JADVALIDA RUXSAT CHIPLARINI CHIZISH
 function ruxsatlarBadgeHTML(a) {
   if (a.rol === 'superadmin') return `<span class="mini yashil">${SVG.lock} Hammasi</span>`;
   const arr = ruxsatlarniOlish(a.ruxsatlar);
@@ -1691,9 +1686,9 @@ async function bYukla() {
     const sozlama = r.ok && r.sozlama ? r.sozlama : { matn: 'Hisobotni yuklashni unutmang!', interval: 60 };
     panel.innerHTML = `<h3>Bildirishnoma sozlamalari</h3>
       <label style="font-weight:700;font-size:13px;display:block;margin-bottom:8px;color:var(--text-asosiy)">Xabar matni</label>
-      <input id="bnMatn" value="${sozlama.matn || ''}" style="width:100%;max-width:420px;padding:14px;border:1px solid var(--chiziq);border-radius:14px;margin-bottom:20px;background:var(--bg-input);color:var(--text-asosiy)">
+      <input id="bnMatn" value="${sozlama.matn || ''}" style="width:100%;max-width:420px;padding:14px;border:1.5px solid var(--chiziq);border-radius:14px;margin-bottom:20px;background:var(--bg-input);color:var(--text-asosiy)">
       <label style="font-weight:700;font-size:13px;display:block;margin-bottom:8px;color:var(--text-asosiy)">Interval (daqiqa)</label>
-      <input id="bnInterval" type="number" value="${sozlama.interval || 60}" style="width:160px;padding:14px;border:1px solid var(--chiziq);border-radius:14px;margin-bottom:24px;background:var(--bg-input);color:var(--text-asosiy)">
+      <input id="bnInterval" type="number" value="${sozlama.interval || 60}" style="width:160px;padding:14px;border:1.5px solid var(--chiziq);border-radius:14px;margin-bottom:24px;background:var(--bg-input);color:var(--text-asosiy)">
       <br><button class="qoshBtn" onclick="bildirishnomaSaqla()">Saqlash</button>`;
   }
 
@@ -1703,7 +1698,7 @@ async function bYukla() {
     panel.innerHTML = `<h3>⚙️ Tizim Sozlamalari</h3>
       <div style="max-width:440px;background:var(--bg-input);padding:24px;border:1px solid var(--chiziq-kard);border-radius:20px">
         <label style="font-weight:700;font-size:13px;display:block;margin-bottom:8px;color:var(--text-asosiy)">Kutish vaqti (daqiqa)</label>
-        <input id="szVaqt" type="number" min="1" value="${daqiqa}" style="width:100%;padding:14px;border:1px solid var(--chiziq);border-radius:14px;margin-bottom:24px;background:var(--bg-kard);color:var(--text-asosiy)">
+        <input id="szVaqt" type="number" min="1" value="${daqiqa}" style="width:100%;padding:14px;border:1.5px solid var(--chiziq);border-radius:14px;margin-bottom:24px;background:var(--bg-kard);color:var(--text-asosiy)">
         <button class="qoshBtn" style="margin:0" onclick="tizimSozlamaSaqla()">Saqlash</button>
       </div>`;
   }
@@ -1876,7 +1871,6 @@ function xodimForma(x) {
   });
 }
 
-// SUPERADMIN TOMONIDAN ADMIN/NAZORATCHI YARATISH VA RUXSATLARINI BELGILASH FORMASI
 function adminForma(a) {
   const ruxsatlarMavjud = ruxsatlarniOlish(a?.ruxsatlar);
   const f = document.getElementById('forma');
@@ -1943,7 +1937,6 @@ function adminForma(a) {
     if (parol && parol.length < 6) return toast('Parol kamida 6 belgidan iborat bo\'lishi kerak', 'xato');
 
     const ruxsatlar = Array.from(document.querySelectorAll('.ruxsatChk:checked')).map(c => c.value);
-    // Backend "ruxsatlar" ustunini vergul bilan ajratilgan matn sifatida o'qiydi (data.ruxsatlar.split(','))
     const qiymatlar = { fio, rol, mfyId, login, parol, ruxsatlar: ruxsatlar.join(',') };
 
     const r = a ? await apiPost('adminTahrir', { adminId:a.id, ...qiymatlar }) : await apiPost('adminQosh', qiymatlar);
