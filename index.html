@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
 /* =========================================================
@@ -20,43 +21,45 @@
 ========================================================= */
 :root {
   --kok: #2F6FEF; --kok-och: rgba(47,111,239,0.12); --kok-rgb: 47,111,239;
-  --yashil: #17A34E; --yashil-och: rgba(23,163,78,0.12);
-  --sariq: #E7930A; --sariq-och: rgba(231,147,10,0.13);
-  --qizil: #E23F4E; --qizil-och: rgba(226,63,78,0.12);
-  --binafsha: #7C5CFC; --binafsha-och: rgba(124,92,252,0.13);
+  --yashil: #17A34E; --yashil-och: rgba(23,163,78,0.12); --yashil-rgb: 23,163,78;
+  --sariq: #E7930A; --sariq-och: rgba(231,147,10,0.13); --sariq-rgb: 231,147,10;
+  --qizil: #EF4444; --qizil-och: rgba(239,68,68,0.13); --qizil-rgb: 239,68,68;
+  --binafsha: #8B5CF6; --binafsha-och: rgba(139,92,246,0.14); --binafsha-rgb: 139,92,246;
+  --pushti: #EC4899; --pushti-rgb: 236,72,153;
 
   --bg-asosiy: #EEF1F7;
-  --bg-sidebar: #FFFFFF;
-  --bg-kard: #FFFFFF;
+  --bg-sidebar: rgba(255,255,255,0.72);
+  --bg-kard: rgba(255,255,255,0.78);
   --bg-kard-shaffof: rgba(255, 255, 255, 0.92);
-  --bg-kard-hover: #F5F7FC;
-  --bg-input: #F1F3F9;
-  --bg-header: rgba(255, 255, 255, 0.82);
+  --bg-kard-hover: rgba(255,255,255,0.92);
+  --bg-input: rgba(20,28,51,0.045);
+  --bg-header: rgba(255, 255, 255, 0.68);
   --text-asosiy: #12141C;
   --text-ikkinchi: #6B7286;
-  --chiziq: rgba(20, 28, 51, 0.09);
-  --chiziq-kard: rgba(20, 28, 51, 0.07);
+  --chiziq: rgba(20, 28, 51, 0.10);
+  --chiziq-kard: rgba(20, 28, 51, 0.09);
   --soya-kard: 0 1px 2px rgba(23,31,58,0.04), 0 14px 32px -20px rgba(23,31,58,0.20);
   --soya-hover: 0 34px 64px -22px rgba(23,31,58,0.30);
-  --radius: 18px;
+  --radius: 20px;
+  --blur-kard: blur(28px);
   --font-ui: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 [data-theme="dark"] {
-  --bg-asosiy: #06070C;
-  --bg-sidebar: #0A0C13;
-  --bg-kard: #10121B;
-  --bg-kard-shaffof: rgba(16, 18, 27, 0.9);
-  --bg-kard-hover: #161923;
-  --bg-input: #0B0D14;
-  --bg-header: rgba(6, 7, 12, 0.7);
-  --text-asosiy: #F3F4F9;
-  --text-ikkinchi: #868DA1;
-  --chiziq: rgba(255, 255, 255, 0.075);
-  --chiziq-kard: rgba(255, 255, 255, 0.055);
-  --soya-kard: 0 1px 0 rgba(255,255,255,0.025) inset, 0 18px 38px -20px rgba(0,0,0,0.65);
-  --soya-hover: 0 34px 76px -22px rgba(0,0,0,0.75);
+  --bg-asosiy: #030308;
+  --bg-sidebar: rgba(13, 14, 22, 0.6);
+  --bg-kard: rgba(20, 21, 32, 0.58);
+  --bg-kard-shaffof: rgba(14, 15, 23, 0.92);
+  --bg-kard-hover: rgba(28, 30, 44, 0.72);
+  --bg-input: rgba(255,255,255,0.045);
+  --bg-header: rgba(5, 5, 10, 0.55);
+  --text-asosiy: #F5F6FA;
+  --text-ikkinchi: #8B90A3;
+  --chiziq: rgba(255, 255, 255, 0.09);
+  --chiziq-kard: rgba(255, 255, 255, 0.08);
+  --soya-kard: 0 1px 0 rgba(255,255,255,0.04) inset, 0 20px 44px -20px rgba(0,0,0,0.7);
+  --soya-hover: 0 40px 90px -24px rgba(0,0,0,0.85);
 }
 
 * { box-sizing: border-box; }
@@ -72,7 +75,24 @@ body {
   color: var(--text-asosiy); font-size: 14px; letter-spacing: -0.011em;
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.25s ease, color 0.25s ease;
+  position: relative;
 }
+
+/* ---- signature: ambient glow orbs behind the whole app (premium glass backdrop) ---- */
+body::before, body::after{
+  content:''; position:fixed; z-index:0; pointer-events:none; border-radius:50%;
+  filter: blur(90px); opacity:.55; transition: opacity .3s ease;
+}
+body::before{
+  width:640px; height:640px; top:-220px; left:-160px;
+  background: radial-gradient(circle at 30% 30%, rgba(var(--kok-rgb),0.55), rgba(var(--kok-rgb),0) 70%);
+}
+body::after{
+  width:560px; height:560px; bottom:-200px; right:-140px;
+  background: radial-gradient(circle at 60% 60%, rgba(var(--binafsha-rgb),0.5), rgba(var(--binafsha-rgb),0) 70%);
+}
+[data-theme="light"] body::before, [data-theme="light"] body::after{ opacity:.22; }
+#app, #loginEkran, .toast{ position:relative; z-index:1; }
 
 h1,h2,h3,.brand-name{font-weight:800;letter-spacing:-0.03em}
 p{line-height:1.6}
@@ -102,29 +122,34 @@ svg { flex-shrink: 0; }
 /* ============ LOGIN ============ */
 #loginEkran{
   position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;
-  background:
-    radial-gradient(900px 520px at 14% -10%, rgba(var(--kok-rgb),0.20), transparent 62%),
-    radial-gradient(760px 520px at 104% 112%, rgba(124,92,252,0.16), transparent 60%),
-    var(--bg-asosiy);
+  background: var(--bg-asosiy);
   z-index: 1000;
 }
-#loginEkran::before{
-  content:''; position:absolute; inset:0; opacity:.5; pointer-events:none;
-  background-image: radial-gradient(rgba(var(--kok-rgb),0.22) 1px, transparent 1.6px);
-  background-size: 22px 22px;
-  -webkit-mask-image: radial-gradient(620px 420px at 50% 40%, #000 0%, transparent 78%);
-  mask-image: radial-gradient(620px 420px at 50% 40%, #000 0%, transparent 78%);
+.loginOrb{ position:absolute; border-radius:50%; filter:blur(2px); pointer-events:none; }
+.loginOrb.o1{ width:180px; height:180px; top:8%; left:14%;
+  background: radial-gradient(circle at 32% 28%, rgba(120,140,190,0.9), rgba(20,22,34,0.9) 65%);
+  box-shadow: inset 0 0 40px rgba(0,0,0,0.5), 0 30px 60px -20px rgba(0,0,0,0.6);
 }
+.loginOrb.o2{ width:260px; height:260px; top:38%; right:8%;
+  background: radial-gradient(circle at 30% 25%, rgba(var(--kok-rgb),0.75), rgba(10,12,20,0.92) 65%);
+  box-shadow: inset 0 0 50px rgba(0,0,0,0.5), 0 30px 70px -20px rgba(var(--kok-rgb),0.4);
+}
+.loginOrb.o3{ width:140px; height:140px; bottom:10%; left:20%;
+  background: radial-gradient(circle at 30% 25%, rgba(var(--binafsha-rgb),0.7), rgba(10,12,20,0.92) 65%);
+  box-shadow: inset 0 0 30px rgba(0,0,0,0.5), 0 24px 50px -18px rgba(var(--binafsha-rgb),0.4);
+}
+[data-theme="light"] .loginOrb{ opacity:.5; }
 .loginCard{
-  position:relative; background: var(--bg-kard);
-  border-radius:28px; padding:44px 40px 40px; width:min(408px,92vw);
-  border:1px solid var(--chiziq-kard); box-shadow: var(--soya-hover);
+  position:relative; background: var(--bg-kard-shaffof);
+  border-radius:26px; padding:46px 42px 42px; width:min(400px,90vw);
+  border:1px solid rgba(255,255,255,0.14); box-shadow: 0 50px 100px -30px rgba(0,0,0,0.6);
+  backdrop-filter: blur(34px); -webkit-backdrop-filter: blur(34px);
   animation:cardIn .5s cubic-bezier(.16,1,.3,1);
 }
 @keyframes cardIn{from{opacity:0;transform:translateY(24px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
 .loginCard .logoMark{
   position:relative;
-  width:52px; height:52px; border-radius:16px; margin-bottom:22px;
+  width:52px; height:52px; border-radius:16px; margin:0 auto 20px;
   background: linear-gradient(135deg, var(--kok), #6AA3FF);
   display:flex; align-items:center; justify-content:center;
   box-shadow: 0 14px 26px -10px rgba(var(--kok-rgb),0.55);
@@ -133,8 +158,8 @@ svg { flex-shrink: 0; }
   content:''; position:absolute; inset:-7px; border-radius:20px;
   border:1.5px solid rgba(var(--kok-rgb),.4); animation:livePulse 2.6s ease-out infinite;
 }
-.loginCard .brand{font-size:23px; color:var(--text-asosiy); letter-spacing:-0.03em;}
-.loginCard .sub{color:var(--text-ikkinchi); font-size:13px; margin:5px 0 30px; font-weight:600; display:flex; align-items:center; gap:8px;}
+.loginCard .brand{font-size:22px; color:var(--text-asosiy); letter-spacing:-0.02em; text-align:center; font-weight:800;}
+.loginCard .sub{color:var(--text-ikkinchi); font-size:12.5px; margin:6px 0 30px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:8px;}
 .loginCard label{display:block; font-weight:700; font-size:11px; margin:18px 0 7px; color:var(--text-ikkinchi); text-transform:uppercase; letter-spacing:0.08em}
 .loginCard input{width:100%; padding:14px 16px; border:1.5px solid var(--chiziq); border-radius:14px; font-size:14.5px; background:var(--bg-input); color:var(--text-asosiy)}
 .loginCard input:focus{border-color:var(--kok); box-shadow:0 0 0 4px var(--kok-och)}
@@ -147,9 +172,11 @@ svg { flex-shrink: 0; }
 
 /* ---- SIDEBAR ---- */
 .sidebar{
-  width:252px; flex-shrink:0; height:100vh;
+  width:256px; flex-shrink:0; height:100vh;
   background:var(--bg-sidebar); border-right:1px solid var(--chiziq);
+  backdrop-filter: var(--blur-kard); -webkit-backdrop-filter: var(--blur-kard);
   display:flex; flex-direction:column; padding:22px 16px;
+  position:relative; z-index:1;
 }
 .sidebar-brand{ display:flex; align-items:center; gap:12px; padding:4px 6px 22px; }
 .brand-mark{
@@ -164,9 +191,9 @@ svg { flex-shrink: 0; }
 
 .sidebar-label{ font-size:10.5px; font-weight:800; color:var(--text-ikkinchi); text-transform:uppercase; letter-spacing:.09em; padding:6px 10px 8px; }
 
-.navTabs{display:flex; flex-direction:column; gap:3px;}
+.navTabs{display:flex; flex-direction:column; gap:4px;}
 .navTabs button{
-  background:transparent; border-radius:12px; padding:11px 12px 11px 14px; font-weight:700; font-size:13.5px;
+  background:transparent; border-radius:13px; padding:9px 12px 9px 10px; font-weight:700; font-size:13.5px;
   color:var(--text-ikkinchi); position:relative; justify-content:flex-start; width:100%;
 }
 .navTabs button::before{
@@ -174,6 +201,15 @@ svg { flex-shrink: 0; }
   width:3px; height:18px; border-radius:0 4px 4px 0; background:var(--kok); transition:transform .18s ease;
 }
 .navTabs button svg{ flex-shrink:0; }
+.navIcoBox{
+  width:30px; height:30px; border-radius:9px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--bg-input); color:var(--text-ikkinchi); transition:all .18s ease;
+}
+.navTabs button:hover .navIcoBox{ color:var(--text-asosiy); }
+.navTabs button.aktiv .navIcoBox.nav-blue{ background:linear-gradient(135deg, var(--kok), #6AA3FF); color:#fff; box-shadow:0 8px 18px -8px rgba(var(--kok-rgb),.6); }
+.navTabs button.aktiv .navIcoBox.nav-purple{ background:linear-gradient(135deg, var(--binafsha), #B794F6); color:#fff; box-shadow:0 8px 18px -8px rgba(var(--binafsha-rgb),.6); }
+.navTabs button.aktiv .navIcoBox.nav-amber{ background:linear-gradient(135deg, var(--sariq), #FBBF24); color:#fff; box-shadow:0 8px 18px -8px rgba(var(--sariq-rgb),.6); }
 .navTabs button:hover{ background:var(--bg-kard-hover); color:var(--text-asosiy); }
 .navTabs button.aktiv{ background:var(--kok-och); color:var(--kok); box-shadow:none; }
 .navTabs button.aktiv::before{ transform:translateY(-50%) scaleY(1); }
@@ -202,8 +238,9 @@ svg { flex-shrink: 0; }
 .content-col{ display:flex; flex-direction:column; height:100vh; flex:1; min-width:0; overflow:hidden; }
 
 header.top{
-  background: var(--bg-header); backdrop-filter:blur(20px); -webkit-backdrop-filter: blur(20px);
+  background: var(--bg-header); backdrop-filter:blur(24px); -webkit-backdrop-filter: blur(24px);
   border-bottom:1px solid var(--chiziq); padding:0 26px; height:64px; display:flex; align-items:center; gap:14px; z-index:20; flex-shrink: 0;
+  position:relative;
 }
 .rolBadge{border-radius:20px; padding:4px 11px; font-size:10.5px; font-weight:800; letter-spacing:0.04em; width:fit-content;}
 .rolBadge.superadmin{background:var(--binafsha-och); color:var(--binafsha);}
@@ -237,6 +274,7 @@ main{
   border: 1px solid var(--chiziq-kard);
   border-radius: var(--radius);
   box-shadow: var(--soya-kard);
+  backdrop-filter: var(--blur-kard); -webkit-backdrop-filter: var(--blur-kard);
   display: flex; flex-direction: column;
   overflow-y: auto;
   position: relative;
@@ -253,6 +291,9 @@ main{
   background-repeat: no-repeat; background-position: right 14px center; background-size: 16px; padding-right: 36px;
 }
 #chap .qidiruv input:focus, #chap .qidiruv select:focus{border-color:var(--kok); box-shadow:0 0 0 3px var(--kok-och);}
+.nazFiltrBar{ display:flex; gap:4px; background:var(--bg-input); padding:4px; border-radius:12px; border:1px solid var(--chiziq); }
+.nazFiltrBar .nazFiltrBtn{ flex:1; background:transparent; border-radius:9px; padding:8px 6px; font-size:11.5px; font-weight:700; color:var(--text-ikkinchi); white-space:nowrap; }
+.nazFiltrBar .nazFiltrBtn.aktiv{ background:var(--bg-kard); color:var(--kok); box-shadow:0 3px 10px rgba(0,0,0,0.08); }
 #xodimlarList{flex:1; padding:10px;}
 .xodimRow{padding:11px; border-radius:14px; margin-bottom:5px; cursor:pointer; display:flex; gap:11px; align-items:center; border:1px solid transparent; background:transparent; transition:background .15s ease, border-color .15s ease;}
 .xodimRow:hover{background:var(--bg-kard-hover)}
@@ -322,7 +363,31 @@ main{
 .bPanel h3{font-size:19px; color:var(--text-asosiy); font-weight:800; letter-spacing:-0.02em;}
 .bPanel .izoh{color:var(--text-ikkinchi); font-size:13.5px; margin:6px 0 24px; font-weight:500}
 
-/* ---- DASHBOARD HERO ---- */
+.dashFiltrBar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:22px; }
+.dashFiltrBar select{
+  padding:11px 34px 11px 14px; border:1.5px solid var(--chiziq); border-radius:13px; font-size:13px; font-weight:700;
+  background:var(--bg-input); color:var(--text-asosiy);
+  appearance: none; -webkit-appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg fill="none" stroke="%236B7286" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>');
+  background-repeat: no-repeat; background-position: right 12px center; background-size: 15px;
+  min-width:170px;
+}
+.dashFiltrBar select:focus{ border-color:var(--kok); box-shadow:0 0 0 3px var(--kok-och); }
+.dashFiltrBar .filtrLabel{ font-size:11px; font-weight:800; color:var(--text-ikkinchi); text-transform:uppercase; letter-spacing:.06em; display:flex; align-items:center; gap:6px; }
+.dashFiltrBar .tozalaBtn{ background:var(--bg-input); border:1.5px solid var(--chiziq); border-radius:13px; padding:10px 15px; font-size:12.5px; font-weight:700; color:var(--text-ikkinchi); }
+.dashFiltrBar .tozalaBtn:hover{ color:var(--qizil); border-color:rgba(var(--qizil-rgb),.3); }
+
+.chartKard{
+  background:var(--bg-kard); border:1px solid var(--chiziq-kard); border-radius:20px; padding:24px;
+  margin-bottom:32px; box-shadow:var(--soya-kard);
+}
+.chartKard .chartBosh{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:18px; }
+.chartKard h3{ font-size:16.5px; margin:0; }
+.chartLegend{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+.chartLegend span{ display:inline-flex; align-items:center; gap:7px; font-size:11.5px; font-weight:700; color:var(--text-ikkinchi); }
+.chartLegend i{ width:10px; height:10px; border-radius:3px; display:inline-block; }
+.chartWrap{ position:relative; height:280px; }
+.chartBosh_empty{ text-align:center; padding:50px 10px; color:var(--text-ikkinchi); font-size:13.5px; font-weight:600; }
 .dashHero{
   position:relative; overflow:hidden;
   display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;
@@ -512,6 +577,9 @@ input[type="checkbox"].chk{ width:18px; height:18px; border-radius:6px; }
 <div id="toastContainer" style="position:fixed;top:22px;right:22px;z-index:9999;display:flex;flex-direction:column;gap:9px;"></div>
 
 <div id="loginEkran">
+  <div class="loginOrb o1"></div>
+  <div class="loginOrb o2"></div>
+  <div class="loginOrb o3"></div>
   <div class="loginCard">
     <div class="logoMark">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round"><path d="M6 18V13M12 18V6M18 18V10"/></svg>
@@ -542,13 +610,13 @@ input[type="checkbox"].chk{ width:18px; height:18px; border-radius:6px; }
     <div class="sidebar-label">Menyu</div>
     <nav class="navTabs" id="navTabs" style="display:none">
       <button id="navDashboard" class="aktiv" onclick="bolimKorsat('dashboard')">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg> <span class="navLabel">Dashboard</span>
+        <span class="navIcoBox nav-blue"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></span> <span class="navLabel">Dashboard</span>
       </button>
       <button id="navNazorat" onclick="bolimKorsat('nazorat')">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> <span class="navLabel">Nazorat</span> <span id="mainBadge" class="yangi-badge" style="display:none;">0</span>
+        <span class="navIcoBox nav-purple"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span> <span class="navLabel">Nazorat</span> <span id="mainBadge" class="yangi-badge" style="display:none;">0</span>
       </button>
       <button id="navBoshqaruv" onclick="bolimKorsat('boshqaruv')" style="display:none">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> <span class="navLabel">Boshqaruv</span>
+        <span class="navIcoBox nav-amber"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span> <span class="navLabel">Boshqaruv</span>
       </button>
     </nav>
 
@@ -594,6 +662,11 @@ input[type="checkbox"].chk{ width:18px; height:18px; border-radius:6px; }
           <input id="qidiruv" placeholder="Xodim qidirish..." oninput="xodimlarChiz()">
           <select id="fMfy" onchange="xodimlarChiz()"><option value="">Barcha tashkilotlar</option></select>
           <select id="fKategoriya" onchange="xodimlarChiz()"><option value="">Barcha kategoriya</option></select>
+          <div class="nazFiltrBar">
+            <button class="nazFiltrBtn aktiv" data-tur="barchasi" onclick="nazoratFiltrOrnat('barchasi')">Barchasi</button>
+            <button class="nazFiltrBtn" data-tur="yuklagan" onclick="nazoratFiltrOrnat('yuklagan')">Yuklaganlar</button>
+            <button class="nazFiltrBtn" data-tur="yuklamagan" onclick="nazoratFiltrOrnat('yuklamagan')">Yuklamaganlar</button>
+          </div>
         </div>
         <div id="xodimlarList"><div class="yuklanmoqda"><div class="spinner"></div>Kuting...</div></div>
         <div class="eslatmaPanel" id="eslatmaPanel" style="display:none; padding:16px; margin-top:auto; border-top:1px solid var(--chiziq);">
@@ -640,11 +713,30 @@ input[type="checkbox"].chk{ width:18px; height:18px; border-radius:6px; }
             </div>
           </div>
 
+          <div class="dashFiltrBar">
+            <span class="filtrLabel"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg> Filtr:</span>
+            <select id="dFiltrMfy" onchange="dashboardYukla()"><option value="">Barcha tashkilotlar</option></select>
+            <select id="dFiltrKategoriya" onchange="dashboardYukla()"><option value="">Barcha kategoriya</option></select>
+            <button class="tozalaBtn" onclick="document.getElementById('dFiltrMfy').value='';document.getElementById('dFiltrKategoriya').value='';dashboardYukla()">Tozalash</button>
+          </div>
+
           <div class="dashGrid" id="dashGrid">
             <div class="dashCard blue"><div class="dcIco"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><span>Jami Xodimlar</span><b id="dJamiXodim">0</b></div>
             <div class="dashCard green"><div class="dcIco"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><span>Bugun Yuklaganlar</span><b id="dBugunYuklagan">0</b></div>
             <div class="dashCard red"><div class="dcIco"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span>Yuklamaganlar</span><b id="dBugunYuklamagan">0</b></div>
             <div class="dashCard amber"><div class="dcIco"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><span>Muammoli (Flag)</span><b id="dFlagSoni">0</b></div>
+          </div>
+
+          <div class="chartKard">
+            <div class="chartBosh">
+              <h3>Xodimlar bo'yicha bugungi hisobotlar soni</h3>
+              <div class="chartLegend">
+                <span><i style="background:var(--kok)"></i> Norma bajarilgan</span>
+                <span><i style="background:var(--qizil)"></i> Norma bajarilmagan</span>
+                <span><i style="background:var(--sariq); border-radius:0; height:2px; width:14px;"></i> Norma chizig'i</span>
+              </div>
+            </div>
+            <div class="chartWrap"><canvas id="dashChart"></canvas></div>
           </div>
 
           <h3 style="margin-top:8px">Xodimlar holati (Bugun)</h3>
@@ -1022,6 +1114,29 @@ async function dashboardYukla() {
     hisobots = hisobots.filter(h => String(h.mfyId) === myMfy);
   }
 
+  // Dashboard filtr paneli — tashkilot va kategoriya select'larini birinchi marta to'ldiramiz
+  const dFiltrMfySel = document.getElementById('dFiltrMfy');
+  const dFiltrKatSel = document.getElementById('dFiltrKategoriya');
+  if (dFiltrMfySel && dFiltrMfySel.options.length <= 1) {
+    const mfyRoyxat = SESSIYA.rol === 'nazoratchi' ? mfylar : mfylar;
+    fillSelect('dFiltrMfy', mfyRoyxat, true);
+  }
+  if (dFiltrKatSel && dFiltrKatSel.options.length <= 1) {
+    fillSelect('dFiltrKategoriya', kategoriyalar, true);
+  }
+  const tanlanganMfy = dFiltrMfySel ? dFiltrMfySel.value : '';
+  const tanlanganKat = dFiltrKatSel ? dFiltrKatSel.value : '';
+
+  if (tanlanganMfy) {
+    xodims = xodims.filter(x => String(x.mfyId) === String(tanlanganMfy));
+    hisobots = hisobots.filter(h => String(h.mfyId) === String(tanlanganMfy));
+  }
+  if (tanlanganKat) {
+    const filtrXodimIds = new Set(xodims.filter(x => String(x.kategoriyaId) === String(tanlanganKat)).map(x => String(x.id)));
+    xodims = xodims.filter(x => String(x.kategoriyaId) === String(tanlanganKat));
+    hisobots = hisobots.filter(h => filtrXodimIds.has(String(h.xodimId)));
+  }
+
   const jamiXodim = xodims.length;
   const bugunYuklaganXodimlarIds = new Set(hisobots.filter(h => h.sana === bugunStr).map(h => String(h.xodimId)));
   const bugunYuklagan = bugunYuklaganXodimlarIds.size;
@@ -1037,9 +1152,12 @@ async function dashboardYukla() {
   dashYuklamagan = xodims.filter(x => !bugunYuklaganXodimlarIds.has(String(x.id)));
   dashTab('yuklamaganlar');
 
+  dashChartChiz(xodims, hisobots, bugunStr);
+
   const mfyStat = {};
   mfylar.forEach(m => {
     if (SESSIYA.rol === 'nazoratchi' && String(m.id) !== String(SESSIYA.mfyId)) return;
+    if (tanlanganMfy && String(m.id) !== String(tanlanganMfy)) return;
     mfyStat[m.id] = { nomi: m.nomi, jami: 0, yuklagan: new Set() };
   });
 
@@ -1054,6 +1172,93 @@ async function dashboardYukla() {
   });
 
   document.getElementById('dashJadval').innerHTML = jHTML || '<tr><td colspan="4" class="yuklanmoqda">Ma\'lumot topilmadi</td></tr>';
+}
+
+// Xodimlar bo'yicha bugungi hisobot sonini ko'rsatuvchi ustunli diagramma.
+// Norma (threshold)dan past bo'lganlar qizil rangda, norma bajarilganlar ko'k rangda chiziladi.
+let dashChart = null;
+const DASH_NORMA = 1;
+function dashChartChiz(xodims, hisobots, bugunStr) {
+  const canvas = document.getElementById('dashChart');
+  if (!canvas || typeof Chart === 'undefined') return;
+
+  const bugunHisobotlar = hisobots.filter(h => h.sana === bugunStr);
+  const sonlar = {};
+  bugunHisobotlar.forEach(h => { const id = String(h.xodimId); sonlar[id] = (sonlar[id] || 0) + 1; });
+
+  let ishtirokchilar = xodims.map(x => ({ fio: x.fio, soni: sonlar[String(x.id)] || 0 }));
+  // Eng ko'p hisobot yuklaganlar oldinda, so'ng eng ozlar — grafik yanada tushunarli bo'ladi
+  ishtirokchilar.sort((a, b) => b.soni - a.soni);
+  ishtirokchilar = ishtirokchilar.slice(0, 25);
+
+  const wrap = canvas.closest('.chartKard').querySelector('.chartWrap');
+  if (!ishtirokchilar.length) {
+    if (dashChart) { dashChart.destroy(); dashChart = null; }
+    wrap.innerHTML = '<div class="chartBosh_empty">Bugun uchun ma\'lumot topilmadi</div>';
+    return;
+  }
+  if (!wrap.querySelector('#dashChart')) {
+    wrap.innerHTML = '<canvas id="dashChart"></canvas>';
+  }
+  const ctx = document.getElementById('dashChart');
+  if (!ctx) return;
+
+  const rootStyles = getComputedStyle(document.documentElement);
+  const kokRang = rootStyles.getPropertyValue('--kok').trim() || '#2F6FEF';
+  const qizilRang = rootStyles.getPropertyValue('--qizil').trim() || '#EF4444';
+  const sariqRang = rootStyles.getPropertyValue('--sariq').trim() || '#E7930A';
+  const matnRang = rootStyles.getPropertyValue('--text-ikkinchi').trim() || '#6B7286';
+  const chiziqRang = rootStyles.getPropertyValue('--chiziq').trim() || 'rgba(0,0,0,0.08)';
+
+  const labels = ishtirokchilar.map(x => x.fio);
+  const data = ishtirokchilar.map(x => x.soni);
+  const renglar = data.map(v => v >= DASH_NORMA ? kokRang : qizilRang);
+
+  if (dashChart) { dashChart.destroy(); dashChart = null; }
+  dashChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "Hisobotlar soni",
+          data,
+          backgroundColor: renglar,
+          borderRadius: 7,
+          maxBarThickness: 34,
+          order: 2
+        },
+        {
+          label: "Norma chizig'i",
+          type: 'line',
+          data: labels.map(() => DASH_NORMA),
+          borderColor: sariqRang,
+          borderWidth: 2,
+          borderDash: [7, 5],
+          pointRadius: 0,
+          fill: false,
+          order: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: (items) => items[0].label,
+            label: (item) => item.datasetIndex === 0 ? `${item.raw} ta hisobot` : `Norma: ${item.raw} ta`
+          }
+        }
+      },
+      scales: {
+        x: { ticks: { color: matnRang, font: { size: 10.5, family: "'Plus Jakarta Sans'" }, maxRotation: 45, minRotation: 0 }, grid: { display: false } },
+        y: { beginAtZero: true, ticks: { color: matnRang, precision: 0, font: { size: 11 } }, grid: { color: chiziqRang } }
+      }
+    }
+  });
 }
 
 async function xodimlarYukla() {
@@ -1138,13 +1343,26 @@ async function hisobotlarniYangila() {
   }, 400);
 }
 
+let nazoratFiltr = 'barchasi';
+function nazoratFiltrOrnat(tur) {
+  nazoratFiltr = tur;
+  document.querySelectorAll('.nazFiltrBtn').forEach(b => b.classList.toggle('aktiv', b.dataset.tur === tur));
+  xodimlarChiz();
+}
+
 function xodimlarChiz() {
   const q = (document.getElementById('qidiruv').value || '').toLowerCase();
   const fMfy = document.getElementById('fMfy').value;
   const fKat = document.getElementById('fKategoriya').value;
-  const list = xodimlar.filter(x =>
+  let list = xodimlar.filter(x =>
     (x.fio.toLowerCase().includes(q) || (x.mfyNomi||'').toLowerCase().includes(q)) &&
     (!fMfy || String(x.mfyId) === String(fMfy)) && (!fKat || String(x.kategoriyaId) === String(fKat)));
+
+  if (nazoratFiltr === 'yuklagan') list = list.filter(x => x.bugunBor);
+  else if (nazoratFiltr === 'yuklamagan') list = list.filter(x => !x.bugunBor);
+
+  // Bugun hisobot topshirgan xodimlar avtomatik ravishda ro'yxat boshiga chiqadi
+  list = list.slice().sort((a, b) => (b.bugunBor === true) - (a.bugunBor === true));
   
   const eslatmaKerak = SESSIYA.rol !== 'nazoratchi' || (SESSIYA.ruxsatlar||[]).includes('eslatma_yuborish');
   
