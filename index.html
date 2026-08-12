@@ -75,11 +75,21 @@ body {
 }
 
 h1,h2,h3,.brand-name{font-weight:800;letter-spacing:-0.03em}
+p{line-height:1.6}
 button{font-family:inherit;cursor:pointer;border:none;transition:transform .15s ease,background .18s ease,box-shadow .18s ease,color .18s ease,border-color .18s ease;-webkit-tap-highlight-color:transparent; display:flex; align-items:center; justify-content:center; gap:8px;}
 button:active{transform:scale(0.96)}
 input,select,textarea{font-family:inherit;outline:none;transition:all .18s ease; box-sizing: border-box; color:var(--text-asosiy);}
 input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid var(--kok); outline-offset: 2px; }
 ::selection{background:var(--kok-och)}
+
+/* ---- signature: live pulse dot (jonli monitoring belgisi) ---- */
+.liveDot{ position:relative; width:8px; height:8px; border-radius:50%; background:var(--yashil); flex-shrink:0; }
+.liveDot::after{ content:''; position:absolute; inset:-5px; border-radius:50%; border:1.5px solid var(--yashil); opacity:.55; animation:livePulse 2.2s ease-out infinite; }
+@keyframes livePulse{ 0%{transform:scale(.5); opacity:.7;} 100%{transform:scale(1.9); opacity:0;} }
+.livePill{ display:inline-flex; align-items:center; gap:8px; background:var(--yashil-och); color:var(--yashil); font-weight:800; font-size:11px; letter-spacing:.05em; padding:7px 13px 7px 11px; border-radius:20px; text-transform:uppercase; }
+
+/* ---- signature: subtle radar dot-grid background used on hero/login ---- */
+.dotGrid{ background-image: radial-gradient(rgba(var(--kok-rgb),0.28) 1px, transparent 1.6px); background-size: 16px 16px; }
 
 *{scrollbar-width:thin;scrollbar-color:rgba(140,146,166,.4) transparent}
 *::-webkit-scrollbar{width:7px;height:7px}
@@ -93,10 +103,17 @@ svg { flex-shrink: 0; }
 #loginEkran{
   position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;
   background:
-    radial-gradient(900px 500px at 12% -10%, rgba(46,124,246,0.16), transparent 60%),
-    radial-gradient(700px 500px at 100% 110%, rgba(139,108,246,0.14), transparent 60%),
+    radial-gradient(900px 520px at 14% -10%, rgba(var(--kok-rgb),0.20), transparent 62%),
+    radial-gradient(760px 520px at 104% 112%, rgba(124,92,252,0.16), transparent 60%),
     var(--bg-asosiy);
   z-index: 1000;
+}
+#loginEkran::before{
+  content:''; position:absolute; inset:0; opacity:.5; pointer-events:none;
+  background-image: radial-gradient(rgba(var(--kok-rgb),0.22) 1px, transparent 1.6px);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(620px 420px at 50% 40%, #000 0%, transparent 78%);
+  mask-image: radial-gradient(620px 420px at 50% 40%, #000 0%, transparent 78%);
 }
 .loginCard{
   position:relative; background: var(--bg-kard);
@@ -106,13 +123,18 @@ svg { flex-shrink: 0; }
 }
 @keyframes cardIn{from{opacity:0;transform:translateY(24px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
 .loginCard .logoMark{
+  position:relative;
   width:52px; height:52px; border-radius:16px; margin-bottom:22px;
   background: linear-gradient(135deg, var(--kok), #6AA3FF);
   display:flex; align-items:center; justify-content:center;
   box-shadow: 0 14px 26px -10px rgba(var(--kok-rgb),0.55);
 }
+.loginCard .logoMark::after{
+  content:''; position:absolute; inset:-7px; border-radius:20px;
+  border:1.5px solid rgba(var(--kok-rgb),.4); animation:livePulse 2.6s ease-out infinite;
+}
 .loginCard .brand{font-size:23px; color:var(--text-asosiy); letter-spacing:-0.03em;}
-.loginCard .sub{color:var(--text-ikkinchi); font-size:13px; margin:5px 0 30px; font-weight:600}
+.loginCard .sub{color:var(--text-ikkinchi); font-size:13px; margin:5px 0 30px; font-weight:600; display:flex; align-items:center; gap:8px;}
 .loginCard label{display:block; font-weight:700; font-size:11px; margin:18px 0 7px; color:var(--text-ikkinchi); text-transform:uppercase; letter-spacing:0.08em}
 .loginCard input{width:100%; padding:14px 16px; border:1.5px solid var(--chiziq); border-radius:14px; font-size:14.5px; background:var(--bg-input); color:var(--text-asosiy)}
 .loginCard input:focus{border-color:var(--kok); box-shadow:0 0 0 4px var(--kok-och)}
@@ -144,12 +166,17 @@ svg { flex-shrink: 0; }
 
 .navTabs{display:flex; flex-direction:column; gap:3px;}
 .navTabs button{
-  background:transparent; border-radius:12px; padding:11px 12px; font-weight:700; font-size:13.5px;
+  background:transparent; border-radius:12px; padding:11px 12px 11px 14px; font-weight:700; font-size:13.5px;
   color:var(--text-ikkinchi); position:relative; justify-content:flex-start; width:100%;
+}
+.navTabs button::before{
+  content:''; position:absolute; left:-16px; top:50%; transform:translateY(-50%) scaleY(0);
+  width:3px; height:18px; border-radius:0 4px 4px 0; background:var(--kok); transition:transform .18s ease;
 }
 .navTabs button svg{ flex-shrink:0; }
 .navTabs button:hover{ background:var(--bg-kard-hover); color:var(--text-asosiy); }
 .navTabs button.aktiv{ background:var(--kok-och); color:var(--kok); box-shadow:none; }
+.navTabs button.aktiv::before{ transform:translateY(-50%) scaleY(1); }
 .navTabs button .yangi-badge{ margin-left:auto; }
 
 .sidebar-spacer{ flex:1; }
@@ -227,11 +254,12 @@ main{
 }
 #chap .qidiruv input:focus, #chap .qidiruv select:focus{border-color:var(--kok); box-shadow:0 0 0 3px var(--kok-och);}
 #xodimlarList{flex:1; padding:10px;}
-.xodimRow{padding:11px; border-radius:14px; margin-bottom:5px; cursor:pointer; display:flex; gap:11px; align-items:center; border:1px solid transparent; background:transparent}
+.xodimRow{padding:11px; border-radius:14px; margin-bottom:5px; cursor:pointer; display:flex; gap:11px; align-items:center; border:1px solid transparent; background:transparent; transition:background .15s ease, border-color .15s ease;}
 .xodimRow:hover{background:var(--bg-kard-hover)}
 .xodimRow.aktiv{background:var(--kok-och); border-color:rgba(var(--kok-rgb),.35);}
-.nuqta{width:9px; height:9px; border-radius:50%; flex-shrink:0;}
+.nuqta{width:9px; height:9px; border-radius:50%; flex-shrink:0; position:relative;}
 .nuqta.bor{background:var(--yashil); box-shadow:0 0 0 3px var(--yashil-och)}
+.nuqta.bor::after{content:''; position:absolute; inset:-4px; border-radius:50%; border:1.2px solid var(--yashil); opacity:.6; animation:livePulse 2.4s ease-out infinite;}
 .nuqta.yoq{background:var(--text-ikkinchi); opacity:.5;}
 .nuqta.flag{background:var(--qizil); box-shadow:0 0 0 3px var(--qizil-och)}
 .xodimRow .fio{font-weight:700; font-size:13.5px; color:var(--text-asosiy)}
@@ -259,15 +287,22 @@ main{
 .tChap{width:104px; flex-shrink:0; text-align:right; padding:24px 18px 0 0; font-size:11.5px; color:var(--text-ikkinchi); font-weight:600; line-height:1.5}
 .tChap b{color:var(--text-asosiy); font-size:14px; display:block; font-weight:800}
 .tSpine{width:28px; flex-shrink:0; position:relative}
-.tSpine::before{content:''; position:absolute; left:13px; top:0; bottom:0; width:2px; background:var(--chiziq)}
-.tNode{position:absolute; left:6px; top:28px; width:16px; height:16px; border-radius:50%; border:4px solid var(--bg-kard); box-shadow:0 0 0 1px var(--chiziq)}
+.tSpine::before{content:''; position:absolute; left:13px; top:0; bottom:0; width:2px; background:linear-gradient(var(--chiziq), var(--chiziq))}
+.tNode{position:absolute; left:6px; top:28px; width:16px; height:16px; border-radius:50%; border:4px solid var(--bg-kard); box-shadow:0 0 0 1px var(--chiziq); z-index:1;}
 .tNode.YASHIL{background:var(--yashil)} .tNode.SARIQ{background:var(--sariq)} .tNode.QIZIL{background:var(--qizil)}
+.tRow:first-child .tNode::after{
+  content:''; position:absolute; inset:-5px; border-radius:50%; border:1.5px solid currentColor; opacity:.5;
+  animation:livePulse 2.2s ease-out infinite; color:inherit;
+}
+.tRow:first-child .tNode.YASHIL::after{color:var(--yashil)}
+.tRow:first-child .tNode.SARIQ::after{color:var(--sariq)}
+.tRow:first-child .tNode.QIZIL::after{color:var(--qizil)}
 .tCard{
   flex:1; background:var(--bg-input); border:1px solid var(--chiziq-kard); border-radius:16px; padding:20px; margin:9px 0;
-  cursor:pointer; transition:transform .2s ease, box-shadow .2s ease, background .2s ease; position:relative;
+  cursor:pointer; transition:transform .2s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease; position:relative;
 }
 .tCard.unread { border-left: 3px solid var(--kok); }
-.tCard:hover{transform:translateY(-3px); box-shadow:var(--soya-hover); background:var(--bg-kard-hover);}
+.tCard:hover{transform:translateY(-3px); box-shadow:var(--soya-hover); background:var(--bg-kard-hover); border-color:rgba(var(--kok-rgb),.25);}
 .tTop{display:flex; gap:16px; align-items:center}
 .tTop img{width:60px; height:60px; border-radius:14px; object-fit:cover; background:var(--chiziq);}
 .tTop .icim{flex:1; min-width:0}
@@ -289,37 +324,53 @@ main{
 
 /* ---- DASHBOARD HERO ---- */
 .dashHero{
+  position:relative; overflow:hidden;
   display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;
   background:
-    radial-gradient(480px 200px at 100% 0%, rgba(var(--kok-rgb),0.12), transparent 70%),
+    radial-gradient(560px 240px at 102% -10%, rgba(var(--kok-rgb),0.16), transparent 68%),
     var(--bg-input);
-  border:1px solid var(--chiziq-kard); border-radius:20px; padding:26px 28px; margin-bottom:28px;
+  border:1px solid var(--chiziq-kard); border-radius:22px; padding:28px 30px; margin-bottom:28px;
 }
-.dashHero h3{margin:0; font-size:21px;}
-.dashHero .izoh{margin:6px 0 0;}
+.dashHero::before{
+  content:''; position:absolute; inset:0; opacity:.6; pointer-events:none;
+  background-image: radial-gradient(rgba(var(--kok-rgb),0.24) 1px, transparent 1.6px);
+  background-size: 18px 18px;
+  -webkit-mask-image: linear-gradient(115deg, transparent 30%, #000 60%, transparent 92%);
+  mask-image: linear-gradient(115deg, transparent 30%, #000 60%, transparent 92%);
+}
+.dashHero > div:first-child{ position:relative; z-index:1; }
+.dashHero .eyebrow{ display:inline-flex; align-items:center; gap:7px; font-size:10.5px; font-weight:800; letter-spacing:.09em; text-transform:uppercase; color:var(--kok); margin-bottom:8px; }
+.dashHero h3{margin:0; font-size:22px;}
+.dashHero .izoh{margin:6px 0 0; max-width:460px;}
 .dashHero .heroIco{
-  width:54px; height:54px; border-radius:16px; flex-shrink:0;
+  position:relative; z-index:1;
+  width:56px; height:56px; border-radius:17px; flex-shrink:0;
   background:linear-gradient(135deg, var(--kok), #6AA3FF); color:#fff;
   display:flex; align-items:center; justify-content:center;
-  box-shadow:0 16px 28px -10px rgba(var(--kok-rgb),.5);
+  box-shadow:0 18px 32px -12px rgba(var(--kok-rgb),.55);
 }
 
 .dashGrid{display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:18px; margin-bottom:32px}
-.dashCard{background:var(--bg-kard); border:1px solid var(--chiziq-kard); border-radius:20px; padding:24px; transition:transform .2s ease, box-shadow .2s ease; box-shadow:var(--soya-kard);}
+.dashCard{position:relative; overflow:hidden; background:var(--bg-kard); border:1px solid var(--chiziq-kard); border-radius:20px; padding:24px; transition:transform .2s ease, box-shadow .2s ease; box-shadow:var(--soya-kard);}
+.dashCard::before{ content:''; position:absolute; left:0; top:0; right:0; height:3px; background:var(--chiziq); }
+.dashCard.blue::before{background:linear-gradient(90deg, var(--kok), #6AA3FF);}
+.dashCard.green::before{background:linear-gradient(90deg, var(--yashil), #4ADE80);}
+.dashCard.red::before{background:linear-gradient(90deg, var(--qizil), #FB7185);}
+.dashCard.amber::before{background:linear-gradient(90deg, var(--sariq), #FBBF24);}
 .dashCard:hover{transform:translateY(-3px); box-shadow:var(--soya-hover);}
 .dashCard span{font-size:11.5px; font-weight:800; color:var(--text-ikkinchi); text-transform:uppercase; letter-spacing:0.06em}
-.dashCard b{font-size:34px; font-weight:800; color:var(--text-asosiy); display:block; margin-top:8px; letter-spacing:-0.03em; font-family:var(--font-mono);}
+.dashCard b{font-size:36px; font-weight:800; color:var(--text-asosiy); display:block; margin-top:9px; letter-spacing:-0.03em; font-family:var(--font-mono); line-height:1;}
 .dashCard.green b{color:var(--yashil)} .dashCard.red b{color:var(--qizil)} .dashCard.blue b{color:var(--kok)} .dashCard.amber b{color:var(--sariq)}
-.dcIco{width:44px; height:44px; border-radius:13px; display:flex; align-items:center; justify-content:center; margin-bottom:16px;}
+.dcIco{width:44px; height:44px; border-radius:13px; display:flex; align-items:center; justify-content:center; margin-bottom:18px;}
 .dashCard.blue .dcIco{background:var(--kok-och); color:var(--kok);}
 .dashCard.green .dcIco{background:var(--yashil-och); color:var(--yashil);}
 .dashCard.red .dcIco{background:var(--qizil-och); color:var(--qizil);}
 .dashCard.amber .dcIco{background:var(--sariq-och); color:var(--sariq);}
 
 .jadval{width:100%; border-collapse:separate; border-spacing:0; font-size:13.5px}
-.jadval th{text-align:left; padding:13px 16px; background:var(--bg-input); font-size:11px; text-transform:uppercase; color:var(--text-ikkinchi); font-weight:800; letter-spacing:.05em; border-bottom:1px solid var(--chiziq);}
+.jadval th{text-align:left; padding:14px 16px; background:var(--bg-input); font-size:10.5px; text-transform:uppercase; color:var(--text-ikkinchi); font-weight:800; letter-spacing:.06em; border-bottom:1px solid var(--chiziq);}
 .jadval th:first-child{border-radius:12px 0 0 12px} .jadval th:last-child{border-radius:0 12px 12px 0}
-.jadval td{padding:15px 16px; border-bottom:1px solid var(--chiziq); color:var(--text-asosiy)}
+.jadval td{padding:15px 16px; border-bottom:1px solid var(--chiziq); color:var(--text-asosiy); transition:background .12s ease;}
 .jadval tr:last-child td{ border-bottom:none; }
 .jadval tr:hover td{background:var(--bg-kard-hover)}
 
@@ -357,6 +408,14 @@ main{
 .stageBlok{margin:18px 30px; background:var(--bg-input); border-radius:18px; padding:22px; border:1px solid var(--chiziq-kard)}
 .stageBlok h4{font-size:15px; color:var(--text-asosiy); display:flex; align-items:center; gap:12px; margin-bottom:12px;}
 .stageBlok .stTag{font-size:10.5px; padding:6px 13px; border-radius:20px; font-weight:800;}
+.stageMeta{display:flex; align-items:center; flex-wrap:wrap; gap:9px; font-size:12px; color:var(--text-ikkinchi); margin-bottom:10px;}
+.stageMeta .gpsTxt{font-family:var(--font-mono); font-size:11.5px; background:var(--bg-kard); border:1px solid var(--chiziq); border-radius:8px; padding:3px 9px; color:var(--text-asosiy);}
+.gpsBtn{
+  display:inline-flex; align-items:center; gap:6px; background:var(--kok-och); color:var(--kok);
+  font-size:11.5px; font-weight:800; padding:6px 12px 6px 10px; border-radius:20px; border:1px solid rgba(var(--kok-rgb),.22);
+  text-decoration:none; transition:all .16s ease;
+}
+.gpsBtn:hover{ background:var(--kok); color:#fff; transform:translateY(-1px); box-shadow:0 10px 20px -10px rgba(var(--kok-rgb),.6); }
 .mGaler{display:flex; gap:11px; overflow-x:auto; margin:15px 0; padding-bottom:8px;}
 .mGaler img{height:150px; max-width: 100%; border-radius:14px; cursor:zoom-in; border:1px solid var(--chiziq); object-fit: cover; transition:transform .2s ease;}
 .mGaler img:hover{ transform:scale(1.03); }
@@ -458,7 +517,7 @@ input[type="checkbox"].chk{ width:18px; height:18px; border-radius:6px; }
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round"><path d="M6 18V13M12 18V6M18 18V10"/></svg>
     </div>
     <div class="brand">KUNLIK HISOBOT</div>
-    <div class="sub">Nazorat Platformasi</div>
+    <div class="sub"><span class="liveDot"></span> Nazorat Platformasi</div>
     <label>Login</label>
     <input id="inLogin" placeholder="Kiriting">
     <label>Parol</label>
@@ -524,6 +583,7 @@ input[type="checkbox"].chk{ width:18px; height:18px; border-radius:6px; }
       <button id="mobilMenyu" onclick="document.getElementById('chap').classList.toggle('ochiq')">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
       </button>
+      <span class="livePill"><span class="liveDot"></span> Jonli monitoring</span>
       <div style="flex:1"></div>
       <div class="top-amallar" id="topAmallarDesktop"></div>
     </header>
@@ -571,6 +631,7 @@ input[type="checkbox"].chk{ width:18px; height:18px; border-radius:6px; }
         <div class="bPanel">
           <div class="dashHero">
             <div>
+              <span class="eyebrow"><span class="liveDot"></span> Bugungi holat</span>
               <h3 id="dashSarlavha">Umumiy Ko'rsatkichlar</h3>
               <div class="izoh" id="dashIzoh">Tizimdagi joriy kunlik hisobotlar va xodimlar statistikasi</div>
             </div>
@@ -1194,9 +1255,17 @@ function modalOch(id) {
   if (!h) return;
   const stage = (nom, vaqt, tavsif, lat, lng, rasmlar) => {
     if (!vaqt) return `<div class="stageBlok" style="opacity:.5"><h4>${nom} <span class="stTag" style="background:var(--chiziq);color:var(--text-ikkinchi)">Yuklanmagan</span></h4></div>`;
+    const xaritaHavola = lat ? `https://www.google.com/maps?q=${(+lat)},${(+lng)}` : '';
     return `<div class="stageBlok">
       <h4>${nom} <span class="stTag" style="background:var(--yashil-och);color:var(--yashil)">✓ YUKLANGAN</span></h4>
-      <div class="meta" style="font-size:12px;color:var(--text-ikkinchi);margin-bottom:10px;">${vaqt}${lat?' · GPS: '+(+lat).toFixed(5)+', '+(+lng).toFixed(5):''}</div>
+      <div class="stageMeta">
+        <span>${vaqt}</span>
+        ${lat ? `<span class="gpsTxt">GPS ${(+lat).toFixed(5)}, ${(+lng).toFixed(5)}</span>
+        <a class="gpsBtn" href="${xaritaHavola}" target="_blank" rel="noopener">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Google Maps'da ochish
+        </a>` : ''}
+      </div>
       <div class="tavsifTxt">${tavsif || ''}</div>
       <div class="mGaler">${(rasmlar||[]).map(r=>`<img src="${rasmURL(r, 600)}" onclick="zoom('${rasmFullURL(r)}')" loading="lazy">`).join('')}</div>
     </div>`;
@@ -1210,9 +1279,13 @@ function modalOch(id) {
     ${stage('1. Boshlandi', h.b_vaqt, h.b_tavsif, h.b_lat, h.b_lng, h.b_rasmlar)}
     ${stage('2. Davom etmoqda', h.d_vaqt, h.d_tavsif, h.d_lat, h.d_lng, h.d_rasmlar)}
     ${stage('3. Tugatildi', h.y_vaqt, h.y_tavsif, h.y_lat, h.y_lng, h.y_rasmlar)}
-    <div style="margin:16px 32px 32px; background:var(--bg-input); border:1px solid var(--chiziq); border-radius:16px; padding:16px; color:var(--text-asosiy)">
-      <b>Texnik ma'lumot:</b> GPS Lokatsiya: ${h.b_lat ? (+h.b_lat).toFixed(5)+', '+(+h.b_lng).toFixed(5) : '—'} &nbsp;·&nbsp; Reyting: <b>${h.reyting}</b>
-      ${h.flagSabab ? '<br><span style="color:var(--qizil);display:block;margin-top:8px;">⚠ '+h.flagSabab+'</span>' : ''}
+    <div style="margin:16px 30px 20px; background:var(--bg-input); border:1px solid var(--chiziq); border-radius:16px; padding:16px 18px; color:var(--text-asosiy); display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+      <div style="flex:1; min-width:220px;"><b>Texnik ma'lumot:</b> GPS: ${h.b_lat ? (+h.b_lat).toFixed(5)+', '+(+h.b_lng).toFixed(5) : '—'} &nbsp;·&nbsp; Reyting: <b>${h.reyting}</b>
+      ${h.flagSabab ? '<br><span style="color:var(--qizil);display:block;margin-top:8px;">⚠ '+h.flagSabab+'</span>' : ''}</div>
+      ${h.b_lat ? `<a class="gpsBtn" href="https://www.google.com/maps?q=${(+h.b_lat)},${(+h.b_lng)}" target="_blank" rel="noopener">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Boshlanish nuqtasini Maps'da ochish
+      </a>` : ''}
     </div>
     ${h.b_lat ? '<div class="xarita-wrap"><div id="mXarita"></div></div>' : ''}
   `;
