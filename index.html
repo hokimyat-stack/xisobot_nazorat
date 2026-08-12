@@ -445,7 +445,12 @@ main{
 /* ---- MODALS ---- */
 #formaFon, #modalFon, #customModalFon{position:fixed; inset:0; background:rgba(6,8,12,0.65); backdrop-filter:blur(12px); -webkit-backdrop-filter: blur(12px); display:none; align-items:center; justify-content:center; z-index:999; padding:20px}
 #forma, #customModal{background:var(--bg-kard); border-radius:24px; width:min(560px, 100%); padding:32px; box-shadow:var(--soya-hover); border:1px solid var(--chiziq-kard); max-height: 90vh; overflow-y:auto;}
-#modal{background:var(--bg-kard); border-radius:24px; width:min(920px, 100%); max-height:90vh; overflow-y:auto; box-shadow:var(--soya-hover); border:1px solid var(--chiziq-kard); display:flex; flex-direction:column;}
+/* MODAL O'ZGARTIRILGAN JOYI: Modal oynani overflow:hidden qilib, sarlavhani qotirdik */
+#modal{
+  background:var(--bg-kard); border-radius:24px; width:min(920px, 100%);
+  max-height:90vh; overflow:hidden; box-shadow:var(--soya-hover); border:1px solid var(--chiziq-kard);
+  display:flex; flex-direction:column;
+}
 
 #forma h3, #modal h3{font-size:21px; color:var(--text-asosiy); margin-bottom:20px; letter-spacing:-0.02em;}
 #forma label{display:block; font-weight:700; font-size:11.5px; margin:16px 0 8px; color:var(--text-ikkinchi); text-transform:uppercase; letter-spacing:.04em;}
@@ -458,10 +463,13 @@ main{
 .bekorB{background:var(--bg-input); color:var(--text-asosiy); border:1px solid var(--chiziq);}
 .bekorB:hover{ background:var(--bg-kard-hover); }
 
-#modal .mBosh{display:flex; justify-content:space-between; align-items:flex-start; padding:30px 30px 0}
+/* MODAL O'ZGARTIRILGAN JOYI: Qotirilgan (sticky) sarlavha va aylantiriladigan (scrollable) tana qismi */
+#modal .mBosh{display:flex; justify-content:space-between; align-items:flex-start; padding:26px 30px 20px; border-bottom:1px solid var(--chiziq); background:var(--bg-kard); flex-shrink:0; z-index:10;}
+#modal .mBody{flex:1; overflow-y:auto;}
 #modal .mSub{color:var(--text-ikkinchi); font-size:13.5px; margin-top:8px;}
 #modal .yop{background:var(--bg-input); border:1px solid var(--chiziq); border-radius:12px; width:38px; height:38px; font-size:16px; color:var(--text-asosiy); display:flex; align-items:center; justify-content:center; flex-shrink: 0;}
 #modal .yop:hover{background:var(--qizil-och); color:var(--qizil); border-color:transparent;}
+
 .stageBlok{margin:18px 30px; background:var(--bg-input); border-radius:18px; padding:22px; border:1px solid var(--chiziq-kard)}
 .stageBlok h4{font-size:15px; color:var(--text-asosiy); display:flex; align-items:center; gap:12px; margin-bottom:12px;}
 .stageBlok .stTag{font-size:10.5px; padding:6px 13px; border-radius:20px; font-weight:800;}
@@ -501,11 +509,11 @@ main{
 .toast.xato{border-left:3px solid var(--qizil)}
 .toast.info{border-left:3px solid var(--kok)}
 
-/* AVATAR */
-.avatarWrap{position:relative; flex-shrink:0;}
-.avatarDumaloq{width:36px; height:36px; border-radius:11px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:12.5px; flex-shrink:0; letter-spacing:0;}
+/* AVATAR O'ZGARTIRILGAN JOYI: O'lchami qat'iy belgilandi, siqilishni oldi olindi */
+.avatarWrap{position:relative; width:36px; min-width:36px; height:36px; min-height:36px; flex-shrink:0;}
+.avatarDumaloq{width:100%; height:100%; border-radius:11px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:12.5px; flex-shrink:0; letter-spacing:0; overflow:hidden;}
 .avatarWrap .nuqta{position:absolute; bottom:-2px; right:-2px; border:2px solid var(--bg-kard); width:11px; height:11px;}
-.avatarDumaloq.katta{width:52px; height:52px; font-size:17px; border-radius:15px;}
+.avatarDumaloq.katta{width:52px; min-width:52px; height:52px; min-height:52px; font-size:17px; border-radius:15px;}
 
 /* ============ RUXSATLAR (PERMISSIONS) ============ */
 .ruxsatSarlavha{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;}
@@ -893,7 +901,7 @@ function toshkentBugun() {
   return toshkent.toISOString().slice(0, 10);
 }
 
-// ==== VAQT FORMATLASH FUNKSIYASI (UTC -> Local Time aylantirish uchun) ====
+// ==== VAQT FORMATLASH FUNKSIYASI ====
 function formatVaqt(isoStr) {
   if (!isoStr) return '';
   try {
@@ -1026,7 +1034,6 @@ async function boshla() {
   bolimKorsat('dashboard');
   await xodimlarYukla();
 
-  // Har 15 soniyada yangi hisobotlarni fonda tekshiradi (Avto-yangilanish)
   setInterval(checkNewReports, 15000);
 }
 
@@ -1117,7 +1124,6 @@ async function dashboardYukla() {
     hisobots = hisobots.filter(h => String(h.mfyId) === myMfy);
   }
 
-  // Dashboard filtr paneli — tashkilot va kategoriya select'larini birinchi marta to'ldiramiz
   const dFiltrMfySel = document.getElementById('dFiltrMfy');
   const dFiltrKatSel = document.getElementById('dFiltrKategoriya');
   if (dFiltrMfySel && dFiltrMfySel.options.length <= 1) {
@@ -1488,21 +1494,23 @@ function modalOch(id) {
   const m = document.getElementById('modal');
   m.innerHTML = `
     <div class="mBosh">
-      <div><h3>${h.ishNomi || h.ishTuri}</h3><div class="mSub">${h.xodimFio} · ${h.mfyNomi||''} · ${h.kategoriyaNomi||''}</div></div>
+      <div><h3 style="margin-bottom:0;">${h.ishNomi || h.ishTuri}</h3><div class="mSub">${h.xodimFio} · ${h.mfyNomi||''} · ${h.kategoriyaNomi||''}</div></div>
       <button class="yop" onclick="modalYop()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
-    ${stage('1. Boshlandi', formatVaqt(h.b_vaqt), h.b_tavsif, h.b_lat, h.b_lng, h.b_rasmlar)}
-    ${stage('2. Davom etmoqda', formatVaqt(h.d_vaqt), h.d_tavsif, h.d_lat, h.d_lng, h.d_rasmlar)}
-    ${stage('3. Tugatildi', formatVaqt(h.y_vaqt), h.y_tavsif, h.y_lat, h.y_lng, h.y_rasmlar)}
-    <div style="margin:16px 30px 20px; background:var(--bg-input); border:1px solid var(--chiziq); border-radius:16px; padding:16px 18px; color:var(--text-asosiy); display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
-      <div style="flex:1; min-width:220px;"><b>Texnik ma'lumot:</b> GPS: ${h.b_lat ? (+h.b_lat).toFixed(5)+', '+(+h.b_lng).toFixed(5) : '—'} &nbsp;·&nbsp; Reyting: <b>${h.reyting}</b>
-      ${h.flagSabab ? '<br><span style="color:var(--qizil);display:block;margin-top:8px;">⚠ '+h.flagSabab+'</span>' : ''}</div>
-      ${h.b_lat ? `<a class="gpsBtn" href="https://www.google.com/maps?q=${(+h.b_lat)},${(+h.b_lng)}" target="_blank" rel="noopener">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        Boshlanish nuqtasini Maps'da ochish
-      </a>` : ''}
+    <div class="mBody">
+      ${stage('1. Boshlandi', formatVaqt(h.b_vaqt), h.b_tavsif, h.b_lat, h.b_lng, h.b_rasmlar)}
+      ${stage('2. Davom etmoqda', formatVaqt(h.d_vaqt), h.d_tavsif, h.d_lat, h.d_lng, h.d_rasmlar)}
+      ${stage('3. Tugatildi', formatVaqt(h.y_vaqt), h.y_tavsif, h.y_lat, h.y_lng, h.y_rasmlar)}
+      <div style="margin:16px 30px 20px; background:var(--bg-input); border:1px solid var(--chiziq); border-radius:16px; padding:16px 18px; color:var(--text-asosiy); display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:220px;"><b>Texnik ma'lumot:</b> GPS: ${h.b_lat ? (+h.b_lat).toFixed(5)+', '+(+h.b_lng).toFixed(5) : '—'} &nbsp;·&nbsp; Reyting: <b>${h.reyting}</b>
+        ${h.flagSabab ? '<br><span style="color:var(--qizil);display:block;margin-top:8px;">⚠ '+h.flagSabab+'</span>' : ''}</div>
+        ${h.b_lat ? `<a class="gpsBtn" href="https://www.google.com/maps?q=${(+h.b_lat)},${(+h.b_lng)}" target="_blank" rel="noopener">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Boshlanish nuqtasini Maps'da ochish
+        </a>` : ''}
+      </div>
+      ${h.b_lat ? '<div class="xarita-wrap"><div id="mXarita"></div></div>' : ''}
     </div>
-    ${h.b_lat ? '<div class="xarita-wrap"><div id="mXarita"></div></div>' : ''}
   `;
   document.getElementById('modalFon').style.display='flex';
   
@@ -1598,7 +1606,7 @@ async function bYukla() {
         <tr><th>FIO</th><th>PINFL</th><th>Tashkilot</th><th>Kategoriya</th><th>Qurilma</th><th>Holat</th><th>Amallar</th></tr>
         ${sXodimlar.map(x => `<tr>
           <td style="display:flex;align-items:center;gap:10px;border-bottom:none">
-            <div class="avatarDumaloq" style="background:${avatarRang(x.fio)}">${initials(x.fio)}</div>
+            <div class="avatarWrap"><div class="avatarDumaloq" style="background:${avatarRang(x.fio)}">${initials(x.fio)}</div></div>
             <b>${x.fio}</b>
           </td>
           <td style="font-family:monospace;font-size:11px">${x.pinfl||''}</td>
@@ -1625,7 +1633,7 @@ async function bYukla() {
         <tr><th>FIO</th><th>Rol</th><th>Tashkilot</th><th>Login</th><th>Ruxsatlar</th><th>Holat</th><th>Amallar</th></tr>
         ${sAdminlar.map(a => `<tr>
           <td style="display:flex;align-items:center;gap:10px;border-bottom:none">
-            <div class="avatarDumaloq" style="background:${avatarRang(a.fio)}">${initials(a.fio)}</div>
+            <div class="avatarWrap"><div class="avatarDumaloq" style="background:${avatarRang(a.fio)}">${initials(a.fio)}</div></div>
             <b>${a.fio}</b>
           </td>
           <td><span class="rolBadge ${a.rol}">${a.rol.toUpperCase()}</span></td>
