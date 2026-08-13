@@ -971,8 +971,6 @@ async function bildirishnomaSorash() {
   } else {
     toast("Ruxsat berilmadi. Brauzer sozlamalaridan qayta yoqishingiz mumkin.", 'xato');
   }
-  // Eslatma: bu foreground (faol tab) bildirishnoma. Tab yopiq holatda ham ishlashi uchun
-  // backendda Web Push (VAPID) + Service Worker integratsiyasi kerak bo'ladi.
 }
 function brauzerBildirishnoma(sarlavha, matn) {
   if ('Notification' in window && Notification.permission === 'granted') {
@@ -1560,11 +1558,6 @@ async function guruhEslatma() {
   });
 }
 
-/* ================= ESLATMALAR TARIXI (mahalliy jurnal) =================
-   Eslatma: backendda alohida "eslatmalar" jadvali/endpointi bo'lmagani sababli,
-   yuborilgan eslatmalar shu qurilmada (localStorage) saqlanadi. To'liq, barcha
-   adminlar ko'radigan umumiy tarix uchun backendga eslatmaTarixi endpointi qo'shish tavsiya etiladi.
-=========================================================================== */
 function eslatmaTarixigaYoz(xodimIdlar, matn, yuborildiSoni) {
   const kalitNomi = 'ESLATMA_TARIX_' + (SESSIYA?.kalit || 'anon');
   const tarix = JSON.parse(localStorage.getItem(kalitNomi) || '[]');
@@ -1642,6 +1635,13 @@ function lentaChiz() {
     }
     const vaqt = formatVaqt(h.b_vaqt);
     const isNew = !seenReports.has(h.id);
+    const isTezkor = !h.d_vaqt && h.y_vaqt; // 1-bosqichli hisobot ekanligini aniqlash
+
+    const bosqichlarHTML = isTezkor 
+      ? `<span class="bChip bor" style="background:var(--kok-och); color:var(--kok)">⚡ Tezkor (1-bosqichli) ✓</span>`
+      : `<span class="bChip ${h.b_vaqt?'bor':'yoq'}">1. Boshlandi ${h.b_vaqt?'✓':''}</span>
+         <span class="bChip ${h.d_vaqt?'bor':'yoq'}">2. Davom ${h.d_vaqt?'✓':''}</span>
+         <span class="bChip ${h.y_vaqt?'bor':'yoq'}">3. Tugatildi ${h.y_vaqt?'✓':''}</span>`;
 
     html += `<div class="tRow">
       <div class="tChap"><b>${h.sana.slice(8)}-${OYLAR[+h.sana.slice(5,7)-1].toLowerCase().slice(0,3)}</b>${h.haftaKuni||''}<br>${vaqt}</div>
@@ -1657,9 +1657,7 @@ function lentaChiz() {
           </div>
         </div>
         <div class="bosqichlar">
-          <span class="bChip ${h.b_vaqt?'bor':'yoq'}">1. Boshlandi ${h.b_vaqt?'✓':''}</span>
-          <span class="bChip ${h.d_vaqt?'bor':'yoq'}">2. Davom ${h.d_vaqt?'✓':''}</span>
-          <span class="bChip ${h.y_vaqt?'bor':'yoq'}">3. Tugatildi ${h.y_vaqt?'✓':''}</span>
+          ${bosqichlarHTML}
           ${h.reyting!=='YASHIL' ? `<span class="badge kech">⚠ ${h.reyting}</span>` : ''}
         </div>
       </div>
@@ -1682,6 +1680,8 @@ function modalOch(id) {
 
   const h = joriyHisobotlar.find(x => x.id === id);
   if (!h) return;
+  const isTezkor = !h.d_vaqt && h.y_vaqt;
+
   const stage = (nom, vaqt, tavsif, lat, lng, rasmlar) => {
     if (!vaqt) return `<div class="stageBlok" style="opacity:.5"><h4>${nom} <span class="stTag" style="background:var(--chiziq);color:var(--text-ikkinchi)">Yuklanmagan</span></h4></div>`;
     const xaritaHavola = lat ? `https://www.google.com/maps?q=${(+lat)},${(+lng)}` : '';
@@ -1699,6 +1699,7 @@ function modalOch(id) {
       <div class="mGaler">${(rasmlar||[]).map(r=>`<img src="${rasmURL(r, 600)}" onclick="zoom('${rasmFullURL(r)}')" loading="lazy">`).join('')}</div>
     </div>`;
   };
+
   const m = document.getElementById('modal');
   m.innerHTML = `
     <div class="mBosh">
@@ -1709,9 +1710,12 @@ function modalOch(id) {
       </div>
     </div>
     <div class="mBody">
-      ${stage('1. Boshlandi', formatVaqt(h.b_vaqt), h.b_tavsif, h.b_lat, h.b_lng, h.b_rasmlar)}
-      ${stage('2. Davom etmoqda', formatVaqt(h.d_vaqt), h.d_tavsif, h.d_lat, h.d_lng, h.d_rasmlar)}
-      ${stage('3. Tugatildi', formatVaqt(h.y_vaqt), h.y_tavsif, h.y_lat, h.y_lng, h.y_rasmlar)}
+      ${isTezkor 
+        ? stage('⚡ Tezkor hisobot (Yakunlangan)', formatVaqt(h.b_vaqt), h.b_tavsif, h.b_lat, h.b_lng, h.b_rasmlar)
+        : stage('1. Boshlandi', formatVaqt(h.b_vaqt), h.b_tavsif, h.b_lat, h.b_lng, h.b_rasmlar) +
+          stage('2. Davom etmoqda', formatVaqt(h.d_vaqt), h.d_tavsif, h.d_lat, h.d_lng, h.d_rasmlar) +
+          stage('3. Tugatildi', formatVaqt(h.y_vaqt), h.y_tavsif, h.y_lat, h.y_lng, h.y_rasmlar)
+      }
       <div style="margin:16px 30px 20px; background:var(--bg-input); border:1px solid var(--chiziq); border-radius:16px; padding:16px 18px; color:var(--text-asosiy); display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
         <div style="flex:1; min-width:220px;"><b>Texnik ma'lumot:</b> GPS: ${h.b_lat ? (+h.b_lat).toFixed(5)+', '+(+h.b_lng).toFixed(5) : '—'} &nbsp;·&nbsp; Reyting: <b>${h.reyting}</b>
         ${h.flagSabab ? '<br><span style="color:var(--qizil);display:block;margin-top:8px;">⚠ '+h.flagSabab+'</span>' : ''}</div>
@@ -1746,9 +1750,11 @@ function zoom(url){
 }
 
 function hisobotSatr(h) {
+  const isTezkor = !h.d_vaqt && h.y_vaqt;
   return {
     'Sana':h.sana,'Hafta kuni':h.haftaKuni,'Xodim':h.xodimFio,'Tashkilot':h.mfyNomi,'Kategoriya':h.kategoriyaNomi,
     'Ish nomi':h.ishNomi||h.ishTuri,
+    'Hisobot turi': isTezkor ? '1-bosqichli (Tezkor)' : '3-bosqichli',
     'Boshlandi vaqti':formatVaqt(h.b_vaqt),'Boshlandi tavsif':h.b_tavsif,'Boshlandi GPS':(h.b_lat?h.b_lat+','+h.b_lng:''),
     'Davom vaqti':formatVaqt(h.d_vaqt),'Davom tavsif':h.d_tavsif,
     'Yakun vaqti':formatVaqt(h.y_vaqt),'Yakun tavsif':h.y_tavsif,
@@ -1801,7 +1807,8 @@ function xodimPDF() {
   lentaKorsatiladigan.slice(0, 200).forEach(h => {
     if (y > 275) { doc.addPage(); y = 20; }
     doc.setFont(undefined, 'bold');
-    doc.text(`${h.sana}  ·  ${h.ishNomi || h.ishTuri}  ·  ${h.reyting}`, 14, y);
+    const turStr = (!h.d_vaqt && h.y_vaqt) ? ' [Tezkor]' : '';
+    doc.text(`${h.sana}  ·  ${h.ishNomi || h.ishTuri}${turStr}  ·  ${h.reyting}`, 14, y);
     doc.setFont(undefined, 'normal');
     y += 6;
     const tavsif = (h.b_tavsif || h.d_tavsif || h.y_tavsif || '').slice(0, 160);
@@ -1820,9 +1827,15 @@ function hisobotPDF(id) {
   const doc = new jsPDF();
   pdfSarlavhaChiz(doc, h.ishNomi || h.ishTuri, `${h.xodimFio} · ${h.mfyNomi||''} · ${h.sana}`);
   let y = 40;
-  [['1. Boshlandi', h.b_vaqt, h.b_tavsif, h.b_lat, h.b_lng],
-   ['2. Davom etmoqda', h.d_vaqt, h.d_tavsif, h.d_lat, h.d_lng],
-   ['3. Tugatildi', h.y_vaqt, h.y_tavsif, h.y_lat, h.y_lng]].forEach(([nom, vaqt, tavsif, lat, lng]) => {
+  
+  const isTezkor = !h.d_vaqt && h.y_vaqt;
+  const bosqichlar = isTezkor 
+    ? [['⚡ Tezkor hisobot (Yakunlangan)', h.b_vaqt, h.b_tavsif, h.b_lat, h.b_lng]]
+    : [['1. Boshlandi', h.b_vaqt, h.b_tavsif, h.b_lat, h.b_lng],
+       ['2. Davom etmoqda', h.d_vaqt, h.d_tavsif, h.d_lat, h.d_lng],
+       ['3. Tugatildi', h.y_vaqt, h.y_tavsif, h.y_lat, h.y_lng]];
+
+  bosqichlar.forEach(([nom, vaqt, tavsif, lat, lng]) => {
     doc.setFont(undefined, 'bold'); doc.setFontSize(12);
     doc.text(`${nom}  ${vaqt ? '('+formatVaqt(vaqt)+')' : '— yuklanmagan'}`, 14, y); y += 7;
     doc.setFont(undefined, 'normal'); doc.setFontSize(10.5);
