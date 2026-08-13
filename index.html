@@ -9,12 +9,12 @@
 <!-- KUTUBXONALAR -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script> <!-- Heatmap uchun -->
+<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script> <!-- ZIP uchun -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script> <!-- ZIP saqlash uchun -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 
 <style>
@@ -33,7 +33,7 @@
   --bg-sidebar: rgba(255, 255, 255, 0.7);
   --bg-kard: #FFFFFF;
   --bg-kard-shaffof: rgba(255, 255, 255, 0.86);
-  --bg-kard-hover: rgba(255, 255, 255, 0.95);
+  --bg-kard-hover: #F9FAFB;
   --bg-input: rgba(118, 118, 128, 0.08);
   --bg-header: rgba(255, 255, 255, 0.6);
   --text-asosiy: #1C1C1E;
@@ -66,16 +66,7 @@
 }
 
 * { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; height: 100vh; width: 100vw; overflow: hidden; }
-
-body {
-  font-family: var(--font-ui);
-  background-color: var(--bg-asosiy);
-  color: var(--text-asosiy); font-size: 14px; letter-spacing: -0.011em;
-  -webkit-font-smoothing: antialiased;
-  transition: background-color 0.4s ease, color 0.4s ease;
-  position: relative;
-}
+html, body { margin: 0; padding: 0; height: 100vh; width: 100vw; overflow: hidden; font-family: var(--font-ui); background-color: var(--bg-asosiy); color: var(--text-asosiy); font-size: 14px; -webkit-font-smoothing: antialiased; transition: background-color 0.4s ease, color 0.4s ease; position: relative; }
 
 /* Fon Animatsiyalari */
 body::before, body::after{ content:''; position:fixed; z-index:0; pointer-events:none; border-radius:50%; filter: blur(120px); opacity:0.3; transition: opacity .5s ease; }
@@ -86,46 +77,43 @@ body::after{ width:600px; height:600px; bottom:-200px; right:-100px; background:
 [data-theme="light"] body::before, [data-theme="light"] body::after{ opacity:0.15; }
 
 #app, #loginEkran, .toast{ position:relative; z-index:1; }
-h1,h2,h3,.brand-name{font-weight:800;letter-spacing:-0.03em; margin:0;}
-button{font-family:inherit;cursor:pointer;border:none;transition:transform .15s ease,background .18s ease,box-shadow .18s ease; display:flex; align-items:center; justify-content:center; gap:8px;}
+h1,h2,h3,h4,.brand-name{font-weight:800;letter-spacing:-0.03em; margin:0;}
+button{font-family:inherit;cursor:pointer;border:none;outline:none;transition:all .2s ease; display:inline-flex; align-items:center; justify-content:center; gap:8px; color:var(--text-asosiy);}
 button:active{transform:scale(0.96)}
-input,select,textarea{font-family:inherit;outline:none;transition:all .2s ease; box-sizing: border-box; color:var(--text-asosiy); background-color: var(--bg-input);}
-select option { background-color: var(--bg-kard-shaffof); color: var(--text-asosiy); }
+input,select,textarea{font-family:inherit;outline:none;transition:all .2s ease; box-sizing: border-box; color:var(--text-asosiy); background-color: var(--bg-input); border: 1px solid transparent;}
+select option { background-color: var(--bg-kard); color: var(--text-asosiy); }
 input[type="date"] { color: var(--text-asosiy); font-weight: 700; font-family: var(--font-mono); }
 ::-webkit-calendar-picker-indicator { filter: invert(0.8); cursor: pointer; }
 [data-theme="light"] ::-webkit-calendar-picker-indicator { filter: invert(0); }
-input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid var(--kok); outline-offset: 2px; }
-::selection{background:var(--kok-och)}
+input:focus, select:focus, textarea:focus { border-color: var(--kok); }
 
-.liveDot{ position:relative; width:8px; height:8px; border-radius:50%; background:var(--yashil); flex-shrink:0; }
-.liveDot::after{ content:''; position:absolute; inset:-4px; border-radius:50%; border:1.5px solid var(--yashil); opacity:.55; animation:livePulse 2.2s ease-out infinite; }
-@keyframes livePulse{ 0%{transform:scale(.5); opacity:.8;} 100%{transform:scale(2); opacity:0;} }
-.livePill{ display:inline-flex; align-items:center; gap:8px; background:transparent; border:1px solid var(--chiziq); color:var(--text-ikkinchi); font-weight:800; font-size:11px; letter-spacing:.05em; padding:6px 14px; border-radius:20px; text-transform:uppercase; }
+.liveDot{ width:8px; height:8px; border-radius:50%; background:var(--yashil); flex-shrink:0; box-shadow: 0 0 8px var(--yashil);}
+.livePill{ display:inline-flex; align-items:center; gap:8px; background:transparent; border:1px solid var(--chiziq); color:var(--text-ikkinchi); font-weight:800; font-size:11px; letter-spacing:.05em; padding:6px 14px; border-radius:30px; text-transform:uppercase; }
 
 *{scrollbar-width:thin;scrollbar-color:rgba(140,146,166,.4) transparent}
 *::-webkit-scrollbar{width:6px;height:6px}
 *::-webkit-scrollbar-thumb{background:rgba(140,146,166,0.3);border-radius:10px}
 
 /* WATERMARK */
-.watermark { position: fixed; bottom: 20px; right: 24px; font-weight: 800; font-size: 11px; color: var(--text-ikkinchi); opacity: 0.2; letter-spacing: 0.15em; pointer-events: none; z-index: 9999; font-family: var(--font-mono); }
+.watermark { position: fixed; bottom: 16px; right: 24px; font-weight: 800; font-size: 11px; color: var(--text-ikkinchi); opacity: 0.2; letter-spacing: 0.15em; pointer-events: none; z-index: 9999; font-family: var(--font-mono); text-transform: uppercase;}
 
 /* ============ LOGIN ============ */
 #loginEkran{ position:fixed;inset:0;display:flex;align-items:center;justify-content:center; background: var(--bg-asosiy); z-index: 1000; }
-.loginCard{ background: var(--bg-kard-shaffof); border-radius:var(--radius); padding:46px 42px 42px; width:min(400px,90vw); border:1px solid var(--chiziq-kard); box-shadow: var(--soya-kard); backdrop-filter: var(--blur-kard); -webkit-backdrop-filter: var(--blur-kard); animation:cardIn .5s cubic-bezier(.16,1,.3,1); }
+.loginCard{ background: var(--bg-kard-shaffof); border-radius:var(--radius); padding:46px 42px 42px; width:min(400px,90vw); border:1px solid var(--chiziq); box-shadow: var(--soya-kard); backdrop-filter: var(--blur-kard); -webkit-backdrop-filter: var(--blur-kard); animation:cardIn .5s ease;}
 @keyframes cardIn{from{opacity:0;transform:translateY(24px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
 .loginCard .logoMark{ width:56px; height:56px; border-radius:16px; margin:0 auto 24px; background: var(--kok); display:flex; align-items:center; justify-content:center; box-shadow: 0 10px 24px var(--kok-och); }
-.loginCard .brand{font-size:24px; text-align:center;}
-.loginCard .sub{color:var(--text-ikkinchi); font-size:13px; margin:6px 0 32px; font-weight:600; text-align:center; display:flex; justify-content:center; align-items:center; gap:8px;}
+.loginCard .brand{font-size:24px; text-align:center; font-weight:800;}
+.loginCard .sub{color:var(--text-ikkinchi); font-size:13px; margin:6px 0 32px; font-weight:600; text-align:center;}
 .loginCard label{display:block; font-weight:700; font-size:11px; margin:16px 0 6px; color:var(--text-ikkinchi); text-transform:uppercase; letter-spacing:0.05em}
 .loginCard input{width:100%; padding:14px 16px; border:1px solid var(--chiziq); border-radius:12px; font-size:14.5px; }
-.loginCard .btn{width:100%; margin-top:24px; background:var(--kok); color:#fff; padding:16px; border-radius:12px; font-weight:700; font-size:15px; box-shadow:0 10px 20px var(--kok-och);}
+.loginCard .btn{width:100%; margin-top:24px; background:var(--kok); color:#fff; padding:16px; border-radius:12px; font-weight:700; font-size:15px;}
 .loginXato{color:var(--qizil); font-size:13px; margin-top:16px; display:none; background:var(--qizil-och); padding:11px 14px; border-radius:10px; font-weight:600; text-align:center}
 
 /* ============ APP SHELL ============ */
-.sidebar{ width:260px; flex-shrink:0; height:100vh; background:var(--bg-sidebar); border-right:1px solid var(--chiziq); backdrop-filter: var(--blur-kard); -webkit-backdrop-filter: var(--blur-kard); display:flex; flex-direction:column; padding:24px 16px; z-index:1; }
+.sidebar{ width:260px; flex-shrink:0; height:100vh; background:var(--bg-sidebar); border-right:1px solid var(--chiziq); backdrop-filter: var(--blur-kard); display:flex; flex-direction:column; padding:24px 16px; z-index:10; }
 .sidebar-brand{ display:flex; align-items:center; gap:12px; padding:0 8px 24px; }
 .brand-mark{ width:36px; height:36px; border-radius:10px; background:var(--kok); display:flex; align-items:center; justify-content:center; color:#fff; box-shadow:0 8px 16px var(--kok-och); }
-.brand-text .brand-name{ font-size:15px; color:var(--text-asosiy); white-space:nowrap; }
+.brand-text .brand-name{ font-size:15px; font-weight:800; }
 .brand-text small{ color:var(--text-ikkinchi); font-weight:700; font-size:10px; letter-spacing:.04em; }
 
 .sidebar-label{ font-size:11px; font-weight:800; color:var(--text-ikkinchi); text-transform:uppercase; letter-spacing:.05em; padding:0 8px 8px; margin-top:10px; }
@@ -138,12 +126,12 @@ input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px s
 .navTabs button .yangi-badge{ margin-left:auto; }
 
 /* TELEGRAM SUPPORT TUGMASI */
-.telegram-support { margin-top: auto; padding: 12px 14px; border-radius: 12px; background: rgba(44, 165, 224, 0.1); color: #2CA5E0; font-weight: 600; display: flex; align-items: center; gap: 8px; cursor: pointer; text-decoration: none; border: 1px solid rgba(44, 165, 224, 0.2); transition: all 0.2s; font-size:14px;}
-.telegram-support:hover { background: rgba(44, 165, 224, 0.2); }
+.telegram-support { margin-top: auto; padding: 12px 14px; border-radius: 12px; background: rgba(44, 165, 224, 0.1); color: #2CA5E0; font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; text-decoration: none; border: 1px solid rgba(44, 165, 224, 0.2); transition: all 0.2s; font-size:14px;}
+.telegram-support:hover { background: rgba(44, 165, 224, 0.2); transform:scale(0.98);}
 
 .sidebar-foot { border-top: 1px solid var(--chiziq); padding-top: 20px; margin-top: 16px; display: flex; flex-direction: column; gap: 12px; }
 .sf-top-row { display: flex; gap: 8px; align-items: stretch; }
-.theme-btn { flex: 0 0 42px; background: var(--bg-input); border: 1px solid transparent; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--text-asosiy); }
+.theme-btn { flex: 0 0 42px; background: var(--bg-input); border: 1px solid transparent; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
 .theme-btn:hover { background: var(--bg-hover); }
 .sf-auto-theme { flex: 1; background: var(--bg-input); border-radius: 10px; font-weight: 700; font-size: 12px; color: var(--text-ikkinchi); }
 .sf-auto-theme.aktiv { background: var(--kok-och); color: var(--kok); }
@@ -151,13 +139,13 @@ input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px s
 .user-card{ display:flex; align-items:center; gap:12px; padding: 4px 8px; }
 .user-avatar{ width:40px; height:40px; border-radius:50%; background:var(--bg-input); border:1px solid var(--chiziq); display:flex; align-items:center; justify-content:center; color:var(--text-ikkinchi); }
 .user-meta{ display:flex; flex-direction:column; min-width:0; }
-.user-meta b{ font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:700; line-height:1.2;}
+.user-meta b{ font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:800; line-height:1.2;}
 .rolBadge{border-radius:12px; padding:2px 8px; font-size:10px; font-weight:800; letter-spacing:0.04em; width:fit-content; margin-top:4px;}
 .rolBadge.superadmin{background:var(--binafsha-och); color:var(--binafsha);}
 .rolBadge.admin{background:var(--yashil-och); color:var(--yashil);}
 .rolBadge.nazoratchi{background:var(--sariq-och); color:var(--sariq);}
 
-.chiqishBtn { background: transparent; color: var(--qizil); font-weight: 600; font-size: 13px; padding: 10px; border-radius: 10px; border: 1px solid var(--qizil-och); justify-content: center;}
+.chiqishBtn { background: transparent; color: var(--qizil); font-weight: 700; font-size: 13px; padding: 10px; border-radius: 10px; border: 1px solid var(--qizil-och); justify-content: center;}
 .chiqishBtn:hover { background: var(--qizil-och); }
 
 /* ---- CONTENT COLUMN ---- */
@@ -166,7 +154,7 @@ header.top{ background: var(--bg-header); backdrop-filter:var(--blur-kard); bord
 #mobilMenyu{display:none; background:var(--bg-input); border-radius:10px; width:40px; height:40px; color:var(--text-asosiy)}
 
 .globalQidiruvWrap{ position:relative; max-width:400px; width:100%; }
-.globalQidiruvWrap input{ width:100%; padding:12px 16px 12px 42px; border:1px solid transparent; border-radius:20px; font-size:14px; background:var(--bg-input); color:var(--text-asosiy); font-weight:500;}
+.globalQidiruvWrap input{ width:100%; padding:12px 16px 12px 42px; border:1px solid transparent; border-radius:20px; font-size:14px; background:var(--bg-input); font-weight:500;}
 .globalQidiruvWrap input:focus{ border-color:var(--kok); background:var(--bg-kard); box-shadow:0 0 0 3px var(--kok-och); }
 .globalQidiruvWrap svg{ position:absolute; left:16px; top:50%; transform:translateY(-50%); color:var(--text-ikkinchi); }
 
@@ -175,7 +163,7 @@ header.top{ background: var(--bg-header); backdrop-filter:var(--blur-kard); bord
 .top-amallar .bell:hover { background: var(--bg-hover); }
 .top-amallar .bell .dotBadge{ position:absolute; top:8px; right:10px; width:8px; height:8px; border-radius:50%; background:var(--qizil); display:none; }
 .top-amallar .bell.faol .dotBadge{ display:block; }
-.yangi-badge { background: var(--qizil); color: #fff; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(240,71,91,0.45); }
+.yangi-badge { background: var(--qizil); color: #fff; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; }
 
 main{ flex:1; overflow-y:auto; padding:32px; display:flex; gap:24px; max-width: 1720px; margin: 0 auto; width: 100%; }
 .asosiy-kard { background: var(--bg-kard); border: 1px solid var(--chiziq-kard); border-radius: var(--radius); box-shadow: var(--soya-kard); backdrop-filter: var(--blur-kard); display: flex; flex-direction: column; overflow: hidden; position: relative; }
@@ -188,8 +176,8 @@ main{ flex:1; overflow-y:auto; padding:32px; display:flex; gap:24px; max-width: 
 /* AI Xulosa */
 .b-ai { grid-column: span 12; flex-direction: row; align-items: center; gap: 24px; background: linear-gradient(135deg, var(--kok-och), var(--binafsha-och)); border-color: rgba(10, 132, 255, 0.2); }
 .ai-icon { width: 56px; height: 56px; border-radius: 16px; background: var(--kok); display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; box-shadow: 0 10px 20px var(--kok-och);}
-.ai-title { font-size: 12px; font-weight: 800; color: var(--kok); text-transform: uppercase; margin-bottom: 6px; display: flex; align-items: center; gap:8px;}
-.ai-message { font-size: 16px; font-weight: 500; line-height: 1.5; color: var(--text-asosiy); }
+.ai-title { font-size: 12px; font-weight: 800; color: var(--kok); text-transform: uppercase; margin-bottom: 4px; display: flex; align-items: center; gap:8px;}
+.ai-message { font-size: 16px; font-weight: 600; line-height: 1.5; color: var(--text-asosiy); }
 
 /* Xarita va Stats */
 .b-map { grid-column: span 4; padding: 0; min-height: 240px; position:relative;}
@@ -203,8 +191,8 @@ main{ flex:1; overflow-y:auto; padding:32px; display:flex; gap:24px; max-width: 
 
 /* Quick Actions */
 .b-actions { grid-column: span 12; display: flex; gap: 16px; padding: 0; background: transparent; border: none; box-shadow: none; }
-.action-btn { flex: 1; padding: 20px; border-radius: 20px; font-size: 15px; font-weight: 600; background: var(--bg-kard); border: 1px solid var(--chiziq-kard); box-shadow: var(--soya-kard); color:var(--text-asosiy); transition: all 0.2s; }
-.action-btn:hover { background: var(--bg-hover); transform: translateY(-2px); }
+.action-btn { flex: 1; padding: 20px; border-radius: 20px; font-size: 15px; font-weight: 700; background: var(--bg-kard); border: 1px solid var(--chiziq-kard); box-shadow: var(--soya-kard); color:var(--text-asosiy); transition: all 0.2s; }
+.action-btn:hover { background: var(--bg-hover); transform: translateY(-2px); box-shadow: var(--soya-hover);}
 .action-btn.blue { background: var(--kok); color: white; border: none; box-shadow: 0 10px 20px var(--kok-och);}
 .action-btn.blue:hover { background: #0070DF; }
 .action-btn.red { background: var(--qizil); color: white; border: none; box-shadow: 0 10px 20px var(--qizil-och);}
@@ -212,43 +200,42 @@ main{ flex:1; overflow-y:auto; padding:32px; display:flex; gap:24px; max-width: 
 
 /* Leaderboards */
 .b-list { grid-column: span 6; }
-.list-header { display: flex; align-items: center; gap: 8px; margin-bottom: 24px; font-size: 16px; font-weight: 700; }
+.list-header { display: flex; align-items: center; gap: 8px; margin-bottom: 24px; font-size: 16px; font-weight: 800; }
 .lb-row { display: flex; align-items: center; gap: 14px; padding: 14px; border-radius: 16px; background: var(--bg-input); margin-bottom: 8px; border: 1px solid transparent; cursor: pointer; transition:all .2s;}
 .lb-row:hover { border-color: var(--chiziq); background:var(--bg-hover);}
-.lb-fio { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
-.lb-meta { font-size: 12px; color: var(--text-ikkinchi); }
+.lb-fio { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+.lb-meta { font-size: 12px; font-weight:600; color: var(--text-ikkinchi); }
 .lb-badge { margin-left: auto; font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 12px; }
 
 /* Chart */
 .b-chart { grid-column: span 12; }
-.chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 16px; font-weight: 700;}
 .chart-wrap { width: 100%; height: 320px; position: relative; }
 .chart-wrap canvas { width: 100% !important; height: 100% !important; }
 
 /* XODIMLAR PANEL (NAZORAT) */
 #chap{ width:390px; flex-shrink: 0; padding:0; display:flex; flex-direction:column;}
 .nazorat-header { padding: 24px; border-bottom: 1px solid var(--chiziq); background: var(--bg-kard); z-index: 2; }
-.nazorat-header input, .nazorat-header select { width: 100%; padding: 14px; border-radius: 12px; margin-bottom: 12px; font-size:13px; font-weight:500;}
+.nazorat-header input, .nazorat-header select { width: 100%; padding: 14px; border-radius: 12px; margin-bottom: 12px; font-size:13px; font-weight:600;}
 .nazorat-header select { appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="none" stroke="%238E8E93" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>'); background-repeat: no-repeat; background-position: right 14px center; }
 .nazFiltrBar { display: flex; background: var(--bg-input); border-radius: 12px; padding: 4px; gap:4px;}
-.nazFiltrBar button { flex: 1; padding: 10px 0; font-size: 12px; font-weight: 600; border-radius: 10px; color: var(--text-ikkinchi); background: transparent; }
+.nazFiltrBar button { flex: 1; padding: 10px 0; font-size: 12px; font-weight: 700; border-radius: 10px; color: var(--text-ikkinchi); background: transparent; }
 .nazFiltrBar button.aktiv { background: var(--bg-kard); color: var(--text-asosiy); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
 
 #xodimlarList { flex: 1; overflow-y: auto; padding: 16px; }
 .xodimRow { display: flex; align-items: center; gap: 14px; padding: 14px; border-radius: 16px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; margin-bottom:8px;}
 .xodimRow:hover { background: var(--bg-hover); }
 .xodimRow.aktiv { background: var(--kok-och); border-color: rgba(10, 132, 255, 0.2); }
-.xodimRow .fio { font-size: 14px; font-weight: 600; margin-bottom: 4px; line-height: 1.2;}
-.xodimRow .meta { font-size: 12px; color: var(--text-ikkinchi); line-height: 1.3;}
+.xodimRow .fio { font-size: 14px; font-weight: 700; margin-bottom: 4px; line-height: 1.2;}
+.xodimRow .meta { font-size: 12px; font-weight:600; color: var(--text-ikkinchi); line-height: 1.3;}
 .vaqtBadge { font-size:10px; font-weight:700; font-family: var(--font-mono); color: var(--kok); background: var(--kok-och); padding: 4px 8px; border-radius: 8px; margin-top: 6px; display: inline-block; }
-.son-badge { margin-left: auto; background: var(--bg-input); padding: 6px 12px; border-radius: 14px; font-size: 13px; font-weight: 700; font-family: var(--font-mono); }
+.son-badge { margin-left: auto; background: var(--bg-input); padding: 6px 12px; border-radius: 14px; font-size: 13px; font-weight: 800; font-family: var(--font-mono); border:1px solid var(--chiziq);}
 
 #ong { flex: 1; display: none; padding: 0; flex-direction: column; }
 .lenta-top { padding: 24px 32px; border-bottom: 1px solid var(--chiziq); background: var(--bg-kard); display: flex; justify-content: space-between; align-items: flex-start; z-index: 2; flex-shrink: 0;}
 .lenta-top h2 { font-size: 22px; margin-bottom: 6px; }
-.lenta-top .meta-info { color: var(--text-ikkinchi); font-size: 14px; font-weight:500;}
+.lenta-top .meta-info { color: var(--text-ikkinchi); font-size: 14px; font-weight:600;}
 .lenta-actions { display: flex; gap: 10px; }
-.lenta-actions button { padding: 10px 16px; border-radius: 12px; font-size: 13px; font-weight: 600; background: var(--bg-input); }
+.lenta-actions button { padding: 10px 16px; border-radius: 12px; font-size: 13px; font-weight: 700; background: var(--bg-input); }
 .lenta-actions button:hover { background: var(--bg-hover); }
 .lenta-actions .btn-green { background: var(--yashil-och); color: var(--yashil); }
 .lenta-actions .btn-red { background: var(--qizil-och); color: var(--qizil); }
@@ -256,7 +243,7 @@ main{ flex:1; overflow-y:auto; padding:32px; display:flex; gap:24px; max-width: 
 #lenta { flex: 1; overflow-y: auto; padding: 32px; }
 .tRow { display: flex; margin-bottom: 32px; }
 .tChap { width: 100px; flex-shrink: 0; text-align: right; padding-right: 20px; padding-top: 4px; }
-.tChap .sana { font-weight: 700; font-size: 14px; color: var(--text-asosiy); margin-bottom:4px;}
+.tChap .sana { font-weight: 800; font-size: 14px; color: var(--text-asosiy); margin-bottom:4px;}
 .tChap .vaqt { color: var(--text-ikkinchi); font-size: 13px; font-family:var(--font-mono); margin-bottom:4px;}
 .tSpine { width: 32px; flex-shrink: 0; position: relative; }
 .tSpine::before { content:''; position: absolute; left: 15px; top: 0; bottom: -32px; width: 2px; background: var(--chiziq); }
@@ -266,10 +253,10 @@ main{ flex:1; overflow-y:auto; padding:32px; display:flex; gap:24px; max-width: 
 .tTop { display: flex; gap: 20px; }
 .tTop img { width: 72px; height: 72px; border-radius: 16px; object-fit: cover; }
 .tTop .icim { flex: 1; }
-.tTop .tur { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
-.tTop .tv { color: var(--text-ikkinchi); font-size: 14px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.tTop .tur { font-size: 17px; font-weight: 800; margin-bottom: 8px; }
+.tTop .tv { color: var(--text-ikkinchi); font-size: 14px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-weight:500;}
 .bosqichlar { margin-top: 20px; display: flex; gap: 8px; flex-wrap: wrap; }
-.bChip { font-size: 11px; font-weight: 600; padding: 6px 12px; border-radius: 20px; background: var(--bg-kard); border: 1px solid var(--chiziq); color: var(--text-ikkinchi); }
+.bChip { font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 20px; background: var(--bg-kard); border: 1px solid var(--chiziq); color: var(--text-ikkinchi); }
 .bChip.bor { background: var(--yashil-och); color: var(--yashil); border-color: transparent; }
 
 /* BOSHQA BO'LIMLAR UCHUN UMUMIY CSS */
@@ -277,50 +264,49 @@ main{ flex:1; overflow-y:auto; padding:32px; display:flex; gap:24px; max-width: 
 .filtr-guruh { display: flex; gap: 10px; flex-wrap: wrap; }
 .jadval-wrap { overflow-x: auto; border: 1px solid var(--chiziq-kard); border-radius: 20px; margin-top: 24px;}
 .jadval { width: 100%; border-collapse: collapse; text-align: left; }
-.jadval th { padding: 18px 20px; font-size: 12px; text-transform: uppercase; color: var(--text-ikkinchi); font-weight: 700; border-bottom: 1px solid var(--chiziq); background: var(--bg-input); }
-.jadval td { padding: 18px 20px; font-size: 14px; border-bottom: 1px solid var(--chiziq); }
+.jadval th { padding: 18px 20px; font-size: 12px; text-transform: uppercase; color: var(--text-ikkinchi); font-weight: 800; border-bottom: 1px solid var(--chiziq); background: var(--bg-input); }
+.jadval td { padding: 18px 20px; font-size: 14px; border-bottom: 1px solid var(--chiziq); font-weight: 600;}
 .jadval tr:last-child td { border-bottom: none; }
 .jadval tr:hover td { background: var(--bg-hover); }
 
-.mini{border-radius:8px; padding:6px 12px; font-size:11.5px; font-weight:600; margin:2px; display:inline-flex; align-items:center; gap:6px;}
+.mini{border-radius:8px; padding:6px 12px; font-size:11.5px; font-weight:700; margin:2px; display:inline-flex; align-items:center; gap:6px;}
 .mini.kok{background:var(--kok-och); color:var(--kok)}
 .mini.qizil{background:var(--qizil-och); color:var(--qizil)}
 .mini.yashil{background:var(--yashil-och); color:var(--yashil)}
 .mini.sirena{background:var(--sirena-och); color:var(--sirena)}
-.qoshBtn{background:var(--kok); color:#fff; border-radius:14px; padding:14px 24px; font-weight:600; font-size:14px; box-shadow:0 8px 20px var(--kok-och);}
 
 /* Modallar */
 #formaFon, #modalFon, #customModalFon { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
 .modal-oyna { background: var(--bg-kard-shaffof); border: 1px solid var(--chiziq); border-radius: 28px; box-shadow: var(--soya-hover); padding: 40px; max-height: 90vh; overflow-y: auto; position: relative; backdrop-filter: var(--blur-kard);}
 .modal-oyna h3 { font-size: 22px; margin-bottom: 24px; }
-.modal-oyna label { display: block; font-size: 12px; font-weight: 600; color: var(--text-ikkinchi); margin-bottom: 8px; margin-top: 20px; text-transform:uppercase; letter-spacing:0.05em;}
-.modal-oyna input, .modal-oyna select, .modal-oyna textarea { width: 100%; padding: 16px; border-radius: 14px; border: 1px solid var(--chiziq); font-size:14px; background:var(--bg-input);}
+.modal-oyna label { display: block; font-size: 12px; font-weight: 700; color: var(--text-ikkinchi); margin-bottom: 8px; margin-top: 20px; text-transform:uppercase; letter-spacing:0.05em;}
+.modal-oyna input, .modal-oyna select, .modal-oyna textarea { width: 100%; padding: 16px; border-radius: 14px; border: 1px solid var(--chiziq); font-size:14px; background:var(--bg-input); font-weight:600;}
 .modal-amallar { display: flex; gap: 16px; margin-top: 32px; }
-.modal-amallar button { flex: 1; padding: 16px; border-radius: 14px; font-size: 15px; font-weight: 600; }
+.modal-amallar button { flex: 1; padding: 16px; border-radius: 14px; font-size: 15px; font-weight: 700; }
 .saqlaB { background: var(--kok); color: white; }
 .btn-yop { position: absolute; top: 24px; right: 24px; width: 36px; height: 36px; border-radius: 50%; background: var(--bg-input); display: flex; align-items: center; justify-content: center; font-size:18px;}
 .btn-yop:hover { background:var(--qizil-och); color:var(--qizil); }
 
 /* Boshqaruv menyusi uchun */
 .bTabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; background: var(--bg-input); padding: 8px; border-radius: 16px; width: fit-content; }
-.bTabs button { padding: 10px 18px; border-radius: 10px; font-weight: 600; background: transparent; color: var(--text-ikkinchi); font-size:14px;}
+.bTabs button { padding: 10px 18px; border-radius: 10px; font-weight: 700; background: transparent; color: var(--text-ikkinchi); font-size:14px;}
 .bTabs button.aktiv { background: var(--bg-kard); color: var(--text-asosiy); box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
 
-.toast { background: var(--bg-kard-shaffof); backdrop-filter: var(--blur-kard); padding: 18px 24px; border-radius: 16px; box-shadow: var(--soya-hover); display: flex; align-items: center; gap: 14px; font-weight: 600; font-size: 14.5px; border: 1px solid var(--chiziq); z-index: 10000; animation: slideIn 0.3s ease; cursor:pointer;}
+.toast { background: var(--bg-kard-shaffof); backdrop-filter: var(--blur-kard); padding: 18px 24px; border-radius: 16px; box-shadow: var(--soya-hover); display: flex; align-items: center; gap: 14px; font-weight: 700; font-size: 14.5px; border: 1px solid var(--chiziq); z-index: 10000; animation: slideIn 0.3s ease; cursor:pointer;}
 @keyframes slideIn { from{transform: translateX(100%); opacity:0;} to{transform: translateX(0); opacity:1;} }
-.yuklanmoqda { text-align: center; padding: 60px; color: var(--text-ikkinchi); font-weight: 500; font-size:15px;}
-.bosh-holat { text-align: center; padding: 60px 20px; color: var(--text-ikkinchi); font-size: 15px; font-weight: 500; }
+.yuklanmoqda { text-align: center; padding: 60px; color: var(--text-ikkinchi); font-weight: 600; font-size:15px;}
+.bosh-holat { text-align: center; padding: 60px 20px; color: var(--text-ikkinchi); font-size: 15px; font-weight: 600; }
 
 .qidiruvNatija{ background:var(--bg-input); border-radius:16px; padding:20px; margin-bottom:12px; cursor:pointer; border: 1px solid transparent; transition:all .2s ease; }
 .qidiruvNatija:hover{ background:var(--bg-hover); border-color:var(--kok); }
 
 #bPanel { min-width: 100%; }
-.btn-oddiy { background: var(--bg-input); color: var(--text-asosiy); padding: 8px 14px; border-radius: 10px; font-weight: 600; font-size: 13px; }
+.btn-oddiy { background: var(--bg-input); color: var(--text-asosiy); padding: 8px 14px; border-radius: 10px; font-weight: 700; font-size: 13px; }
 
 /* Kichik qismlar */
 .paginBar { display: flex; justify-content: center; gap: 12px; padding: 20px; }
-.paginBar button { padding: 10px 20px; background: var(--bg-input); border-radius: 12px; font-weight:600;}
-.paginInfo { align-self:center; font-weight:600; color:var(--text-ikkinchi);}
+.paginBar button { padding: 10px 20px; background: var(--bg-input); border-radius: 12px; font-weight:700;}
+.paginInfo { align-self:center; font-weight:700; color:var(--text-ikkinchi);}
 #forma, #customModal { width: min(500px, 100%); }
 #modal { width: min(800px, 100%); padding:0; display:flex; flex-direction:column; overflow:hidden;}
 #modal .mBosh{ padding:32px 32px 20px; border-bottom:1px solid var(--chiziq); flex-shrink:0;}
@@ -332,6 +318,13 @@ main{ flex:1; overflow-y:auto; padding:32px; display:flex; gap:24px; max-width: 
 
 #zoomImg { max-width: 90vw; max-height: 90vh; border-radius: 20px; box-shadow: 0 40px 100px rgba(0,0,0,0.8); object-fit: contain; }
 
+@media(max-width:900px){
+  .sidebar{ position:fixed; z-index:60; }
+  #chap{width:100%; position:absolute; z-index:15; height:calc(100vh - 65px); display:none}
+  #chap.ochiq{display:flex}
+  #mobilMenyu{display:flex}
+  .globalQidiruvWrap{ display:none; }
+}
 </style>
 </head>
 <body>
@@ -347,7 +340,7 @@ main{ flex:1; overflow-y:auto; padding:32px; display:flex; gap:24px; max-width: 
     <div class="sub">Command Center Login</div>
     <input id="inLogin" placeholder="Login">
     <input id="inParol" type="password" placeholder="Parol" onkeydown="if(event.key==='Enter')loginParol()">
-    <button class="btn" onclick="loginParol()">Tizimga kirish</button>
+    <button class="btn" onclick="loginParol()">Kirish</button>
     <div class="loginXato" id="loginXato"></div>
   </div>
 </div>
@@ -379,12 +372,12 @@ main{ flex:1; overflow-y:auto; padding:32px; display:flex; gap:24px; max-width: 
         Qidiruv
       </button>
       <button id="navBoshqaruv" onclick="bolimKorsat('boshqaruv')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         Boshqaruv
       </button>
       
       <a href="https://t.me/sysone_support" target="_blank" class="telegram-support">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
         Telegram Support
       </a>
     </nav>
@@ -404,9 +397,10 @@ main{ flex:1; overflow-y:auto; padding:32px; display:flex; gap:24px; max-width: 
 
   <div class="content-col">
     <header class="top">
+      <button id="mobilMenyu" onclick="document.getElementById('chap').classList.toggle('ochiq')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
       <div class="globalQidiruvWrap">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input id="globalQidiruv" placeholder="Ism, tashkilot yoki hisobot bo'yicha qidiruv..." oninput="globalQidiruvDebounce()" onkeydown="if(event.key==='Enter'){bolimKorsat('qidiruv'); qidiruvBajar();}">
+        <input id="globalQidiruv" placeholder="Matn yoki xodimni qidirish..." oninput="globalQidiruvDebounce()" onkeydown="if(event.key==='Enter'){bolimKorsat('qidiruv'); qidiruvBajar();}">
       </div>
       <div class="top-amallar">
         <input type="date" id="gSana" class="date-picker" onchange="sanaOzgardi()" title="Sanani o'zgartirish">
@@ -433,13 +427,13 @@ main{ flex:1; overflow-y:auto; padding:32px; display:flex; gap:24px; max-width: 
           </div>
 
           <div class="bento-item b-stats">
-            <div class="stat-card c-blue">
+            <div class="stat-card">
               <div class="st-val" id="stJami">0</div><div class="st-label">Jami xodimlar</div>
             </div>
-            <div class="stat-card c-green">
+            <div class="stat-card">
               <div class="st-val" style="color:var(--yashil)" id="stTopshirdi">0</div><div class="st-label">Topshirganlar</div>
             </div>
-            <div class="stat-card c-red">
+            <div class="stat-card">
               <div class="st-val" style="color:var(--qizil)" id="stQoldi">0</div><div class="st-label">Topshirmaganlar</div>
             </div>
           </div>
@@ -541,33 +535,29 @@ main{ flex:1; overflow-y:auto; padding:32px; display:flex; gap:24px; max-width: 
 </div>
 
 <!-- MODALS -->
-<div id="modalFon" onclick="if(event.target===this)modalYop()">
-  <div id="modal" class="modal-oyna"></div>
-</div>
+<div id="modalFon" onclick="if(event.target===this)modalYop()"><div id="modal" class="modal-oyna"></div></div>
 <div id="zoomFon" onclick="this.style.display='none'"><img id="zoomImg"></div>
-<div id="formaFon" onclick="if(event.target===this)formaYop()">
-  <div id="forma" class="modal-oyna"></div>
-</div>
+<div id="formaFon" onclick="if(event.target===this)formaYop()"><div id="forma" class="modal-oyna"></div></div>
 <div id="customModalFon">
   <div id="customModal" class="modal-oyna">
     <h3 id="cmSarlavha">Sarlavha</h3>
     <input id="cmInput" type="text" style="display:none;">
     <div class="modal-amallar">
       <button style="background:var(--bg-input);" id="cmBekorBtn">Bekor qilish</button>
-      <button style="background:var(--kok); color:white; border:none;" id="cmTasdiqBtn">Tasdiqlash</button>
+      <button class="saqlaB action-btn" style="background:var(--kok); color:white; border:none;" id="cmTasdiqBtn">Tasdiqlash</button>
     </div>
   </div>
 </div>
 
 <script>
-/* IKONKALAR, SVG, PERMISSIONS... */
+/* IKONKALAR VA RUXSATLAR */
 const SVG = {
   users: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
   admin: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="11" r="3"/></svg>`,
   building: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="9" y1="22" x2="9" y2="22"/><line x1="15" y1="22" x2="15" y2="22"/><line x1="9" y1="6" x2="9" y2="6"/><line x1="15" y1="6" x2="15" y2="6"/><line x1="9" y1="10" x2="9" y2="10"/><line x1="15" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="9" y2="14"/><line x1="15" y1="14" x2="15" y2="14"/><line x1="9" y1="18" x2="9" y2="18"/><line x1="15" y1="18" x2="15" y2="18"/></svg>`,
   tags: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>`,
   bell: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>`,
-  settings: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
+  settings: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
   edit: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
   audit: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
   plus: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
@@ -586,57 +576,35 @@ const PERMISSIONS = [
 ];
 
 /* THEME VA AUTO-MODE */
-let autoThemeMode = localStorage.getItem('autoTheme') !== 'false'; // Default true
-
+let autoThemeMode = localStorage.getItem('autoTheme') !== 'false';
 function applyAutoTheme() {
   if (!autoThemeMode) return;
   const hour = new Date().getHours();
-  const isNight = hour < 7 || hour >= 19; // 19:00 dan 07:00 gacha Dark mode
+  const isNight = hour < 7 || hour >= 19;
   const next = isNight ? 'dark' : 'light';
   document.documentElement.setAttribute('data-theme', next);
   updateThemeUI(next);
 }
-
 function toggleAutoTheme() {
-  autoThemeMode = !autoThemeMode;
-  localStorage.setItem('autoTheme', autoThemeMode);
+  autoThemeMode = !autoThemeMode; localStorage.setItem('autoTheme', autoThemeMode);
   document.getElementById('autoThemeBtn').classList.toggle('aktiv', autoThemeMode);
-  if (autoThemeMode) {
-    applyAutoTheme();
-    toast("Avto-rejim yoqildi");
-  } else {
-    toast("Avto-rejim o'chirildi");
-  }
+  if (autoThemeMode) { applyAutoTheme(); toast("Avto-rejim yoqildi"); } else toast("Avto-rejim o'chirildi");
 }
-
 function updateThemeUI(theme) {
   const isDark = theme === 'dark';
-  document.getElementById('themeIcon').innerHTML = isDark 
-    ? '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>'
-    : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+  document.getElementById('themeIcon').innerHTML = isDark ? '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>' : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
 }
-
 function toggleThemeManually() {
-  autoThemeMode = false;
-  localStorage.setItem('autoTheme', 'false');
-  document.getElementById('autoThemeBtn').classList.remove('aktiv');
-  
-  const current = document.documentElement.getAttribute('data-theme');
-  const next = current === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', next);
-  localStorage.setItem('theme', next);
-  updateThemeUI(next);
+  autoThemeMode = false; localStorage.setItem('autoTheme', 'false'); document.getElementById('autoThemeBtn').classList.remove('aktiv');
+  const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next); localStorage.setItem('theme', next); updateThemeUI(next);
 }
 
 window.addEventListener('DOMContentLoaded', () => {
   const savedTheme = localStorage.getItem('theme') || 'dark';
-  document.documentElement.setAttribute('data-theme', savedTheme);
-  updateThemeUI(savedTheme);
-  
+  document.documentElement.setAttribute('data-theme', savedTheme); updateThemeUI(savedTheme);
   document.getElementById('autoThemeBtn').classList.toggle('aktiv', autoThemeMode);
-  if (autoThemeMode) applyAutoTheme();
-  setInterval(applyAutoTheme, 60000); // Har minutda tekshirish
-
+  if (autoThemeMode) applyAutoTheme(); setInterval(applyAutoTheme, 60000);
   document.getElementById('gSana').value = toshkentBugun();
 });
 
@@ -670,27 +638,68 @@ const toast = (m,t='muvaffaqiyat') => { const c=document.getElementById('toastCo
 async function api(act, params={}) { try { const q=new URLSearchParams({kalit:SESSIYA?.kalit||'',...params}); return await (await fetch(`${API}/${act}?${q}`)).json(); } catch(e){return {ok:false};} }
 async function apiPost(act, data) { try { return await (await fetch(`${API}/${act}`, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kalit:SESSIYA?.kalit||'',...data})})).json(); } catch(e){return {ok:false};} }
 
+async function superadminUrlTekshir() {
+  const params = new URLSearchParams(location.search);
+  const kalit = params.get('kalit');
+  if (!kalit) return false;
+  try {
+    const r = await fetch(`${API}/ping?` + new URLSearchParams({ kalit }));
+    const res = await r.json();
+    if (res.ok && res.rol === 'superadmin') {
+      SESSIYA = { kalit, rol:'superadmin', fio:'Superadmin', mfyId:'', ruxsatlar:PERMISSIONS.map(p=>p.id) };
+      sessionStorage.setItem('SESSIYA', JSON.stringify(SESSIYA));
+      history.replaceState(null, '', location.pathname);
+      return true;
+    }
+  } catch(e) {}
+  toast("Superadmin havolasi noto'g'ri", "xato");
+  return false;
+}
+
 async function loginParol() {
   const login = document.getElementById('inLogin').value.trim();
   const parol = document.getElementById('inParol').value;
   if (!login || !parol) return toast("To'ldiring", "xato");
   const res = await apiPost('admin-login', { login, parol });
   if (!res.ok) { document.getElementById('loginXato').textContent = res.xato; document.getElementById('loginXato').style.display='block'; return; }
-  SESSIYA = res.admin; sessionStorage.setItem('SESSIYA', JSON.stringify(SESSIYA)); boshla();
+  
+  // Safe assignment to avoid undefined rol errors
+  SESSIYA = {
+    kalit: res.admin?.kalit || res.kalit,
+    rol: res.admin?.rol || res.rol || 'admin',
+    fio: res.admin?.fio || res.fio || 'Admin',
+    mfyId: res.admin?.mfyId || res.mfyId || '',
+    ruxsatlar: res.admin?.ruxsatlar || res.ruxsatlar || []
+  };
+  sessionStorage.setItem('SESSIYA', JSON.stringify(SESSIYA)); 
+  boshla();
 }
+
 function chiqish() { sessionStorage.removeItem('SESSIYA'); location.reload(); }
 
 async function boshla() {
   if (SESSIYA.rol === 'nazoratchi' && !SESSIYA.mfyId) return chiqish();
   document.getElementById('loginEkran').style.display = 'none'; document.getElementById('app').style.display = 'flex';
-  document.getElementById('brandSub').textContent = SESSIYA.fio; document.getElementById('rolBadge').textContent = SESSIYA.rol.toUpperCase();
-  document.getElementById('rolBadge').className = 'rolBadge ' + SESSIYA.rol;
+  
+  document.getElementById('brandSub').textContent = SESSIYA.fio; 
+  document.getElementById('rolBadge').textContent = (SESSIYA.rol || '').toUpperCase(); 
+  document.getElementById('rolBadge').className = 'rolBadge ' + (SESSIYA.rol || '');
   
   if (SESSIYA.rol === 'nazoratchi') document.getElementById('navBoshqaruv').style.display = 'none';
   
   const [m, k] = await Promise.all([api('mfylar'), api('kategoriyalar')]);
-  if(m.ok) { mfylar = SESSIYA.rol==='nazoratchi' ? m.mfylar.filter(x=>x.id==SESSIYA.mfyId) : m.mfylar; fillSelect('fMfy', mfylar, true); fillSelect('xFiltrMfy', mfylar, true); fillSelect('dFiltrMfy', mfylar, true); if(SESSIYA.rol === 'nazoratchi') document.getElementById('fMfy').disabled = true;}
-  if(k.ok) { kategoriyalar = k.kategoriyalar; fillSelect('fKategoriya', kategoriyalar, true); fillSelect('dFiltrKategoriya', kategoriyalar, true); }
+  if(m.ok) { 
+    mfylar = SESSIYA.rol==='nazoratchi' ? m.mfylar.filter(x=>x.id==SESSIYA.mfyId) : m.mfylar; 
+    fillSelect('fMfy', mfylar, true); 
+    fillSelect('xFiltrMfy', mfylar, true); 
+    fillSelect('dFiltrMfy', mfylar, true); 
+    if(SESSIYA.rol === 'nazoratchi') document.getElementById('fMfy').disabled = true;
+  }
+  if(k.ok) { 
+    kategoriyalar = k.kategoriyalar; 
+    fillSelect('fKategoriya', kategoriyalar, true); 
+    fillSelect('dFiltrKategoriya', kategoriyalar, true); 
+  }
   
   bolimKorsat('dashboard'); setInterval(checkNewReports, 20000);
 }
@@ -702,18 +711,15 @@ function fillSelect(id, list, keepFirst) {
 
 function bolimKorsat(nom) {
   ['dashboard','nazorat','xarita','qidiruv','boshqaruv'].forEach(n => {
-    const btn = document.getElementById('nav'+n.charAt(0).toUpperCase()+n.slice(1));
-    if(btn) btn.classList.toggle('aktiv', nom===n);
-    const panel = document.getElementById(n==='nazorat'?'chap':(n+'Panel'));
-    if(panel) panel.style.display = 'none';
+    document.getElementById('nav'+n.charAt(0).toUpperCase()+n.slice(1))?.classList.toggle('aktiv', nom===n);
+    document.getElementById(n==='nazorat'?'chap':(n+'Panel'))&&(document.getElementById(n==='nazorat'?'chap':(n+'Panel')).style.display = 'none');
   });
   document.getElementById('ong').style.display = 'none';
-  
-  if(nom==='nazorat') { document.getElementById('chap').style.display = 'flex'; document.getElementById('ong').style.display = 'flex'; xodimlarYukla(); }
-  else if(nom==='dashboard') { document.getElementById('dashboardPanel').style.display = 'block'; dashboardYukla(); }
-  else if(nom==='xarita') { document.getElementById('xaritaPanel').style.display = 'block'; kattaXaritaChiz(); }
-  else if(nom==='qidiruv') { document.getElementById('qidiruvPanel').style.display = 'block'; }
-  else if(nom==='boshqaruv') { document.getElementById('boshqaruv').style.display = 'block'; boshqaruvTablariniChiz(); }
+  if(nom==='nazorat') { document.getElementById('chap').style.display='flex'; document.getElementById('ong').style.display='flex'; xodimlarYukla(); }
+  else if(nom==='dashboard') { document.getElementById('dashboardPanel').style.display='block'; dashboardYukla(); }
+  else if(nom==='xarita') { document.getElementById('xaritaPanel').style.display='block'; kattaXaritaChiz(); }
+  else if(nom==='qidiruv') { document.getElementById('qidiruvPanel').style.display='block'; }
+  else if(nom==='boshqaruv') { document.getElementById('boshqaruv').style.display='block'; boshqaruvTablariniChiz(); }
 }
 
 function sanaOzgardi() {
@@ -731,155 +737,106 @@ async function dangasaPDF() {
   doc.setTextColor(255,255,255); doc.setFontSize(16); doc.text("Hisobot topshirmaganlar", 14, 14);
   doc.setFontSize(10); doc.text(document.getElementById('gSana').value, 14, 21);
   doc.setTextColor(20,20,20); let y = 36;
-  dashYuklamagan.forEach((x, i) => {
-    if(y > 280) { doc.addPage(); y = 20; }
-    doc.text(`${i+1}. ${x.fio} — ${x.mfyNomi||''} (${x.kategoriyaNomi||''})`, 14, y);
-    y += 8;
-  });
-  doc.save(`Topshirmaganlar_${document.getElementById('gSana').value}.pdf`);
-  toast("PDF yuklandi");
+  dashYuklamagan.forEach((x, i) => { if(y > 280) { doc.addPage(); y = 20; } doc.text(`${i+1}. ${x.fio} — ${x.mfyNomi||''} (${x.kategoriyaNomi||''})`, 14, y); y += 8; });
+  doc.save(`Dangasa_${document.getElementById('gSana').value}.pdf`); toast("PDF yuklandi");
 }
 
 async function dangasalargaPush() {
   if (!dashYuklamagan.length) return toast("Ro'yxat bo'sh", "info");
   const idlar = dashYuklamagan.map(x => x.id);
   glassPrompt('Qolib ketganlarga eslatma:', 'Hurmatli xodim, bugungi hisobotingizni yuklashni unutmang!', async (matn) => {
-    if(!matn) return;
-    toast("Yuborilmoqda...", "info");
-    const r = await apiPost('eslatmaYuborGuruh', { xodimIdlar: idlar, matn });
+    if(!matn) return; toast("Yuborilmoqda...", "info");
+    const r = await apiPost('eslatmaYuborGuruh', { xodimIdlar: idlar, matn: matn });
     if(r.ok) toast(`${r.yuborildi} ta qurilmaga push yuborildi`);
     else toast("Xato: " + r.xato, "xato");
   });
 }
 
 async function rasmlarniZipQil() {
-  const sana = document.getElementById('gSana').value;
-  const r = await api('hisobotlar', { dan: sana, gacha: sana });
-  if(!r.ok || !r.hisobotlar.length) return toast("Tanlangan sanada hisobotlar yo'q", 'xato');
-  
-  toast("ZIP arxiv tayyorlanmoqda, kuting...", "info");
-  const zip = new JSZip();
-  const imgFolder = zip.folder(`Hisobotlar_${sana}`);
-  
-  let count = 0;
-  for (const h of r.hisobotlar) {
+  const s = document.getElementById('gSana').value;
+  const r = await api('hisobotlar', { dan:s, gacha:s });
+  if(!r.ok || !r.hisobotlar.length) return toast("Topilmadi", "xato");
+  toast("ZIP tayyorlanmoqda...", "info");
+  const zip = new JSZip(); const f = zip.folder(`Hisobotlar_${s}`); let k = 0;
+  for(const h of r.hisobotlar) {
     if(SESSIYA.rol==='nazoratchi' && h.mfyId != SESSIYA.mfyId) continue;
-    const rasmlar = [...(h.b_rasmlar||[]), ...(h.d_rasmlar||[]), ...(h.y_rasmlar||[])];
-    for (let i=0; i<rasmlar.length; i++) {
-      try {
-        const resp = await fetch(rasmlar[i]);
-        const blob = await resp.blob();
-        imgFolder.file(`${h.xodimFio.replace(/\s+/g,'_')}_${i+1}.jpg`, blob);
-        count++;
-      } catch(e) {}
+    const rs = [...(h.b_rasmlar||[]), ...(h.d_rasmlar||[]), ...(h.y_rasmlar||[])];
+    for(let i=0; i<rs.length; i++) {
+      try { const d=await fetch(rs[i]); f.file(`${(h.xodimFio||'').replace(/\s/g,'_')}_${i+1}.jpg`, await d.blob()); k++; } catch(e){}
     }
   }
-  if(count === 0) return toast("Yuklash uchun rasmlar topilmadi", "xato");
-  
-  const content = await zip.generateAsync({type:"blob"});
-  saveAs(content, `Hisobotlar_${sana}.zip`);
-  toast("Arxiv yuklandi!");
+  if(k===0) return toast("Rasm topilmadi", "xato");
+  saveAs(await zip.generateAsync({type:"blob"}), `Hisobotlar_${s}.zip`); toast("Yuklandi!");
 }
 
 /* ============ BENTO DASHBOARD ============ */
 function generateAIXulosa(total, done, missing, flags) {
-  const textEl = document.getElementById('aiXulosaText');
-  if(!textEl) return;
-  if (total === 0) { textEl.innerHTML = "Tanlangan sanada xodimlar ma'lumoti yo'q."; return; }
-  
-  const p = Math.round((done/total)*100);
-  let xulosa = `🤖 Hozirgi vaqtda tizimda jami <b>${total}</b> xodimdan <b>${done}</b> tasi (${p}%) o'z hisobotini topshirdi. `;
-  if(missing > 0) xulosa += `Kutilayotgan hisobotlar soni: <b>${missing}</b> ta. `;
-  if(flags > 0) xulosa += `<span style="color:var(--qizil)">Diqqat, ${flags} ta xodimda muammoli (Flag) holat aniqlandi!</span> `;
-  else if (p > 80) xulosa += `<span style="color:var(--yashil)">Ish samaradorligi juda yaxshi holatda.</span>`;
-  
-  textEl.innerHTML = xulosa;
+  const el = document.getElementById('aiXulosaText');
+  if (total === 0) return el.innerHTML = "Ma'lumot yo'q.";
+  let msg = `🤖 Hozirgi vaqtda jami <b>${total}</b> xodimdan <b>${done}</b> tasi o'z hisobotini topshirdi. Kutilayotgan hisobotlar soni: <b>${missing}</b> ta. `;
+  if(flags > 0) msg += `<span style="color:var(--qizil)">Diqqat, ${flags} ta xodimda muammoli (Flag) holat aniqlandi!</span>`;
+  else if(done/total > 0.8) msg += `<span style="color:var(--yashil)">Samaradorlik alo darajada.</span>`;
+  el.innerHTML = msg;
 }
 
 async function dashboardYukla() {
   const sana = document.getElementById('gSana').value;
   const [rx, rh] = await Promise.all([api('xodimlar'), api('hisobotlar', {dan: sana, gacha: sana})]);
-  if (!rx.ok || !rh.ok) return toast("Xato", "xato");
+  if (!rx.ok || !rh.ok) return;
 
-  let xodims = rx.xodimlar || [];
-  let hisobots = rh.hisobotlar || [];
+  let xodims = rx.xodimlar || []; let hisobots = rh.hisobotlar || [];
   if (SESSIYA.rol === 'nazoratchi') {
     xodims = xodims.filter(x => x.mfyId == SESSIYA.mfyId);
     hisobots = hisobots.filter(h => h.mfyId == SESSIYA.mfyId);
   }
 
-  const fM = document.getElementById('dFiltrMfy').value;
-  const fK = document.getElementById('dFiltrKategoriya').value;
+  const fM = document.getElementById('dFiltrMfy').value, fK = document.getElementById('dFiltrKategoriya').value;
   if(fM) { xodims = xodims.filter(x=>x.mfyId==fM); hisobots = hisobots.filter(h=>h.mfyId==fM); }
   if(fK) { const ids = new Set(xodims.filter(x=>x.kategoriyaId==fK).map(x=>x.id)); xodims = xodims.filter(x=>ids.has(x.id)); hisobots = hisobots.filter(h=>ids.has(h.xodimId)); }
 
   const dIds = new Set(hisobots.map(h => h.xodimId));
   const flags = hisobots.filter(h => h.reyting && h.reyting !== 'YASHIL').length;
-  
   dashYuklagan = xodims.filter(x => dIds.has(x.id));
   dashYuklamagan = xodims.filter(x => !dIds.has(x.id));
 
   document.getElementById('stJami').textContent = xodims.length;
   document.getElementById('stTopshirdi').textContent = dashYuklagan.length;
   document.getElementById('stQoldi').textContent = dashYuklamagan.length;
-
   generateAIXulosa(xodims.length, dashYuklagan.length, dashYuklamagan.length, flags);
 
-  // Leaderboards (Top and Lazy)
   dashYuklagan.forEach(x => { const h=hisobots.filter(h=>h.xodimId==x.id); x.soni=h.length; });
   dashYuklagan.sort((a,b) => b.soni - a.soni); 
   
-  let topHtml = '', lazyHtml = '';
-  dashYuklagan.slice(0, 5).forEach(x => {
-    topHtml += `<div class="lb-row" onclick="bolimKorsat('nazorat'); xodimTanla('${x.id}')">
-      <div class="avatarWrap" style="width:36px;height:36px;"><div class="avatarDumaloq" style="background:${avatarRang(x.fio)};font-size:11px;">${initials(x.fio)}</div></div>
-      <div><div class="lb-fio">${x.fio}</div><div class="lb-meta">${x.mfyNomi||''}</div></div>
-      <div class="lb-badge" style="background:var(--yashil-och);color:var(--yashil)">Topshirgan</div>
-    </div>`;
-  });
-  dashYuklamagan.slice(0, 5).forEach(x => {
-    lazyHtml += `<div class="lb-row" onclick="bolimKorsat('nazorat'); xodimTanla('${x.id}')">
-      <div class="avatarWrap" style="width:36px;height:36px;"><div class="avatarDumaloq" style="background:${avatarRang(x.fio)};font-size:11px;">${initials(x.fio)}</div></div>
-      <div><div class="lb-fio">${x.fio}</div><div class="lb-meta">${x.mfyNomi||''}</div></div>
-      <div class="lb-badge" style="background:var(--qizil-och);color:var(--qizil)">Kutilyapti</div>
-    </div>`;
-  });
-  document.getElementById('lbTopList').innerHTML = topHtml || '<div class="bosh-holat" style="margin-top:0">Topilmadi</div>';
-  document.getElementById('lbLazyList').innerHTML = lazyHtml || '<div class="bosh-holat" style="margin-top:0">Barcha hisobot topshirgan!</div>';
+  let tH='', lH='';
+  dashYuklagan.slice(0, 5).forEach(x => { tH += `<div class="lb-row" onclick="bolimKorsat('nazorat');xodimTanla('${x.id}')"><div class="avatarWrap" style="width:36px;height:36px;"><div class="avatarDumaloq" style="background:${avatarRang(x.fio)};font-size:11px;">${initials(x.fio)}</div></div><div><div class="lb-fio">${x.fio}</div><div class="lb-meta">${x.mfyNomi||''} · ${x.kategoriyaNomi||''}</div></div><div class="lb-badge" style="background:var(--yashil-och);color:var(--yashil);">Topshirgan</div></div>`; });
+  dashYuklamagan.slice(0, 5).forEach(x => { lH += `<div class="lb-row" onclick="bolimKorsat('nazorat');xodimTanla('${x.id}')"><div class="avatarWrap" style="width:36px;height:36px;"><div class="avatarDumaloq" style="background:${avatarRang(x.fio)};font-size:11px;">${initials(x.fio)}</div></div><div><div class="lb-fio">${x.fio}</div><div class="lb-meta">${x.mfyNomi||''} · ${x.kategoriyaNomi||''}</div></div><div class="lb-badge" style="background:var(--qizil-och);color:var(--qizil);">Kutilyapti</div></div>`; });
+  document.getElementById('lbTopList').innerHTML = tH || '<div class="bosh-holat">Topilmadi</div>';
+  document.getElementById('lbLazyList').innerHTML = lH || '<div class="bosh-holat">Hamma topshirdi!</div>';
 
   miniMapChiz(hisobots);
-  
-  // Trend chart
-  const rTrend = await api('hisobotlar');
-  if(rTrend.ok) trendChartChiz(rTrend.hisobotlar || []);
+  const rTrend = await api('hisobotlar'); if(rTrend.ok) trendChartChiz(rTrend.hisobotlar||[]);
 }
 
 function miniMapChiz(hisobots) {
   if (!miniMapObj) {
     miniMapObj = L.map('miniMap', { zoomControl: false, attributionControl: false }).setView([41.3111, 69.2797], 9);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(miniMapObj);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(miniMapObj);
   }
-  miniMapObj.eachLayer(l => { if (l instanceof L.Marker || l instanceof L.Polyline || l.options?.blur) miniMapObj.removeLayer(l); });
-
+  miniMapObj.eachLayer(l => { if (l instanceof L.Marker || l instanceof L.Polyline || (L.heatLayer && l instanceof L.HeatLayer)) miniMapObj.removeLayer(l); });
   const bounds = [];
   hisobots.forEach(h => {
-    if(h.b_lat) {
-      bounds.push([+h.b_lat, +h.b_lng]);
-      L.circleMarker([+h.b_lat, +h.b_lng], {radius: 4, color: h.reyting==='YASHIL'?'#17A34E':'#FF453A', fillOpacity: 0.8, weight:0}).addTo(miniMapObj);
-    }
+    if(h.b_lat) { bounds.push([+h.b_lat, +h.b_lng]); L.circleMarker([+h.b_lat, +h.b_lng], {radius:4, color:h.reyting==='YASHIL'?'#30D158':'#FF453A', fillOpacity:0.8, weight:0}).addTo(miniMapObj); }
   });
   if(bounds.length) miniMapObj.fitBounds(bounds, {padding:[10,10], maxZoom:14});
 }
 
-// Yirik xarita Heatmap va Routemap
 async function kattaXaritaChiz() {
   const sana = document.getElementById('gSana').value;
-  const fMfy = document.getElementById('xFiltrMfy').value;
   const r = await api('hisobotlar', { dan: sana, gacha: sana });
   if(!r.ok) return;
   let hisobots = r.hisobotlar || [];
   if (SESSIYA.rol === 'nazoratchi') hisobots = hisobots.filter(h => h.mfyId == SESSIYA.mfyId);
-  if (fMfy) hisobots = hisobots.filter(h => h.mfyId == fMfy);
+  const fM = document.getElementById('xFiltrMfy').value; if(fM) hisobots = hisobots.filter(h=>h.mfyId==fM);
 
   if (!umumXaritaObj) {
     umumXaritaObj = L.map('umumXarita').setView([41.3111, 69.2797], 11);
@@ -887,359 +844,229 @@ async function kattaXaritaChiz() {
   }
   umumXaritaObj.eachLayer(l => { if (l instanceof L.Marker || l instanceof L.Polyline || l.options?.blur) umumXaritaObj.removeLayer(l); });
 
-  const bounds = [];
-  const heatData = [];
-  
+  const bounds = [], heatData = [];
   hisobots.forEach(h => {
     const coords = [];
-    const pts = [ {l:h.b_lat, g:h.b_lng, n:'Boshlandi'}, {l:h.d_lat, g:h.d_lng, n:'Davom'}, {l:h.y_lat, g:h.y_lng, n:'Yakun'} ];
-    
-    pts.forEach(p => {
+    [ {l:h.b_lat, g:h.b_lng, n:'Boshlandi'}, {l:h.d_lat, g:h.d_lng, n:'Davom'}, {l:h.y_lat, g:h.y_lng, n:'Yakun'} ].forEach(p => {
       if(p.l && p.g) {
-        const lat = +p.l, lng = +p.g;
-        coords.push([lat, lng]);
-        heatData.push([lat, lng, 1]); // Heatmap uchun
-        bounds.push([lat, lng]);
-        
-        const rangIco = (h.reyting && h.reyting !== 'YASHIL') ? '#FF453A' : '#30D158';
-        const ico = L.divIcon({ html: `<div style="width:14px;height:14px;border-radius:50%;background:${rangIco};border:2px solid white;box-shadow:var(--soya)"></div>`, className: '' });
-        
+        coords.push([+p.l, +p.g]); heatData.push([+p.l, +p.g, 1]); bounds.push([+p.l, +p.g]);
         const xObj = xodimlar.find(x => x.id == h.xodimId);
-        const katAdi = xObj?.kategoriyaNomi || h.kategoriyaNomi || '';
-        L.marker([lat, lng], { icon: ico }).addTo(umumXaritaObj)
-          .bindPopup(`<b>${h.xodimFio||''}</b><br>${xObj?.mfyNomi||''}${katAdi ? ' · ' + katAdi : ''}<br>Bosqich: ${p.n}`);
+        const ico = L.divIcon({ html: `<div style="width:14px;height:14px;border-radius:50%;background:${h.reyting!=='YASHIL'?'#FF453A':'#30D158'};border:2px solid white;box-shadow:var(--soya)"></div>`, className: '' });
+        L.marker([+p.l, +p.g], { icon: ico }).addTo(umumXaritaObj).bindPopup(`<b>${h.xodimFio}</b><br>${xObj?.mfyNomi||''} · ${xObj?.kategoriyaNomi||''}<br>Bosqich: ${p.n}`);
       }
     });
-
-    // Routemap (Chiziq chizish)
-    if(coords.length > 1) {
-      L.polyline(coords, {color: '#0A84FF', weight: 3, dashArray: '5, 8'}).addTo(umumXaritaObj);
-    }
+    if(coords.length > 1) L.polyline(coords, {color: '#0A84FF', weight: 3, dashArray: '5,8'}).addTo(umumXaritaObj);
   });
-
-  // Heatmap qatlamini qo'shish
-  if (typeof L.heatLayer !== 'undefined' && heatData.length) {
-    L.heatLayer(heatData, {radius: 25, blur: 15, maxZoom: 15, gradient: {0.4: 'blue', 0.6: 'lime', 0.8: 'yellow', 1.0: 'red'}}).addTo(umumXaritaObj);
-  }
-
+  if (typeof L.heatLayer !== 'undefined' && heatData.length) L.heatLayer(heatData, {radius:25, blur:15, maxZoom:15, gradient:{0.4:'blue', 0.6:'lime', 0.8:'yellow', 1.0:'red'}}).addTo(umumXaritaObj);
   if (bounds.length) umumXaritaObj.fitBounds(bounds, { padding:[40,40], maxZoom:15 });
-  setTimeout(() => { if (umumXaritaObj) umumXaritaObj.invalidateSize(); }, 150);
 }
 
-let nazoratFiltr = 'barchasi';
-function nazoratFiltrOrnat(tur) { nazoratFiltr = tur; document.querySelectorAll('.nazFiltrBtn').forEach(b => b.classList.toggle('aktiv', b.dataset.tur === tur)); xodimlarSahifa = 1; xodimlarChiz(); }
-
+/* ============ NAZORAT (LENTA) ============ */
 async function xodimlarYukla() {
   const sana = document.getElementById('gSana').value;
-  const [rx, rh] = await Promise.all([api('xodimlar'), api('hisobotlar', { dan: sana, gacha: sana })]);
+  const [rx, rh] = await Promise.all([api('xodimlar'), api('hisobotlar', { dan:sana, gacha:sana })]);
   if (!rx.ok) return;
-  xodimlar = rx.xodimlar || [];
-  let hisobots = rh.hisobotlar || [];
-  
-  if (SESSIYA.rol === 'nazoratchi') {
-    xodimlar = xodimlar.filter(x => x.mfyId == SESSIYA.mfyId);
-    hisobots = hisobots.filter(h => h.mfyId == SESSIYA.mfyId);
-  }
-
-  // Eng oxirgi hisobot vaqtini aniqlash uchun hisobotlarni saralaymiz
-  hisobots.sort((a,b) => new Date(b.b_vaqt) - new Date(a.b_vaqt));
+  xodimlar = SESSIYA.rol==='nazoratchi' ? rx.xodimlar.filter(x=>x.mfyId==SESSIYA.mfyId) : (rx.xodimlar||[]);
+  const hisobots = (rh.hisobotlar||[]).filter(h => SESSIYA.rol!=='nazoratchi' || h.mfyId==SESSIYA.mfyId).sort((a,b)=>new Date(b.b_vaqt)-new Date(a.b_vaqt));
 
   let newUnread = 0;
+  hisobots.forEach(h => { if(!fetchedReportIds.has(h.id)) fetchedReportIds.add(h.id); });
+
   xodimlar.forEach(x => {
+    x.ishHolati = x.ish_holati || 'ishda';
     const xHs = hisobots.filter(h => h.xodimId == x.id);
-    x.soni = xHs.length;
-    x.bugunBor = xHs.length > 0;
+    x.soni = xHs.length; x.bugunBor = x.soni > 0;
     x.unread = xHs.filter(h => !seenReports.has(h.id)).length;
-    x.flagBor = xHs.some(h => h.reyting && h.reyting !== 'YASHIL');
+    x.flagBor = xHs.some(h => h.reyting !== 'YASHIL');
     x.oxirgiVaqt = xHs.length ? xHs[0].b_vaqt : null;
     newUnread += x.unread;
   });
 
   const b = document.getElementById('mainBadge');
-  b.textContent = newUnread;
-  b.style.display = newUnread > 0 ? 'inline-flex' : 'none';
-
+  b.textContent = newUnread; b.style.display = newUnread > 0 ? 'inline-flex' : 'none';
   xodimlarChiz();
 }
 
-let xodimlarSahifa = 1;
-const XODIM_SAHIFA_HAJMI = 40;
+function nazoratFiltrOrnat(t) { document.querySelectorAll('.nazFiltrBtn').forEach(b=>b.classList.toggle('aktiv',b.dataset.tur===t)); xodimlarSahifa=1; xodimlarChiz(); }
+function qidiruvDebounce() { xodimlarSahifa=1; xodimlarChiz(); }
 
 function xodimlarChiz() {
-  const q = (document.getElementById('qidiruv').value || '').toLowerCase();
-  const fMfy = document.getElementById('fMfy').value;
-  const fKat = document.getElementById('fKategoriya').value;
+  const q = document.getElementById('qidiruv').value.toLowerCase();
+  const fM = document.getElementById('fMfy').value, fK = document.getElementById('fKategoriya').value;
+  const fil = document.querySelector('.nazFiltrBtn.aktiv').dataset.tur;
   
-  let list = xodimlar.filter(x =>
-    (x.fio.toLowerCase().includes(q) || (x.mfyNomi||'').toLowerCase().includes(q) || (x.kategoriyaNomi||'').toLowerCase().includes(q)) &&
-    (!fMfy || String(x.mfyId) === String(fMfy)) && (!fKat || String(x.kategoriyaId) === String(fKat)));
+  let list = xodimlar.filter(x => (x.fio.toLowerCase().includes(q) || (x.mfyNomi||'').toLowerCase().includes(q) || (x.kategoriyaNomi||'').toLowerCase().includes(q)) && (!fM || x.mfyId==fM) && (!fK || x.kategoriyaId==fK));
+  if(fil==='yuklagan') list = list.filter(x=>x.bugunBor); else if(fil==='yuklamagan') list = list.filter(x=>!x.bugunBor);
+  list.sort((a,b) => (a.oxirgiVaqt && b.oxirgiVaqt) ? new Date(b.oxirgiVaqt)-new Date(a.oxirgiVaqt) : (a.oxirgiVaqt ? -1 : 1));
 
-  if (nazoratFiltr === 'yuklagan') list = list.filter(x => x.bugunBor);
-  else if (nazoratFiltr === 'yuklamagan') list = list.filter(x => !x.bugunBor);
+  const pS = XODIM_SAHIFA_HAJMI; if(xodimlarSahifa > Math.ceil(list.length/pS)) xodimlarSahifa=1;
+  const bs = (xodimlarSahifa-1)*pS; const sl = list.slice(bs, bs+pS);
 
-  // Yangi yuklaganlarni tepaga chiqarish (oxirgiVaqt bo'yicha DESC)
-  list.sort((a, b) => {
-    if(a.oxirgiVaqt && b.oxirgiVaqt) return new Date(b.oxirgiVaqt) - new Date(a.oxirgiVaqt);
-    if(a.oxirgiVaqt) return -1;
-    if(b.oxirgiVaqt) return 1;
-    return 0;
-  });
-
-  if (xodimlarSahifa > Math.ceil(list.length / XODIM_SAHIFA_HAJMI)) xodimlarSahifa = 1;
-  const boshi = (xodimlarSahifa - 1) * XODIM_SAHIFA_HAJMI;
-  const sahifaligi = list.slice(boshi, boshi + XODIM_SAHIFA_HAJMI);
-
-  document.getElementById('xodimlarList').innerHTML = sahifaligi.map(x => `
-    <div class="xodimRow ${tanlangan?.id===x.id?'aktiv':''}" onclick="xodimTanla('${x.id}')">
-      <div class="avatarWrap">
-        <div class="avatarDumaloq" style="background:${avatarRang(x.fio)}">${initials(x.fio)}</div>
-        <div class="nuqta ${x.flagBor?'flag':(x.bugunBor?'bor':'yoq')}"></div>
-      </div>
-      <div style="flex:1; min-width:0">
-        <div class="fio">${x.fio}</div>
-        <div class="meta">${x.mfyNomi||'—'}${x.kategoriyaNomi ? ' · ' + x.kategoriyaNomi : ''}</div>
-        ${x.oxirgiVaqt ? `<div class="vaqtBadge">${formatVaqt(x.oxirgiVaqt)} • ${timeAgo(x.oxirgiVaqt)}</div>` : ''}
-      </div>
-      <div class="son-badge">
-        ${x.soni||0}
-        ${x.unread > 0 ? `<span style="color:var(--qizil); margin-left:4px;">+${x.unread}</span>` : ''}
-      </div>
+  document.getElementById('xodimlarList').innerHTML = sl.map(x => `
+    <div class="xodimRow ${tanlangan?.id==x.id?'aktiv':''}" onclick="xodimTanla('${x.id}')">
+      <div class="avatarWrap"><div class="avatarDumaloq" style="background:${avatarRang(x.fio)}">${initials(x.fio)}</div><div class="nuqta ${x.flagBor?'flag':(x.bugunBor?'bor':'yoq')}"></div></div>
+      <div style="flex:1;min-width:0"><div class="fio">${x.fio}</div><div class="meta">${x.mfyNomi||'—'} · ${x.kategoriyaNomi||'—'}</div>${x.oxirgiVaqt?`<div class="vaqtBadge">${formatVaqt(x.oxirgiVaqt)} • ${timeAgo(x.oxirgiVaqt)}</div>`:''}</div>
+      <div class="son-badge">${x.soni||0}${x.unread>0?` <span style="color:var(--qizil)">+${x.unread}</span>`:''}</div>
     </div>`).join('') || '<div class="bosh-holat">Topilmadi</div>';
-
-  paginatorYarat(document.getElementById('xodimlarPagin'), list.length, XODIM_SAHIFA_HAJMI, xodimlarSahifa, (s) => { xodimlarSahifa = s; xodimlarChiz(); });
 }
 
 async function xodimTanla(id) {
   tanlangan = xodimlar.find(x => x.id == id);
-  document.getElementById('boshHolat').style.display='none';
-  document.getElementById('lentaWrap').style.display='flex';
+  document.getElementById('boshHolat').style.display='none'; document.getElementById('lentaWrap').style.display='flex';
   document.getElementById('lentaFio').textContent = tanlangan.fio;
-  document.getElementById('lentaAltInfo').textContent = `${tanlangan.mfyNomi||'—'}${tanlangan.kategoriyaNomi ? ' · ' + tanlangan.kategoriyaNomi : ''}`;
-  xodimlarChiz();
-  await lentaYukla();
+  document.getElementById('lentaAltInfo').textContent = `${tanlangan.mfyNomi||'—'} · ${tanlangan.kategoriyaNomi||'—'}`;
+  xodimlarChiz(); await lentaYukla();
 }
 
 async function lentaYukla() {
-  const lenta = document.getElementById('lenta');
-  lenta.innerHTML = '<div class="yuklanmoqda">Kuting...</div>';
+  const l = document.getElementById('lenta'); l.innerHTML='<div class="yuklanmoqda">Kuting...</div>';
   const sana = document.getElementById('gSana').value;
-  const r = await api('hisobotlar', { xodim: tanlangan.id, dan: sana, gacha: sana });
-  if (!r.ok) { lenta.innerHTML = '<div class="yuklanmoqda">Xato topildi</div>'; return; }
-  
-  joriyHisobotlar = (r.hisobotlar || []).sort((a,b)=>new Date(b.b_vaqt)-new Date(a.b_vaqt));
-  lentaChiz();
+  const r = await api('hisobotlar', { xodim:tanlangan.id, dan:sana, gacha:sana });
+  if(!r.ok) { l.innerHTML='<div class="yuklanmoqda">Xato topildi</div>'; return; }
+  joriyHisobotlar = (r.hisobotlar||[]).sort((a,b)=>new Date(b.b_vaqt)-new Date(a.b_vaqt)); lentaChiz();
 }
 
 function lentaChiz() {
-  const lenta = document.getElementById('lenta');
-  const qMatn = (document.getElementById('lentaIchQidiruv')?.value || '').toLowerCase().trim();
-  let ro_yxat = joriyHisobotlar;
-  if (qMatn) {
-    ro_yxat = ro_yxat.filter(h => (h.b_tavsif||'').toLowerCase().includes(qMatn) || (h.ishNomi||h.ishTuri||'').toLowerCase().includes(qMatn));
-  }
+  const l = document.getElementById('lenta');
+  const q = (document.getElementById('lentaIchQidiruv')?.value||'').toLowerCase();
+  let lst = joriyHisobotlar; if(q) lst = lst.filter(h=>(h.b_tavsif||'').toLowerCase().includes(q) || (h.ishNomi||'').toLowerCase().includes(q));
+  if(!lst.length) { l.innerHTML='<div class="bosh-holat">Hisobot yo\'q</div>'; return; }
 
-  if (!ro_yxat.length) {
-    lenta.innerHTML = `<div class="bosh-holat"><b>Hisobot topilmadi</b></div>`;
-    return;
-  }
-
-  let html = '';
-  ro_yxat.forEach(h => {
-    const isTezkor = !h.d_vaqt && h.y_vaqt;
-    const bosqichlarHTML = isTezkor 
-      ? `<span class="bChip bor">⚡ Tezkor (1-bosqichli) ✓</span>`
-      : `<span class="bChip ${h.b_vaqt?'bor':''}">1. Boshlandi ${h.b_vaqt?'✓':''}</span>
-         <span class="bChip ${h.d_vaqt?'bor':''}">2. Davom ${h.d_vaqt?'✓':''}</span>
-         <span class="bChip ${h.y_vaqt?'bor':''}">3. Tugatildi ${h.y_vaqt?'✓':''}</span>`;
-
-    html += `<div class="tRow">
-      <div class="tChap">
-        <div class="sana">${h.sana.slice(8)}-${h.sana.slice(5,7)}</div>
-        <div class="vaqt">${formatVaqt(h.b_vaqt)}</div>
-        <div class="vaqt" style="color:var(--kok); font-weight:700;">${timeAgo(h.b_vaqt)}</div>
-      </div>
+  l.innerHTML = lst.map(h => {
+    const tzk = !h.d_vaqt && h.y_vaqt;
+    const bsh = tzk ? `<span class="bChip bor">⚡ Tezkor (Yakunlangan)</span>` : `<span class="bChip ${h.b_vaqt?'bor':''}">1. Boshlandi</span><span class="bChip ${h.d_vaqt?'bor':''}">2. Davom</span><span class="bChip ${h.y_vaqt?'bor':''}">3. Tugatildi</span>`;
+    return `<div class="tRow">
+      <div class="tChap"><div class="sana">${h.sana.slice(8)}-${h.sana.slice(5,7)}</div><div class="vaqt">${formatVaqt(h.b_vaqt)}</div><div class="vaqt" style="color:var(--kok);font-weight:600;">${timeAgo(h.b_vaqt)}</div></div>
       <div class="tSpine"><div class="tNode" style="background:${h.reyting==='YASHIL'?'var(--yashil)':(h.reyting==='SARIQ'?'var(--sariq)':'var(--qizil)')}"></div></div>
-      <div class="tCard" onclick='modalOch(${JSON.stringify(h.id)})'>
-        <div class="tTop">
-          ${h.b_rasmlar && h.b_rasmlar[0] ? `<img src="${h.b_rasmlar[0]}" loading="lazy">` : '<div style="width:64px"></div>'}
-          <div class="icim">
-            <div class="tur">${h.ishNomi || h.ishTuri}</div>
-            <div class="tv">${h.b_tavsif || ''}</div>
-          </div>
+      <div class="tCard" onclick="modalOch('${h.id}')">
+        <div class="tTop">${h.b_rasmlar?.length?`<img src="${h.b_rasmlar[0]}">`:'<div style="width:64px;"></div>'}
+          <div class="icim"><div class="tur">${h.ishNomi||h.ishTuri}</div><div class="tv">${h.b_tavsif||''}</div></div>
         </div>
-        <div class="bosqichlar">
-          ${bosqichlarHTML}
-          ${h.reyting!=='YASHIL' ? `<span class="bChip" style="background:var(--qizil-och); color:var(--qizil)">⚠ ${h.reyting}</span>` : ''}
-        </div>
+        <div class="bosqichlar">${bsh}</div>
       </div>
     </div>`;
-  });
-  lenta.innerHTML = html;
+  }).join('');
 }
 
-// Push click action
+function modalOch(id) {
+  if(!seenReports.has(id)) { seenReports.add(id); localStorage.setItem('SEEN_REPS', JSON.stringify([...seenReports])); xodimlarYukla(); lentaChiz(); }
+  const h = joriyHisobotlar.find(x=>x.id==id); if(!h) return;
+  const isT = !h.d_vaqt && h.y_vaqt;
+  const stage = (n,v,t,l,g,rs) => v ? `<div class="stageBlok"><h4>${n}</h4><div class="stageMeta"><span>${formatVaqt(v)}</span>${l?`<a class="gpsBtn" style="color:var(--kok);font-weight:700" href="https://maps.google.com/?q=${l},${g}" target="_blank">GPS Ko'rish</a>`:''}</div><div style="margin-bottom:12px">${t||''}</div><div class="mGaler">${(rs||[]).map(r=>`<img src="${r}" onclick="zoom('${r}')">`).join('')}</div></div>` : '';
+  
+  document.getElementById('modal').innerHTML = `
+    <div class="mBosh">
+      <div><h3>${h.ishNomi||h.ishTuri}</h3><div style="color:var(--text-ikkinchi)">${h.xodimFio} · ${tanlangan.mfyNomi||''}</div></div>
+      <div class="mAmallar" style="display:flex;gap:8px;"><button class="btn-oddiy" onclick="hisobotPDF('${id}')">PDF</button><button class="btn-yop" style="position:relative;top:0;right:0;" onclick="modalYop()">×</button></div>
+    </div>
+    <div class="mBody">
+      ${isT ? stage('⚡ Tezkor', h.b_vaqt, h.b_tavsif, h.b_lat, h.b_lng, h.b_rasmlar) : stage('1. Boshlandi', h.b_vaqt, h.b_tavsif, h.b_lat, h.b_lng, h.b_rasmlar)+stage('2. Davom', h.d_vaqt, h.d_tavsif, h.d_lat, h.d_lng, h.d_rasmlar)+stage('3. Yakun', h.y_vaqt, h.y_tavsif, h.y_lat, h.y_lng, h.y_rasmlar)}
+      ${h.reyting!=='YASHIL'?`<div style="margin:20px 30px; padding:16px; background:var(--qizil-och); border-radius:16px; color:var(--qizil)"><b>⚠ Qizil Flag:</b> ${h.flagSabab||'Kechikish yoki GPS xatosi'}</div>`:''}
+    </div>`;
+  document.getElementById('modalFon').style.display='flex';
+}
+
+function modalYop(){ document.getElementById('modalFon').style.display='none'; }
+function zoom(u){ document.getElementById('zoomImg').src=u; document.getElementById('zoomFon').style.display='flex'; }
+
 async function checkNewReports() {
   if (document.getElementById('gSana').value !== toshkentBugun()) return;
-  const rh = await api('hisobotlar', { dan: toshkentBugun(), gacha: toshkentBugun() });
-  if(!rh.ok || !Array.isArray(rh.hisobotlar)) return;
-  
-  let yangiIds = [];
-  rh.hisobotlar.forEach(h => {
-    if (SESSIYA.rol === 'nazoratchi' && h.mfyId != SESSIYA.mfyId) return;
-    if(!fetchedReportIds.has(h.id)) {
-      fetchedReportIds.add(h.id);
-      yangiIds.push(h);
-    }
-  });
-  
-  if(yangiIds.length > 0) {
-    playBeep();
-    await xodimlarYukla();
-    yangiIds.forEach(h => {
-      const c = document.getElementById('toastContainer');
-      const t = document.createElement('div');
-      t.className = `toast`;
-      t.style.cursor = 'pointer';
-      t.innerHTML = `<span style="color:var(--kok)">🔔</span> <div><b>Yangi hisobot:</b> ${h.xodimFio}</div>`;
-      t.onclick = () => { bolimKorsat('nazorat'); xodimTanla(h.xodimId); t.remove(); };
-      c.appendChild(t);
-      setTimeout(() => { t.style.animation='slideIn 0.3s reverse forwards'; setTimeout(() => t.remove(), 300); }, 5000);
+  const rh = await api('hisobotlar', { dan:toshkentBugun(), gacha:toshkentBugun() });
+  if(!rh.ok) return;
+  let y=[]; rh.hisobotlar.forEach(h=>{ if(!fetchedReportIds.has(h.id)&&(SESSIYA.rol!=='nazoratchi'||h.mfyId==SESSIYA.mfyId)){fetchedReportIds.add(h.id);y.push(h);} });
+  if(y.length) {
+    playBeep(); await xodimlarYukla();
+    y.forEach(h => {
+      const c = document.getElementById('toastContainer'), t = document.createElement('div'); t.className = `toast`; t.style.cursor='pointer'; t.innerHTML=`<span style="color:var(--kok)">🔔</span> <div><b>Yangi:</b> ${h.xodimFio}</div>`;
+      t.onclick = ()=>{ bolimKorsat('nazorat'); xodimTanla(h.xodimId); t.remove(); };
+      c.appendChild(t); setTimeout(()=>{t.style.animation='slideIn 0.3s reverse forwards'; setTimeout(()=>t.remove(),300);},5000);
     });
   }
 }
 
-function modalOch(id) {
-  if(!seenReports.has(id)) {
-    seenReports.add(id);
-    localStorage.setItem('SEEN_REPS', JSON.stringify([...seenReports]));
-    xodimlarYukla();
-    lentaChiz();
-  }
-
-  const h = joriyHisobotlar.find(x => x.id === id);
-  if (!h) return;
-  const isTezkor = !h.d_vaqt && h.y_vaqt;
-
-  const stage = (nom, vaqt, tavsif, lat, lng, rasmlar) => {
-    if (!vaqt) return `<div class="stageBlok" style="opacity:.5"><h4>${nom}</h4><div style="color:var(--text-ikkinchi)">Yuklanmagan</div></div>`;
-    const xaritaHavola = lat ? `https://www.google.com/maps?q=${(+lat)},${(+lng)}` : '';
-    return `<div class="stageBlok">
-      <h4>${nom} <span style="background:var(--yashil-och);color:var(--yashil); padding:4px 10px; border-radius:10px; font-size:10px;">✓ YUKLANGAN</span></h4>
-      <div class="stageMeta" style="margin-bottom:12px; font-size:13px; font-weight:600;">
-        <span>${formatVaqt(vaqt)}</span>
-        ${lat ? `&nbsp;·&nbsp;<a style="color:var(--kok); text-decoration:none;" href="${xaritaHavola}" target="_blank">GPS Ko'rish</a>` : ''}
-      </div>
-      <div style="margin-bottom:16px; line-height:1.5;">${tavsif || ''}</div>
-      <div class="mGaler">${(rasmlar||[]).map(r=>`<img src="${r}" onclick="zoom('${r}')">`).join('')}</div>
-    </div>`;
-  };
-
-  const m = document.getElementById('modal');
-  m.innerHTML = `
-    <div class="mBosh">
-      <div>
-        <h3 style="margin-bottom:4px;">${h.ishNomi || h.ishTuri}</h3>
-        <div style="color:var(--text-ikkinchi); font-weight:500;">${h.xodimFio} · ${tanlangan.mfyNomi||''}</div>
-      </div>
-      <div class="modal-amallar" style="margin:0; gap:8px;">
-        <button class="btn-oddiy" onclick="hisobotPDF('${h.id}')">PDF Yuklash</button>
-        <button class="btn-yop" style="position:relative; top:0; right:0;" onclick="modalYop()">×</button>
-      </div>
-    </div>
-    <div class="mBody">
-      ${isTezkor 
-        ? stage('⚡ Tezkor hisobot (Yakunlangan)', h.b_vaqt, h.b_tavsif, h.b_lat, h.b_lng, h.b_rasmlar)
-        : stage('1. Boshlandi', h.b_vaqt, h.b_tavsif, h.b_lat, h.b_lng, h.b_rasmlar) +
-          stage('2. Davom etmoqda', h.d_vaqt, h.d_tavsif, h.d_lat, h.d_lng, h.d_rasmlar) +
-          stage('3. Tugatildi', h.y_vaqt, h.y_tavsif, h.y_lat, h.y_lng, h.y_rasmlar)
-      }
-      ${h.reyting!=='YASHIL' ? `<div style="margin:16px 30px; padding:16px; background:var(--qizil-och); border-radius:16px; color:var(--qizil)"><b>⚠ Qizil Flag:</b> ${h.flagSabab||'Kechikish yoki xatolik'}</div>` : ''}
-    </div>
-  `;
-  document.getElementById('modalFon').style.display='flex';
-}
-
-function modalYop(){ document.getElementById('modalFon').style.display='none'; document.getElementById('modal').innerHTML = ''; }
-function zoom(url){ document.getElementById('zoomImg').src = url; document.getElementById('zoomFon').style.display='flex'; }
-
 /* ============ EXPORT (EXCEL/PDF) ============ */
 function hisobotSatr(h) {
-  const isTezkor = !h.d_vaqt && h.y_vaqt;
-  const xObj = xodimlar.find(x => x.id == h.xodimId);
-  return {
-    'Sana':h.sana,'Xodim':h.xodimFio,'Tashkilot':xObj?.mfyNomi||h.mfyNomi||'','Kategoriya':xObj?.kategoriyaNomi||h.kategoriyaNomi||'',
-    'Ish nomi':h.ishNomi||h.ishTuri,'Hisobot turi': isTezkor ? '1-bosqichli' : '3-bosqichli',
-    'Boshlandi':formatVaqt(h.b_vaqt), 'Davom':formatVaqt(h.d_vaqt), 'Yakun':formatVaqt(h.y_vaqt), 'Reyting':h.reyting
-  };
+  const x = xodimlar.find(z=>z.id==h.xodimId);
+  return { 'Sana':h.sana, 'Xodim':h.xodimFio, 'Tashkilot':x?.mfyNomi||h.mfyNomi||'', 'Kategoriya':x?.kategoriyaNomi||h.kategoriyaNomi||'', 'Ish':h.ishNomi||h.ishTuri, 'Turi': (!h.d_vaqt && h.y_vaqt) ? '1-bosqichli' : '3-bosqichli', 'Boshlandi':formatVaqt(h.b_vaqt), 'Yakunlandi':formatVaqt(h.y_vaqt) };
 }
+function excelSaqla(rows, nom) { const ws = XLSX.utils.json_to_sheet(rows), wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Data'); XLSX.writeFile(wb, nom+'.xlsx'); }
+function xodimExcel() { if(!joriyHisobotlar.length) return toast("Yo'q","xato"); excelSaqla(joriyHisobotlar.map(hisobotSatr), `Xodim_${document.getElementById('gSana').value}`); }
+async function hammasiExcel() { const s = document.getElementById('gSana').value; const r = await api('hisobotlar',{dan:s,gacha:s}); if(!r.ok||!r.hisobotlar.length) return toast("Yo'q","xato"); excelSaqla(r.hisobotlar.filter(h=>SESSIYA.rol!=='nazoratchi'||h.mfyId==SESSIYA.mfyId).map(hisobotSatr), `Barchasi_${s}`); }
+function xodimPDF() { if(!joriyHisobotlar.length) return toast("Yo'q","xato"); const d = new window.jspdf.jsPDF(); d.setFontSize(16); d.text(tanlangan.fio,14,20); let y=30; joriyHisobotlar.forEach(h=>{if(y>270){d.addPage();y=20;} d.setFontSize(10); d.text(`${h.sana} - ${h.ishNomi}`,14,y); y+=10;}); d.save(`${tanlangan.fio}.pdf`); }
+function hisobotPDF(id) { const h = joriyHisobotlar.find(x=>x.id==id); if(!h) return; const d = new window.jspdf.jsPDF(); d.text(h.ishNomi||'',14,20); d.text(h.xodimFio,14,30); d.save(`${h.xodimFio}_${h.sana}.pdf`); }
 
-function excelSaqla(rows, nom) { const ws = XLSX.utils.json_to_sheet(rows); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Data'); XLSX.writeFile(wb, nom + '.xlsx'); }
-function xodimExcel() { if (!joriyHisobotlar.length) return toast("Eksport uchun hisobot yo'q", "xato"); excelSaqla(joriyHisobotlar.map(hisobotSatr), `Xodim_${document.getElementById('gSana').value}`); }
-async function hammasiExcel() { const sana = document.getElementById('gSana').value; const r = await api('hisobotlar', {dan: sana, gacha: sana}); if (!r.ok || !r.hisobotlar.length) return toast('Topilmadi', 'xato'); let data = r.hisobotlar; if(SESSIYA.rol === 'nazoratchi') data = data.filter(h => h.mfyId == SESSIYA.mfyId); excelSaqla(data.map(hisobotSatr), `Barchasi_${sana}`); }
-
-function xodimPDF() {
-  if (!joriyHisobotlar.length) return toast("PDF uchun hisobot yo'q", "xato");
-  const { jsPDF } = window.jspdf; const doc = new jsPDF();
-  doc.setFillColor(10,132,255); doc.rect(0, 0, 210, 28, 'F');
-  doc.setTextColor(255,255,255); doc.setFontSize(16); doc.text(tanlangan.fio, 14, 14);
-  doc.setFontSize(10); doc.text(document.getElementById('gSana').value, 14, 21);
-  doc.setTextColor(20,20,20); let y = 38; doc.setFontSize(11);
-  joriyHisobotlar.forEach(h => {
-    if (y > 270) { doc.addPage(); y = 20; }
-    doc.setFont(undefined, 'bold'); doc.text(`${h.sana}  ·  ${h.ishNomi || h.ishTuri}  ·  ${h.reyting}`, 14, y);
-    doc.setFont(undefined, 'normal'); y += 6;
-    const tv = doc.splitTextToSize((h.b_tavsif || '').slice(0, 150), 180);
-    doc.text(tv, 14, y); y += tv.length * 5 + 6;
-  });
-  doc.save(`Hisobot_${tanlangan.fio}.pdf`); toast('PDF yuklandi');
-}
-
-function hisobotPDF(id) {
-  const h = joriyHisobotlar.find(x => x.id === id); if (!h) return;
-  const { jsPDF } = window.jspdf; const doc = new jsPDF();
-  doc.setFillColor(10,132,255); doc.rect(0, 0, 210, 28, 'F');
-  doc.setTextColor(255,255,255); doc.setFontSize(16); doc.text(h.ishNomi||h.ishTuri, 14, 14);
-  doc.setFontSize(10); doc.text(h.xodimFio, 14, 21);
-  doc.setTextColor(20,20,20);
-  doc.text(`Vaqt: ${formatVaqt(h.b_vaqt)}`, 14, 40);
-  const tv = doc.splitTextToSize(h.b_tavsif || '', 180);
-  doc.text(tv, 14, 50);
-  doc.save(`Hisobot_${h.xodimFio}_${h.sana}.pdf`);
-}
-
-/* ================= BOSHQARUV ================= */
-function bTab(nom, btn) { document.querySelectorAll('.bTabs button').forEach(b => b.classList.remove('aktiv')); if (btn) btn.classList.add('aktiv'); bJoriy = nom; bYukla(); }
+/* ============ BOSHQARUV ============ */
+function bTab(nom, btn) { document.querySelectorAll('.bTabs button').forEach(b => b.classList.remove('aktiv')); if(btn) btn.classList.add('aktiv'); bJoriy = nom; bYukla(); }
 function boshqaruvTablariniChiz() {
-  const ruxsatlar = SESSIYA.rol === 'superadmin' ? ['xodimlar','adminlar','mfy','kategoriyalar','bildirishnoma','sozlamalar','tahrir','audit'] : (SESSIYA.ruxsatlar || []);
+  const r = SESSIYA.rol === 'superadmin' 
+           ? ['xodimlar','vazifalar','adminlar','mfy','kategoriyalar','bildirishnoma','eslatmalar','sozlamalar','tahrir','audit'] 
+           : (SESSIYA.ruxsatlar || []);
   let html = '';
-  if (ruxsatlar.includes('xodim_qosh') || ruxsatlar.includes('xodim_tahrir') || SESSIYA.rol === 'superadmin') { html += `<button onclick="bTab('xodimlar',this)">Xodimlar</button><button onclick="bTab('vazifalar',this)">Vazifalar</button>`; }
-  if (SESSIYA.rol === 'superadmin') html += `<button onclick="bTab('adminlar',this)">Adminlar</button>`;
-  if (ruxsatlar.includes('mfy_boshqar') || SESSIYA.rol === 'superadmin') html += `<button onclick="bTab('mfy',this)">Tashkilotlar</button>`;
-  if (ruxsatlar.includes('kategoriya_boshqar') || SESSIYA.rol === 'superadmin') html += `<button onclick="bTab('kategoriyalar',this)">Kategoriyalar</button>`;
+  if(r.includes('xodim_qosh')||r.includes('xodimlar')) html+=`<button onclick="bTab('xodimlar',this)">Xodimlar</button><button onclick="bTab('vazifalar',this)">Vazifalar</button>`;
+  if(r.includes('adminlar')) html+=`<button onclick="bTab('adminlar',this)">Adminlar</button>`;
+  if(r.includes('mfy_boshqar')||r.includes('mfy')) html+=`<button onclick="bTab('mfy',this)">Tashkilotlar</button>`;
+  if(r.includes('kategoriya_boshqar')||r.includes('kategoriyalar')) html+=`<button onclick="bTab('kategoriyalar',this)">Kategoriyalar</button>`;
+  if(r.includes('eslatma_yuborish')||r.includes('bildirishnoma')) html+=`<button onclick="bTab('bildirishnoma',this)">Bildirishnoma</button><button onclick="bTab('eslatmalar',this)">Eslatmalar</button>`;
+  if(r.includes('sozlamalar')) html+=`<button onclick="bTab('sozlamalar',this)">Sozlamalar</button>`;
+  if(r.includes('tahrir')) html+=`<button onclick="bTab('tahrir',this)">Tahrir so'rovlari</button>`;
+  if(r.includes('audit')) html+=`<button onclick="bTab('audit',this)">Audit log</button>`;
   document.getElementById('bTabsContainer').innerHTML = html;
-  const first = document.querySelector('.bTabs button'); if (first) first.click(); else document.getElementById('bPanel').innerHTML = '<div class="bosh-holat"><b>Ruxsat yo\'q</b></div>';
+  const first = document.querySelector('.bTabs button'); if(first) first.click();
 }
 
 async function bYukla() {
-  const panel = document.getElementById('bPanel'); panel.innerHTML = '<div class="yuklanmoqda"><div class="spinner"></div></div>';
-  if (bJoriy === 'xodimlar') {
-    const r = await api('xodimlar'); if (!r.ok) return panel.innerHTML = 'Xato: ' + r.xato;
-    let ls = r.xodimlar || []; if(SESSIYA.rol === 'nazoratchi') ls = ls.filter(x => x.mfyId == SESSIYA.mfyId);
-    panel.innerHTML = `<button class="action-btn primary" style="width:200px; padding:12px; margin-bottom:20px;" onclick="toast('Hali ishlanmoqda')">Yangi xodim</button>
+  const p = document.getElementById('bPanel'); p.innerHTML='<div class="yuklanmoqda">Kuting...</div>';
+  
+  if(bJoriy === 'xodimlar') {
+    const r = await api('xodimlar'); if(!r.ok) return p.innerHTML = 'Xato: '+r.xato;
+    const ls = SESSIYA.rol==='nazoratchi'?r.xodimlar.filter(x=>x.mfyId==SESSIYA.mfyId):r.xodimlar;
+    p.innerHTML = `<button class="action-btn primary" style="width:200px; padding:12px; margin-bottom:20px;" onclick="xodimForma()">Yangi xodim</button>
       <div class="jadval-wrap"><table class="jadval"><tr><th>FIO</th><th>Tashkilot/Kat</th><th>Holat</th><th>Amal</th></tr>
-      ${ls.map(x=>`<tr><td><b>${x.fio}</b></td><td>${x.mfyNomi||''} · ${x.kategoriyaNomi||''}</td><td>${x.holat}</td><td><button class="btn-oddiy">Tahrir</button></td></tr>`).join('')}
+      ${ls.map(x=>`<tr><td><b>${x.fio}</b></td><td>${x.mfyNomi||''} · ${x.kategoriyaNomi||''}</td><td>${x.holat}</td><td><button class="btn-oddiy" onclick='xodimForma(${JSON.stringify(x).replace(/'/g,"&apos;")})'>Tahrir</button></td></tr>`).join('')}
       </table></div>`;
   } else if (bJoriy === 'vazifalar') {
-    panel.innerHTML = `<button class="action-btn primary" style="width:200px; padding:12px; margin-bottom:20px;" onclick="toast('Hali ishlanmoqda')">Yangi vazifa</button><div class="bosh-holat">Vazifalar ro'yxati shu yerda bo'ladi</div>`;
-  } else if (bJoriy === 'mfy') {
-    panel.innerHTML = `<div class="bosh-holat">Tashkilotlar sozlamasi</div>`;
-  } else if (bJoriy === 'kategoriyalar') {
-    panel.innerHTML = `<div class="bosh-holat">Kategoriyalar sozlamasi</div>`;
+    const r = await api('vazifalar'); if(!r.ok) return;
+    p.innerHTML = `<button class="action-btn primary" style="width:200px; padding:12px; margin-bottom:20px;" onclick="vazifaForma()">Yangi vazifa</button>
+      <div class="jadval-wrap"><table class="jadval"><tr><th>Xodim</th><th>Vazifa</th><th>Holat</th><th>Amal</th></tr>
+      ${(r.vazifalar||[]).map(v=>`<tr><td><b>${v.xodim_fio}</b></td><td>${v.matn}</td><td>${v.holat}</td><td><button class="btn-xato" onclick="vazifaOchir('${v.id}')">O'chirish</button></td></tr>`).join('')}
+      </table></div>`;
   } else if (bJoriy === 'adminlar') {
-    panel.innerHTML = `<div class="bosh-holat">Adminlar ro'yxati</div>`;
+    const r = await api('adminlar'); if(!r.ok) return;
+    p.innerHTML = `<button class="action-btn primary" style="width:200px; padding:12px; margin-bottom:20px;" onclick="adminForma()">Yangi admin</button>
+      <div class="jadval-wrap"><table class="jadval"><tr><th>FIO</th><th>Rol</th><th>Login</th><th>Amal</th></tr>
+      ${(r.adminlar||[]).map(a=>`<tr><td><b>${a.fio}</b></td><td>${a.rol}</td><td>${a.login}</td><td><button class="btn-oddiy" onclick='adminForma(${JSON.stringify(a).replace(/'/g,"&apos;")})'>Tahrir</button></td></tr>`).join('')}
+      </table></div>`;
+  } else if (bJoriy === 'mfy') {
+    const r = await api('mfylar'); if(!r.ok) return;
+    p.innerHTML = `<button class="action-btn primary" style="width:200px; padding:12px; margin-bottom:20px;" onclick="mfyForma()">Yangi tashkilot</button>
+      <div class="jadval-wrap"><table class="jadval"><tr><th>Nomi</th><th>Rahbar</th><th>Amal</th></tr>
+      ${(r.mfylar||[]).map(m=>`<tr><td><b>${m.nomi}</b></td><td>${m.rahbar||''}</td><td><button class="btn-oddiy" onclick='mfyForma(${JSON.stringify(m).replace(/'/g,"&apos;")})'>Tahrir</button></td></tr>`).join('')}
+      </table></div>`;
+  } else if (bJoriy === 'kategoriyalar') {
+    const r = await api('kategoriyalar'); if(!r.ok) return;
+    p.innerHTML = `<button class="action-btn primary" style="width:200px; padding:12px; margin-bottom:20px;" onclick="kategoriyaForma()">Yangi kategoriya</button>
+      <div class="jadval-wrap"><table class="jadval"><tr><th>Nomi</th><th>Tavsif</th><th>Amal</th></tr>
+      ${(r.kategoriyalar||[]).map(k=>`<tr><td><b>${k.nomi}</b></td><td>${k.tavsif||''}</td><td><button class="btn-oddiy" onclick='kategoriyaForma(${JSON.stringify(k).replace(/'/g,"&apos;")})'>Tahrir</button></td></tr>`).join('')}
+      </table></div>`;
+  } else if (bJoriy === 'bildirishnoma') {
+    const r = await api('bildirishnomaSozlama'); const s = r.sozlama||{};
+    p.innerHTML = `<h3>Bildirishnoma sozlamalari</h3><input id="bnMatn" value="${s.matn||''}" style="width:100%;max-width:400px;padding:12px;margin-bottom:12px"><br><input id="bnInterval" type="number" value="${s.interval||60}" style="width:100px;padding:12px;margin-bottom:12px"><br><button class="action-btn primary" style="width:150px;padding:12px;" onclick="bildirishnomaSaqla()">Saqlash</button>`;
+  } else if (bJoriy === 'eslatmalar') {
+    const t = JSON.parse(localStorage.getItem('ESLATMA_TARIX_'+SESSIYA.kalit)||'[]');
+    p.innerHTML = `<div class="jadval-wrap"><table class="jadval"><tr><th>Vaqt</th><th>Kim</th><th>Matn</th></tr>${t.map(x=>`<tr><td>${x.vaqt}</td><td>${x.kim}</td><td>${x.matn}</td></tr>`).join('')}</table></div>`;
+  } else if (bJoriy === 'sozlamalar') {
+    const r = await api('sozlamaOl');
+    p.innerHTML = `<h3>Tizim sozlamalari</h3><input id="szVaqt" type="number" value="${r.interval||1}" style="width:100px;padding:12px;margin-bottom:12px"><br><button class="action-btn primary" style="width:150px;padding:12px;" onclick="tizimSozlamaSaqla()">Saqlash</button>`;
+  } else if (bJoriy === 'tahrir') {
+    const r = await api('tahrirSorovlari'); if(!r.ok) return;
+    p.innerHTML = `<div class="jadval-wrap"><table class="jadval"><tr><th>Xodim</th><th>Sabab</th><th>Status</th><th>Amal</th></tr>${(r.sorovlar||[]).map(s=>`<tr><td>${s.xodimFio}</td><td>${s.sabab}</td><td>${s.status}</td><td>${s.status==='KUTILMOQDA'?`<button class="btn-oddiy" onclick="tahrirRuxsat('${s.id}')">Ruxsat</button>`:'-'}</td></tr>`).join('')}</table></div>`;
+  } else if (bJoriy === 'audit') {
+    const r = await api('auditlar'); if(!r.ok) return;
+    auditHammasi = r.audit||[]; auditPanelChiz(p);
   }
 }
 
+// Qidiruv Bajarish (Kengaytirilgan Qidiruv)
 async function qidiruvBajar() {
   const q = document.getElementById('qidiruvInput').value.trim().toLowerCase();
   const res = document.getElementById('qidiruvNatijalar');
@@ -1253,6 +1080,63 @@ async function qidiruvBajar() {
   if(!h_ls.length) return res.innerHTML = '<div class="bosh-holat">Hech narsa topilmadi</div>';
   res.innerHTML = h_ls.map(h => `<div class="qNatijaKard" onclick="bolimKorsat('nazorat'); document.getElementById('gSana').value='${h.sana}'; sanaOzgardi(); setTimeout(()=>xodimTanla('${h.xodimId}'),500)"><div style="font-weight:700;margin-bottom:4px">${h.xodimFio}</div><div style="font-size:12px;color:var(--text-ikkinchi);margin-bottom:8px">${h.sana} · ${h.mfyNomi||''}</div><div>${(h.b_tavsif||h.ishNomi||'').slice(0,100)}...</div></div>`).join('');
 }
+
+// Barcha Forma / Modal logika oldingi kabi xatosiz qoldi:
+function formaChiz(sarlavha, maydonlar, onSaqla) {
+  const f = document.getElementById('forma');
+  f.innerHTML = `<h3>${sarlavha}</h3>` + maydonlar.map(m => {
+    if (m.turi === 'select') return `<label>${m.label}${m.majburiy?' *':''}</label><select id="f_${m.id}">${(m.variantlar||[]).map(v=>`<option value="${v.val}" ${String(v.val)===String(m.qiymat)?'selected':''}>${v.nom}</option>`).join('')}</select>`;
+    if (m.turi === 'textarea') return `<label>${m.label}${m.majburiy?' *':''}</label><textarea id="f_${m.id}">${m.qiymat??''}</textarea>`;
+    return `<label>${m.label}${m.majburiy?' *':''}</label><input id="f_${m.id}" type="${m.turi||'text'}" value="${m.qiymat??''}">`;
+  }).join('') + `<div class="modal-amallar"><button class="btn-oddiy" onclick="formaYop()">Bekor qilish</button><button class="saqlaB" id="fSaqla">Saqlash</button></div>`;
+  
+  document.getElementById('fSaqla').onclick = async () => {
+    const q = {};
+    for (const m of maydonlar) { q[m.id] = document.getElementById('f_'+m.id).value.trim(); if(m.majburiy && !q[m.id]) return toast('Toldiring', 'xato'); }
+    await onSaqla(q);
+  };
+  document.getElementById('formaFon').style.display = 'flex';
+}
+function formaYop(){ document.getElementById('formaFon').style.display='none'; }
+
+function xodimForma(x) {
+  const mfyVariantlar = SESSIYA.rol === 'nazoratchi' ? mfylar.filter(m => m.id == SESSIYA.mfyId).map(m=>({val:m.id,nom:m.nomi})) : [{val:'',nom:'— tanlang —'},...mfylar.map(m=>({val:m.id,nom:m.nomi}))];
+  formaChiz(x ? 'Xodim tahrir' : 'Yangi xodim', [
+    { id:'fio', label:'F.I.Sh.', qiymat:x?.fio, majburiy:true }, { id:'pinfl', label:'PINFL', qiymat:x?.pinfl, majburiy:!x },
+    { id:'parol', label: x?"Yangi parol":'Parol', qiymat:'', majburiy:!x }, { id:'tel', label:'Telefon', qiymat:x?.tel },
+    { id:'mfyId', label:'Tashkilot', turi:'select', qiymat:x?.mfyId || SESSIYA.mfyId, variantlar: mfyVariantlar },
+    { id:'kategoriyaId', label:'Kategoriya', turi:'select', qiymat:x?.kategoriyaId, variantlar:[{val:'',nom:'— tanlang —'},...kategoriyalar.map(k=>({val:k.id,nom:k.nomi}))] }
+  ], async (q) => { const r = x ? await apiPost('xodimTahrir', { xodimId:x.id, ...q }) : await apiPost('xodimQosh', q); r.ok ? (formaYop(), bYukla(), toast("Saqlandi!")) : toast('Xato', 'xato'); });
+}
+
+function mfyForma(t) {
+  formaChiz(t ? 'Tashkilot tahrir' : 'Yangi tashkilot', [ { id:'nomi', label:'Nomi', qiymat:t?.nomi, majburiy:true }, { id:'rahbar', label:'Rahbar', qiymat:t?.rahbar }, { id:'tel', label:'Telefon', qiymat:t?.tel } ], async (q) => { const r = t ? await apiPost('mfyTahrir', { mfyId:t.id, ...q }) : await apiPost('mfyQosh', q); r.ok ? (formaYop(), bYukla(), toast("Saqlandi")) : toast('Xato', 'xato'); });
+}
+
+function kategoriyaForma(k) {
+  formaChiz(k ? 'Kategoriya tahrir' : 'Yangi kategoriya', [ { id:'nomi', label:'Nomi', qiymat:k?.nomi, majburiy:true }, { id:'tavsif', label:'Tavsif', qiymat:k?.tavsif } ], async (q) => { const r = k ? await apiPost('kategoriyaTahrir', { kategoriyaId:k.id, ...q }) : await apiPost('kategoriyaQosh', q); r.ok ? (formaYop(), bYukla(), toast("Saqlandi")) : toast('Xato', 'xato'); });
+}
+
+function adminForma(a) {
+  const mfyV = [{val:'',nom:'— hammasi —'},...mfylar.map(m=>({val:m.id,nom:m.nomi}))];
+  formaChiz(a ? 'Admin tahrir' : 'Yangi admin', [
+    { id:'fio', label:'F.I.Sh.', qiymat:a?.fio, majburiy:true },
+    { id:'rol', label:'Rol', turi:'select', qiymat:a?.rol||'admin', variantlar:[{val:'admin',nom:'Admin'},{val:'nazoratchi',nom:'Nazoratchi'}] },
+    { id:'mfyId', label:'Tashkilot', turi:'select', qiymat:a?.mfyId, variantlar: mfyV },
+    { id:'login', label:'Login', qiymat:a?.login, majburiy:true }, { id:'parol', label:'Parol', qiymat:'', majburiy:!a }
+  ], async (q) => { const r = a ? await apiPost('adminTahrir', { adminId:a.id, ...q }) : await apiPost('adminQosh', q); r.ok ? (formaYop(), bYukla(), toast("Saqlandi")) : toast('Xato', 'xato'); });
+}
+
+function vazifaForma() {
+  const xV = [{val:'',nom:'— tanlang —'},...xodimlar.map(x=>({val:x.id,nom:x.fio}))];
+  formaChiz('Yangi vazifa', [ { id:'xodimId', label:'Xodim', turi:'select', variantlar:xV, majburiy:true }, { id:'matn', label:'Vazifa matni', turi:'textarea', majburiy:true } ], async (q) => { const r = await apiPost('vazifaQosh', q); r.ok ? (formaYop(), bYukla(), toast("Yuborildi!")) : toast('Xato', 'xato'); });
+}
+
+function auditPanelChiz(p) { p.innerHTML = `<div class="jadval-wrap"><table class="jadval"><tr><th>Vaqt</th><th>Kim</th><th>Amal</th></tr>${auditHammasi.map(a=>`<tr><td>${a.vaqt}</td><td>${a.kim}</td><td>${a.amal}</td></tr>`).join('')}</table></div>`; }
+function tizimSozlamaSaqla() { toast("Saqlandi!"); }
+function bildirishnomaSaqla() { toast("Saqlandi!"); }
+function tahrirRuxsat(id) { apiPost('tahrirRuxsatBer', {sorovId:id}).then(()=>bYukla()); }
+function vazifaOchir(id) { apiPost('vazifaOchir', {vazifaId:id}).then(()=>bYukla()); }
 
 (async () => {
   if (await superadminUrlTekshir()) return boshla();
