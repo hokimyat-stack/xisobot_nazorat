@@ -1163,7 +1163,7 @@ function boshqaruvTablariniChiz() {
 
   if (ruxsatlar.includes('xodim_qosh') || ruxsatlar.includes('xodim_tahrir') || SESSIYA.rol === 'superadmin') {
       tabsHTML += `<button onclick="bTab('xodimlar',this)">${SVG.users} Xodimlar</button>`;
-      tabsHTML += `<button onclick="bTab('vazifalar',this)">${SVG.tasks} Vazifalar</button>`; // Yangi qator
+      tabsHTML += `<button onclick="bTab('vazifalar',this)">${SVG.tasks} Vazifalar</button>`;
   }
   if (SESSIYA.rol === 'superadmin') tabsHTML += `<button onclick="bTab('adminlar',this)">${SVG.admin} Adminlar</button>`;
   if (ruxsatlar.includes('mfy_boshqar') || SESSIYA.rol === 'superadmin') tabsHTML += `<button onclick="bTab('mfy',this)">${SVG.building} Tashkilotlar</button>`;
@@ -1851,6 +1851,43 @@ function hisobotPDF(id) {
   toast('PDF tayyorlandi');
 }
 
+/* ================= UMUMIY JONLI XARITA ================= */
+let umumXaritaObj = null;
+async function xaritaYukla() {
+  const r = await api('hisobotlar');
+  if (!r.ok) { toast('Xarita uchun ma\'lumot yuklanmadi: ' + (r.xato||''), 'xato'); return; }
+  const bugunStr = toshkentBugun();
+  const fMfy = document.getElementById('xFiltrMfy').value;
+  let hisobots = (r.hisobotlar || []).filter(h => h.sana === bugunStr && h.b_lat);
+  if (SESSIYA.rol === 'nazoratchi') hisobots = hisobots.filter(h => String(h.mfyId) === String(SESSIYA.mfyId));
+  if (fMfy) hisobots = hisobots.filter(h => String(h.mfyId) === String(fMfy));
+
+  if (!umumXaritaObj) {
+    umumXaritaObj = L.map('umumXarita').setView([41.3111, 69.2797], 11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution:'© OSM'}).addTo(umumXaritaObj);
+  }
+  umumXaritaObj.eachLayer(l => { if (l instanceof L.Marker) umumXaritaObj.removeLayer(l); });
+
+  if (!hisobots.length) {
+    toast("Bugun uchun GPS bilan hisobot topilmadi", "info");
+  } else {
+    const bounds = [];
+    hisobots.forEach(h => {
+      const lat = +h.b_lat, lng = +h.b_lng;
+      bounds.push([lat, lng]);
+      const rangIco = (h.reyting && h.reyting !== 'YASHIL') ? '#EF4444' : '#17A34E';
+      const ico = L.divIcon({
+        html: `<div style="width:16px;height:16px;border-radius:50%;background:${rangIco};border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,.4)"></div>`,
+        className: '', iconSize:[16,16], iconAnchor:[8,8]
+      });
+      L.marker([lat, lng], { icon: ico }).addTo(umumXaritaObj)
+        .bindPopup(`<b>${h.xodimFio||''}</b><br>${h.ishNomi||h.ishTuri||''}<br>${h.mfyNomi||''}<br><small>${formatVaqt(h.b_vaqt)}</small>`);
+    });
+    if (bounds.length) umumXaritaObj.fitBounds(bounds, { padding:[40,40], maxZoom:15 });
+  }
+  setTimeout(() => { if (umumXaritaObj) umumXaritaObj.invalidateSize(); }, 150);
+}
+
 function bTab(nom, btn) {
   document.querySelectorAll('.bTabs button').forEach(b => b.classList.remove('aktiv'));
   if (btn) btn.classList.add('aktiv'); 
@@ -1920,7 +1957,7 @@ async function bYukla() {
     paginatorYarat(document.getElementById('bXodimPagin'), jamiSoni, B_SAHIFA_HAJMI, bXodimlarSahifa, (s)=>{bXodimlarSahifa=s; bYukla();});
   }
 
-  // YANIG: VAZIFALAR MODULI
+  // VAZIFALAR MODULI (ADMIN PANEL)
   if (bJoriy === 'vazifalar') {
     const r = await api('vazifalar');
     if (!r.ok) return panel.innerHTML = 'Xato: ' + r.xato;
@@ -2149,17 +2186,17 @@ async function adminParolTiklash(id) {
   });
 }
 
-// VAZIFALAR UCHUN FUNKSIYALAR
+// VAZIFALAR UCHUN FUNKSIYALAR (ADMIN PANEL)
 function vazifaForma() {
   const xodimOptions = xodimlar.map(x => ({ val: x.id, nom: x.fio + ' (' + (x.mfyNomi || 'Tashkilotsiz') + ')' }));
   formaChiz('Yangi vazifa biriktirish', [
     { id: 'xodimId', label: 'Xodim', turi: 'select', variantlar: [{val:'', nom:'— Xodimni tanlang —'}, ...xodimOptions], majburiy: true },
-    { id: 'matn', label: 'Vazifa matni', turi: 'text', majburiy: true },
+    { id: 'matn', label: 'Vazifa matni', turi: 'textarea', majburiy: true },
     { id: 'muddat', label: 'Muddat (Ixtiyoriy)', turi: 'date' }
   ], async (q) => {
     const r = await apiPost('vazifaQosh', q);
     if (r.ok) { 
-      formaYop(); bYukla(); toast("Vazifa yuborildi va xodimga xabar ketdi!"); 
+      formaYop(); bYukla(); toast("Vazifa yuborildi va xodimga push xabar ketdi!"); 
     } else {
       toast('Xato: ' + (r.xato || ''), 'xato');
     }
