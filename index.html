@@ -196,7 +196,6 @@ svg { flex-shrink: 0; }
 
 .sidebar-spacer{ flex:1; }
 
-/* DIZAYN MOSLASHUVI (image_bd5b83.png asosida) */
 .sidebar-foot { border-top: 1px solid var(--chiziq); padding-top: 18px; margin-top: auto; display: flex; flex-direction: column; gap: 12px; }
 .sf-top-row { display: flex; gap: 10px; align-items: stretch; }
 .theme-btn { flex: 0 0 42px; background: var(--bg-input); border: 1px solid var(--chiziq); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--text-asosiy); transition: all 0.2s; }
@@ -676,7 +675,10 @@ mark{ background:rgba(var(--kok-rgb),.28); color:inherit; border-radius:3px; pad
         </div>
         <div id="lentaWrap" style="display:none">
           <div class="bosh">
-            <h2 id="lentaFio"></h2>
+            <div>
+              <h2 id="lentaFio" style="margin:0 0 4px 0;"></h2>
+              <div id="lentaAltInfo" style="color:var(--text-ikkinchi); font-size:13px; font-weight:600;"></div>
+            </div>
             <div class="filtr">
               <button class="refreshBtn" onclick="hisobotlarniYangila()" title="Yangi hisobotlarni tekshirish">
                 <svg id="refIco" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Yangilash
@@ -1498,7 +1500,7 @@ function nazoratFiltrOrnat(tur) {
   xodimlarChiz();
 }
 
-/* ================= XODIMLAR RO'YXATI + SAHIFALASH ================= */
+/* ================= XODIMLAR RO'YXATI + KATEGoriya BILAN ================= */
 let xodimlarSahifa = 1;
 const XODIM_SAHIFA_HAJMI = 40;
 let xodimlarFiltrlanganKesh = [];
@@ -1508,7 +1510,7 @@ function xodimlarChiz() {
   const fMfy = document.getElementById('fMfy').value;
   const fKat = document.getElementById('fKategoriya').value;
   let list = xodimlar.filter(x =>
-    (x.fio.toLowerCase().includes(q) || (x.mfyNomi||'').toLowerCase().includes(q)) &&
+    (x.fio.toLowerCase().includes(q) || (x.mfyNomi||'').toLowerCase().includes(q) || (x.kategoriyaNomi||'').toLowerCase().includes(q)) &&
     (!fMfy || String(x.mfyId) === String(fMfy)) && (!fKat || String(x.kategoriyaId) === String(fKat)));
 
   if (nazoratFiltr === 'yuklagan') list = list.filter(x => x.bugunBor);
@@ -1532,7 +1534,8 @@ function xodimlarChiz() {
       </div>
       <div style="flex:1; min-width:0">
         <div class="fio">${x.fio}</div>
-        <div class="meta">${x.mfyNomi||''} ${x.ishHolati && x.ishHolati !== 'ishda' ? `<span class="uzrli-badge">${x.ishHolati}</span>` : ''}</div>
+        <div class="meta">${x.mfyNomi||'—'}${x.kategoriyaNomi ? ' · ' + x.kategoriyaNomi : ''}</div>
+        ${x.ishHolati && x.ishHolati !== 'ishda' ? `<span class="uzrli-badge">${x.ishHolati}</span>` : ''}
       </div>
       <button class="infoBtn" title="Xodim profili" onclick="event.stopPropagation(); profilOch('${x.id}')">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
@@ -1578,6 +1581,13 @@ async function xodimTanla(id) {
   document.getElementById('boshHolat').style.display='none';
   document.getElementById('lentaWrap').style.display='block';
   document.getElementById('lentaFio').textContent = tanlangan.fio;
+  
+  // Xodimning tashkilot va kategoriyasini sarlavha ostiga chiqarish
+  const altInfo = document.getElementById('lentaAltInfo');
+  if (altInfo) {
+    altInfo.textContent = (tanlangan.mfyNomi || '—') + (tanlangan.kategoriyaNomi ? ' · ' + tanlangan.kategoriyaNomi : '');
+  }
+
   document.getElementById('lentaIchQidiruv').value = '';
   xodimlarChiz();
   await lentaYukla();
@@ -1637,7 +1647,7 @@ function lentaChiz() {
     }
     const vaqt = formatVaqt(h.b_vaqt);
     const isNew = !seenReports.has(h.id);
-    const isTezkor = !h.d_vaqt && h.y_vaqt; // 1-bosqichli hisobot ekanligini aniqlash
+    const isTezkor = !h.d_vaqt && h.y_vaqt;
 
     const bosqichlarHTML = isTezkor 
       ? `<span class="bChip bor" style="background:var(--kok-och); color:var(--kok)">⚡ Tezkor (1-bosqichli) ✓</span>`
@@ -1851,7 +1861,7 @@ function hisobotPDF(id) {
   toast('PDF tayyorlandi');
 }
 
-/* ================= UMUMIY JONLI XARITA ================= */
+/* ================= UMUMIY JONLI XARITA (KATEGORIYA BILAN) ================= */
 let umumXaritaObj = null;
 async function xaritaYukla() {
   const r = await api('hisobotlar');
@@ -1880,8 +1890,13 @@ async function xaritaYukla() {
         html: `<div style="width:16px;height:16px;border-radius:50%;background:${rangIco};border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,.4)"></div>`,
         className: '', iconSize:[16,16], iconAnchor:[8,8]
       });
+
+      // Xodim ma'lumotlarini bazadan topish (kategoriyasi uchun)
+      const xObj = xodimlar.find(x => String(x.id) === String(h.xodimId));
+      const katAdi = xObj?.kategoriyaNomi || h.kategoriyaNomi || '';
+
       L.marker([lat, lng], { icon: ico }).addTo(umumXaritaObj)
-        .bindPopup(`<b>${h.xodimFio||''}</b><br>${h.ishNomi||h.ishTuri||''}<br>${h.mfyNomi||''}<br><small>${formatVaqt(h.b_vaqt)}</small>`);
+        .bindPopup(`<b>${h.xodimFio||''}</b><br>${h.mfyNomi||''}${katAdi ? ' · ' + katAdi : ''}<br><b>${h.ishNomi||h.ishTuri||''}</b><br><small>${formatVaqt(h.b_vaqt)}</small>`);
     });
     if (bounds.length) umumXaritaObj.fitBounds(bounds, { padding:[40,40], maxZoom:15 });
   }
@@ -2183,6 +2198,44 @@ async function adminParolTiklash(id) {
     if(!p || p.length<6) return toast('Parol qisqa', 'xato');
     const r = await apiPost('adminParolTiklash',{adminId:id,yangiParol:p});
     r.ok ? toast('Saqlandi: '+p) : toast('Xato: ' + (r.xato || ''), 'xato');
+  });
+}
+
+function mfyForma(t) {
+  formaChiz(t ? 'Tashkilotni tahrirlash' : 'Yangi tashkilot', [
+    { id:'nomi', label:'Nomi', qiymat:t?.nomi, majburiy:true },
+    { id:'rahbar', label:'Rahbar F.I.Sh.', qiymat:t?.rahbar },
+    { id:'tel', label:'Telefon', qiymat:t?.tel }
+  ], async (q) => {
+    const r = t ? await apiPost('mfyTahrir', { mfyId:t.id, ...q }) : await apiPost('mfyQosh', q);
+    if (r.ok) { 
+      formaYop(); 
+      const ym = await api('mfylar'); 
+      if(ym.ok && Array.isArray(ym.mfylar)) { 
+        mfylar = ym.mfylar; 
+        fillSelect('fMfy', mfylar, true); 
+        fillSelect('xFiltrMfy', mfylar, true);
+      }
+      bYukla(); toast("Saqlandi!"); 
+    } else toast('Xato: ' + (r.xato || ''), 'xato');
+  });
+}
+
+function kategoriyaForma(k) {
+  formaChiz(k ? 'Kategoriyani tahrirlash' : 'Yangi kategoriya', [
+    { id:'nomi', label:'Nomi', qiymat:k?.nomi, majburiy:true },
+    { id:'tavsif', label:'Tavsif', qiymat:k?.tavsif }
+  ], async (q) => {
+    const r = k ? await apiPost('kategoriyaTahrir', { kategoriyaId:k.id, ...q }) : await apiPost('kategoriyaQosh', q);
+    if (r.ok) { 
+      formaYop(); 
+      const yk = await api('kategoriyalar'); 
+      if(yk.ok && Array.isArray(yk.kategoriyalar)) { 
+        kategoriyalar = yk.kategoriyalar; 
+        fillSelect('fKategoriya', kategoriyalar, true); 
+      }
+      bYukla(); toast("Saqlandi!"); 
+    } else toast('Xato: ' + (r.xato || ''), 'xato');
   });
 }
 
