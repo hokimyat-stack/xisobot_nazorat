@@ -683,8 +683,8 @@ mark{ background:rgba(var(--kok-rgb),.28); color:inherit; border-radius:3px; pad
               <button class="refreshBtn" onclick="hisobotlarniYangila()" title="Yangi hisobotlarni tekshirish">
                 <svg id="refIco" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Yangilash
               </button>
-              <input type="text" id="lentaIchQidiruv" placeholder="Tavsif ichidan qidirish..." style="min-width:180px" oninput="lentaIchQidiruvBajar()">
-              <input type="date" id="fDan"> <span style="color:var(--text-ikkinchi)">—</span> <input type="date" id="fGacha">
+              <input type="text" id="lentaIchQidiruv" placeholder="Tavsif ichidan qidirish..." style="min-width:160px" oninput="lentaIchQidiruvBajar()">
+              <input type="date" id="fDan" onchange="lentaYukla()"> <span style="color:var(--text-ikkinchi)">—</span> <input type="date" id="fGacha" onchange="lentaYukla()">
               <button onclick="lentaYukla()">Filtrlash</button>
               <button class="excel" onclick="xodimExcel()">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Excel
@@ -1500,7 +1500,7 @@ function nazoratFiltrOrnat(tur) {
   xodimlarChiz();
 }
 
-/* ================= XODIMLAR RO'YXATI + KATEGoriya BILAN ================= */
+/* ================= XODIMLAR RO'YXATI + KATEGORIYA BILAN ================= */
 let xodimlarSahifa = 1;
 const XODIM_SAHIFA_HAJMI = 40;
 let xodimlarFiltrlanganKesh = [];
@@ -1891,7 +1891,6 @@ async function xaritaYukla() {
         className: '', iconSize:[16,16], iconAnchor:[8,8]
       });
 
-      // Xodim ma'lumotlarini bazadan topish (kategoriyasi uchun)
       const xObj = xodimlar.find(x => String(x.id) === String(h.xodimId));
       const katAdi = xObj?.kategoriyaNomi || h.kategoriyaNomi || '';
 
