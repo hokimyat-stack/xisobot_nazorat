@@ -9,10 +9,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
 /* =========================================================
-   DIZAYN TIZIMI 2.0 — "Nazorat" Control-Room Dashboard
+   DIZAYN TIZIMI 3.0 — "Liquid Glass" Control-Room Dashboard
+   Har bir sirt: ko'p qatlamli shaffoflik + spekulyar yorug'lik chizig'i +
+   yumshoq ichki refraksiya gradienti bilan "suyuq shisha" hissi beradi.
 ========================================================= */
 :root {
   --kok: #2F6FEF; --kok-och: rgba(47,111,239,0.12); --kok-rgb: 47,111,239;
@@ -21,48 +24,53 @@
   --qizil: #EF4444; --qizil-och: rgba(239,68,68,0.13); --qizil-rgb: 239,68,68;
   --binafsha: #8B5CF6; --binafsha-och: rgba(139,92,246,0.14); --binafsha-rgb: 139,92,246;
   --pushti: #EC4899; --pushti-rgb: 236,72,153;
+  --sirena: #14B8B0; --sirena-rgb: 20,184,176; --sirena-och: rgba(20,184,176,0.13);
 
   --bg-asosiy: #EEF1F7;
-  --bg-sidebar: rgba(255,255,255,0.72);
-  --bg-kard: rgba(255,255,255,0.78);
-  --bg-kard-shaffof: rgba(255, 255, 255, 0.92);
-  --bg-kard-hover: rgba(255,255,255,0.92);
+  --bg-sidebar: rgba(255,255,255,0.55);
+  --bg-kard: rgba(255,255,255,0.50);
+  --bg-kard-shaffof: rgba(255, 255, 255, 0.86);
+  --bg-kard-hover: rgba(255,255,255,0.72);
   --bg-input: rgba(20,28,51,0.045);
-  --bg-header: rgba(255, 255, 255, 0.68);
+  --bg-header: rgba(255, 255, 255, 0.48);
   --text-asosiy: #12141C;
   --text-ikkinchi: #6B7286;
   --chiziq: rgba(20, 28, 51, 0.10);
   --chiziq-kard: rgba(20, 28, 51, 0.09);
-  --soya-kard: 0 1px 2px rgba(23,31,58,0.04), 0 14px 32px -20px rgba(23,31,58,0.20);
-  --soya-hover: 0 34px 64px -22px rgba(23,31,58,0.30);
-  --radius: 20px;
-  --blur-kard: blur(28px);
+  --glass-sheen: rgba(255,255,255,0.75);
+  --glass-sheen-dim: rgba(255,255,255,0.22);
+  --glass-edge: rgba(255,255,255,0.55);
+  --glass-shadow-col: rgba(23,31,58,0.22);
+  --soya-kard: 0 1px 0 var(--glass-sheen) inset, 0 0 0 1px var(--glass-edge) inset, 0 20px 44px -24px var(--glass-shadow-col);
+  --soya-hover: 0 1px 0 var(--glass-sheen) inset, 0 0 0 1px var(--glass-edge) inset, 0 40px 80px -28px var(--glass-shadow-col);
+  --radius: 22px;
+  --blur-kard: blur(34px) saturate(1.6);
   --font-ui: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 [data-theme="dark"] {
   --bg-asosiy: #030308;
-  --bg-sidebar: rgba(13, 14, 22, 0.6);
-  --bg-kard: rgba(20, 21, 32, 0.58);
-  --bg-kard-shaffof: rgba(14, 15, 23, 0.92);
-  --bg-kard-hover: rgba(28, 30, 44, 0.72);
+  --bg-sidebar: rgba(15, 16, 26, 0.42);
+  --bg-kard: rgba(22, 23, 36, 0.38);
+  --bg-kard-shaffof: rgba(14, 15, 23, 0.86);
+  --bg-kard-hover: rgba(32, 34, 50, 0.55);
   --bg-input: rgba(255,255,255,0.045);
-  --bg-header: rgba(5, 5, 10, 0.55);
+  --bg-header: rgba(6, 6, 12, 0.38);
   --text-asosiy: #F5F6FA;
   --text-ikkinchi: #8B90A3;
   --chiziq: rgba(255, 255, 255, 0.09);
   --chiziq-kard: rgba(255, 255, 255, 0.08);
-  --soya-kard: 0 1px 0 rgba(255,255,255,0.04) inset, 0 20px 44px -20px rgba(0,0,0,0.7);
-  --soya-hover: 0 40px 90px -24px rgba(0,0,0,0.85);
+  --glass-sheen: rgba(255,255,255,0.10);
+  --glass-sheen-dim: rgba(255,255,255,0.05);
+  --glass-edge: rgba(255,255,255,0.09);
+  --glass-shadow-col: rgba(0,0,0,0.75);
+  --soya-kard: 0 1px 0 var(--glass-sheen) inset, 0 0 0 1px var(--glass-edge) inset, 0 24px 52px -22px var(--glass-shadow-col);
+  --soya-hover: 0 1px 0 var(--glass-sheen) inset, 0 0 0 1px var(--glass-edge) inset, 0 46px 96px -26px var(--glass-shadow-col);
 }
 
 * { box-sizing: border-box; }
-html, body {
-  margin: 0; padding: 0;
-  height: 100vh; width: 100vw;
-  overflow: hidden;
-}
+html, body { margin: 0; padding: 0; height: 100vh; width: 100vw; overflow: hidden; }
 
 body {
   font-family: var(--font-ui);
@@ -73,6 +81,7 @@ body {
   position: relative;
 }
 
+/* Suyuq fon "lava" bloblari — sekin harakatlanadi, shisha ostidagi suyuqlik hissi beradi */
 body::before, body::after{
   content:''; position:fixed; z-index:0; pointer-events:none; border-radius:50%;
   filter: blur(90px); opacity:.55; transition: opacity .3s ease;
@@ -80,11 +89,16 @@ body::before, body::after{
 body::before{
   width:640px; height:640px; top:-220px; left:-160px;
   background: radial-gradient(circle at 30% 30%, rgba(var(--kok-rgb),0.55), rgba(var(--kok-rgb),0) 70%);
+  animation: lavaDrift1 26s ease-in-out infinite alternate;
 }
 body::after{
   width:560px; height:560px; bottom:-200px; right:-140px;
   background: radial-gradient(circle at 60% 60%, rgba(var(--binafsha-rgb),0.5), rgba(var(--binafsha-rgb),0) 70%);
+  animation: lavaDrift2 32s ease-in-out infinite alternate;
 }
+@keyframes lavaDrift1{ from{transform:translate(0,0) scale(1);} to{transform:translate(60px,40px) scale(1.08);} }
+@keyframes lavaDrift2{ from{transform:translate(0,0) scale(1);} to{transform:translate(-50px,-30px) scale(1.05);} }
+@media (prefers-reduced-motion: reduce){ body::before, body::after{ animation:none; } }
 [data-theme="light"] body::before, [data-theme="light"] body::after{ opacity:.22; }
 #app, #loginEkran, .toast{ position:relative; z-index:1; }
 
@@ -94,19 +108,8 @@ button{font-family:inherit;cursor:pointer;border:none;transition:transform .15s 
 button:active{transform:scale(0.96)}
 input,select,textarea{font-family:inherit;outline:none;transition:all .18s ease; box-sizing: border-box; color:var(--text-asosiy);}
 
-/* ======= YAXSHILANGAN SELECT DIZAYNI ======= */
-select {
-    font-family: inherit;
-    outline: none;
-    transition: all .18s ease;
-    box-sizing: border-box;
-    color: var(--text-asosiy);
-    background-color: var(--bg-input); 
-}
-select option {
-    background-color: var(--bg-kard); 
-    color: var(--text-asosiy);
-}
+select { font-family: inherit; outline: none; transition: all .18s ease; box-sizing: border-box; color: var(--text-asosiy); background-color: var(--bg-input); }
+select option { background-color: var(--bg-kard-shaffof); color: var(--text-asosiy); }
 
 input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid var(--kok); outline-offset: 2px; }
 ::selection{background:var(--kok-och)}
@@ -126,53 +129,47 @@ input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px s
 
 svg { flex-shrink: 0; }
 
+/* ============ LIQUID GLASS SIRT — umumiy mixin-simon klass ============ */
+.liquidSirt{
+  position:relative;
+  background:
+    linear-gradient(135deg, var(--glass-sheen-dim), transparent 40%),
+    var(--bg-kard);
+  border:1px solid var(--chiziq-kard);
+  box-shadow: var(--soya-kard);
+  backdrop-filter: var(--blur-kard); -webkit-backdrop-filter: var(--blur-kard);
+}
+.liquidSirt::before{
+  content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+  background: linear-gradient(120deg, var(--glass-sheen) 0%, transparent 18%);
+  opacity:.5; mix-blend-mode:overlay;
+}
+
 /* ============ LOGIN ============ */
-#loginEkran{
-  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;
-  background: var(--bg-asosiy);
-  z-index: 1000;
-}
+#loginEkran{ position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden; background: var(--bg-asosiy); z-index: 1000; }
 .loginOrb{ position:absolute; border-radius:50%; filter:blur(2px); pointer-events:none; }
-.loginOrb.o1{ width:180px; height:180px; top:8%; left:14%;
-  background: radial-gradient(circle at 32% 28%, rgba(120,140,190,0.9), rgba(20,22,34,0.9) 65%);
-  box-shadow: inset 0 0 40px rgba(0,0,0,0.5), 0 30px 60px -20px rgba(0,0,0,0.6);
-}
-.loginOrb.o2{ width:260px; height:260px; top:38%; right:8%;
-  background: radial-gradient(circle at 30% 25%, rgba(var(--kok-rgb),0.75), rgba(10,12,20,0.92) 65%);
-  box-shadow: inset 0 0 50px rgba(0,0,0,0.5), 0 30px 70px -20px rgba(var(--kok-rgb),0.4);
-}
-.loginOrb.o3{ width:140px; height:140px; bottom:10%; left:20%;
-  background: radial-gradient(circle at 30% 25%, rgba(var(--binafsha-rgb),0.7), rgba(10,12,20,0.92) 65%);
-  box-shadow: inset 0 0 30px rgba(0,0,0,0.5), 0 24px 50px -18px rgba(var(--binafsha-rgb),0.4);
-}
+.loginOrb.o1{ width:180px; height:180px; top:8%; left:14%; background: radial-gradient(circle at 32% 28%, rgba(120,140,190,0.9), rgba(20,22,34,0.9) 65%); box-shadow: inset 0 0 40px rgba(0,0,0,0.5), 0 30px 60px -20px rgba(0,0,0,0.6); animation: lavaDrift1 20s ease-in-out infinite alternate; }
+.loginOrb.o2{ width:260px; height:260px; top:38%; right:8%; background: radial-gradient(circle at 30% 25%, rgba(var(--kok-rgb),0.75), rgba(10,12,20,0.92) 65%); box-shadow: inset 0 0 50px rgba(0,0,0,0.5), 0 30px 70px -20px rgba(var(--kok-rgb),0.4); animation: lavaDrift2 24s ease-in-out infinite alternate; }
+.loginOrb.o3{ width:140px; height:140px; bottom:10%; left:20%; background: radial-gradient(circle at 30% 25%, rgba(var(--binafsha-rgb),0.7), rgba(10,12,20,0.92) 65%); box-shadow: inset 0 0 30px rgba(0,0,0,0.5), 0 24px 50px -18px rgba(var(--binafsha-rgb),0.4); }
 [data-theme="light"] .loginOrb{ opacity:.5; }
 .loginCard{
   position:relative; background: var(--bg-kard-shaffof);
-  border-radius:26px; padding:46px 42px 42px; width:min(400px,90vw);
-  border:1px solid rgba(255,255,255,0.14); box-shadow: 0 50px 100px -30px rgba(0,0,0,0.6);
-  backdrop-filter: blur(34px); -webkit-backdrop-filter: blur(34px);
+  border-radius:28px; padding:46px 42px 42px; width:min(400px,90vw);
+  border:1px solid var(--glass-edge); box-shadow: 0 1px 0 var(--glass-sheen) inset, 0 60px 120px -30px rgba(0,0,0,0.6);
+  backdrop-filter: blur(40px) saturate(1.7); -webkit-backdrop-filter: blur(40px) saturate(1.7);
   animation:cardIn .5s cubic-bezier(.16,1,.3,1);
 }
 @keyframes cardIn{from{opacity:0;transform:translateY(24px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
-.loginCard .logoMark{
-  position:relative;
-  width:52px; height:52px; border-radius:16px; margin:0 auto 20px;
-  background: linear-gradient(135deg, var(--kok), #6AA3FF);
-  display:flex; align-items:center; justify-content:center;
-  box-shadow: 0 14px 26px -10px rgba(var(--kok-rgb),0.55);
-}
-.loginCard .logoMark::after{
-  content:''; position:absolute; inset:-7px; border-radius:20px;
-  border:1.5px solid rgba(var(--kok-rgb),.4); animation:livePulse 2.6s ease-out infinite;
-}
+.loginCard .logoMark{ position:relative; width:52px; height:52px; border-radius:18px; margin:0 auto 20px; background: linear-gradient(135deg, var(--kok), #6AA3FF); display:flex; align-items:center; justify-content:center; box-shadow: 0 14px 26px -10px rgba(var(--kok-rgb),0.55), inset 0 1px 0 rgba(255,255,255,.4); }
+.loginCard .logoMark::after{ content:''; position:absolute; inset:-7px; border-radius:22px; border:1.5px solid rgba(var(--kok-rgb),.4); animation:livePulse 2.6s ease-out infinite; }
 .loginCard .brand{font-size:22px; color:var(--text-asosiy); letter-spacing:-0.02em; text-align:center; font-weight:800;}
 .loginCard .sub{color:var(--text-ikkinchi); font-size:12.5px; margin:6px 0 30px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:8px;}
 .loginCard label{display:block; font-weight:700; font-size:11px; margin:18px 0 7px; color:var(--text-ikkinchi); text-transform:uppercase; letter-spacing:0.08em}
-.loginCard input{width:100%; padding:14px 16px; border:1.5px solid var(--chiziq); border-radius:14px; font-size:14.5px; background:var(--bg-input); color:var(--text-asosiy)}
+.loginCard input{width:100%; padding:14px 16px; border:1.5px solid var(--chiziq); border-radius:15px; font-size:14.5px; background:var(--bg-input); color:var(--text-asosiy)}
 .loginCard input:focus{border-color:var(--kok); box-shadow:0 0 0 4px var(--kok-och)}
-.loginCard .btn{width:100%; margin-top:30px; background:linear-gradient(135deg, var(--kok), #5B9BFF); color:#fff; padding:15px; border-radius:14px; font-weight:700; font-size:15px; box-shadow:0 14px 26px -8px rgba(var(--kok-rgb),0.5);}
+.loginCard .btn{width:100%; margin-top:30px; background:linear-gradient(135deg, var(--kok), #5B9BFF); color:#fff; padding:15px; border-radius:15px; font-weight:700; font-size:15px; box-shadow:0 14px 26px -8px rgba(var(--kok-rgb),0.5), inset 0 1px 0 rgba(255,255,255,.4);}
 .loginCard .btn:hover{filter:brightness(1.06); transform:translateY(-1px);}
-.loginXato{color:var(--qizil); font-size:13px; margin-top:16px; display:none; background:var(--qizil-och); padding:11px 14px; border-radius:12px; font-weight:600; text-align:center}
+.loginXato{color:var(--qizil); font-size:13px; margin-top:16px; display:none; background:var(--qizil-och); padding:11px 14px; border-radius:13px; font-weight:600; text-align:center}
 
 /* ============ APP SHELL ============ */
 #app{display:none; height:100vh; width:100%; overflow:hidden;}
@@ -184,14 +181,10 @@ svg { flex-shrink: 0; }
   backdrop-filter: var(--blur-kard); -webkit-backdrop-filter: var(--blur-kard);
   display:flex; flex-direction:column; padding:22px 16px;
   position:relative; z-index:1;
+  box-shadow: 1px 0 0 var(--glass-edge) inset;
 }
 .sidebar-brand{ display:flex; align-items:center; gap:12px; padding:4px 6px 22px; }
-.brand-mark{
-  width:38px; height:38px; border-radius:11px; flex-shrink:0;
-  background:linear-gradient(135deg, var(--kok), #6AA3FF);
-  display:flex; align-items:center; justify-content:center;
-  box-shadow:0 10px 20px -8px rgba(var(--kok-rgb),.55);
-}
+.brand-mark{ width:38px; height:38px; border-radius:12px; flex-shrink:0; background:linear-gradient(135deg, var(--kok), #6AA3FF); display:flex; align-items:center; justify-content:center; box-shadow:0 10px 20px -8px rgba(var(--kok-rgb),.55), inset 0 1px 0 rgba(255,255,255,.4); }
 .brand-text{ line-height:1.25; min-width:0; }
 .brand-text .brand-name{ font-size:14.5px; color:var(--text-asosiy); white-space:nowrap; }
 .brand-text small{ color:var(--text-ikkinchi); font-weight:600; font-size:10.5px; letter-spacing:.02em; }
@@ -199,24 +192,16 @@ svg { flex-shrink: 0; }
 .sidebar-label{ font-size:10.5px; font-weight:800; color:var(--text-ikkinchi); text-transform:uppercase; letter-spacing:.09em; padding:6px 10px 8px; }
 
 .navTabs{display:flex; flex-direction:column; gap:4px;}
-.navTabs button{
-  background:transparent; border-radius:13px; padding:9px 12px 9px 10px; font-weight:700; font-size:13.5px;
-  color:var(--text-ikkinchi); position:relative; justify-content:flex-start; width:100%;
-}
-.navTabs button::before{
-  content:''; position:absolute; left:-16px; top:50%; transform:translateY(-50%) scaleY(0);
-  width:3px; height:18px; border-radius:0 4px 4px 0; background:var(--kok); transition:transform .18s ease;
-}
+.navTabs button{ background:transparent; border-radius:14px; padding:9px 12px 9px 10px; font-weight:700; font-size:13.5px; color:var(--text-ikkinchi); position:relative; justify-content:flex-start; width:100%; }
+.navTabs button::before{ content:''; position:absolute; left:-16px; top:50%; transform:translateY(-50%) scaleY(0); width:3px; height:18px; border-radius:0 4px 4px 0; background:var(--kok); transition:transform .18s ease; }
 .navTabs button svg{ flex-shrink:0; }
-.navIcoBox{
-  width:30px; height:30px; border-radius:9px; flex-shrink:0;
-  display:flex; align-items:center; justify-content:center;
-  background:var(--bg-input); color:var(--text-ikkinchi); transition:all .18s ease;
-}
+.navIcoBox{ width:30px; height:30px; border-radius:10px; flex-shrink:0; display:flex; align-items:center; justify-content:center; background:var(--bg-input); color:var(--text-ikkinchi); transition:all .18s ease; }
 .navTabs button:hover .navIcoBox{ color:var(--text-asosiy); }
 .navTabs button.aktiv .navIcoBox.nav-blue{ background:linear-gradient(135deg, var(--kok), #6AA3FF); color:#fff; box-shadow:0 8px 18px -8px rgba(var(--kok-rgb),.6); }
 .navTabs button.aktiv .navIcoBox.nav-purple{ background:linear-gradient(135deg, var(--binafsha), #B794F6); color:#fff; box-shadow:0 8px 18px -8px rgba(var(--binafsha-rgb),.6); }
 .navTabs button.aktiv .navIcoBox.nav-amber{ background:linear-gradient(135deg, var(--sariq), #FBBF24); color:#fff; box-shadow:0 8px 18px -8px rgba(var(--sariq-rgb),.6); }
+.navTabs button.aktiv .navIcoBox.nav-teal{ background:linear-gradient(135deg, var(--sirena), #5EEAD4); color:#fff; box-shadow:0 8px 18px -8px rgba(var(--sirena-rgb),.6); }
+.navTabs button.aktiv .navIcoBox.nav-pink{ background:linear-gradient(135deg, var(--pushti), #F9A8D4); color:#fff; box-shadow:0 8px 18px -8px rgba(var(--pushti-rgb),.6); }
 .navTabs button:hover{ background:var(--bg-kard-hover); color:var(--text-asosiy); }
 .navTabs button.aktiv{ background:var(--kok-och); color:var(--kok); box-shadow:none; }
 .navTabs button.aktiv::before{ transform:translateY(-50%) scaleY(1); }
@@ -226,11 +211,7 @@ svg { flex-shrink: 0; }
 
 .sidebar-foot{ border-top:1px solid var(--chiziq); padding-top:14px; margin-top:10px; }
 .user-card{ display:flex; align-items:center; gap:11px; padding:8px 8px; border-radius:14px; }
-.user-avatar{
-  width:38px; height:38px; border-radius:11px; flex-shrink:0;
-  background:var(--bg-input); border:1px solid var(--chiziq);
-  display:flex; align-items:center; justify-content:center; color:var(--text-ikkinchi);
-}
+.user-avatar{ width:38px; height:38px; border-radius:12px; flex-shrink:0; background:var(--bg-input); border:1px solid var(--chiziq); display:flex; align-items:center; justify-content:center; color:var(--text-ikkinchi); }
 .user-meta{ min-width:0; display:flex; flex-direction:column; gap:5px; }
 .user-meta b{ font-size:13px; color:var(--text-asosiy); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:700; }
 
@@ -245,82 +226,56 @@ svg { flex-shrink: 0; }
 .content-col{ display:flex; flex-direction:column; height:100vh; flex:1; min-width:0; overflow:hidden; }
 
 header.top{
-  background: var(--bg-header); backdrop-filter:blur(24px); -webkit-backdrop-filter: blur(24px);
+  background: var(--bg-header); backdrop-filter:blur(30px) saturate(1.5); -webkit-backdrop-filter: blur(30px) saturate(1.5);
   border-bottom:1px solid var(--chiziq); padding:0 26px; height:64px; display:flex; align-items:center; gap:14px; z-index:20; flex-shrink: 0;
-  position:relative;
+  position:relative; box-shadow: 0 1px 0 var(--glass-edge) inset;
 }
 .rolBadge{border-radius:20px; padding:4px 11px; font-size:10.5px; font-weight:800; letter-spacing:0.04em; width:fit-content;}
 .rolBadge.superadmin{background:var(--binafsha-och); color:var(--binafsha);}
 .rolBadge.admin{background:var(--yashil-och); color:var(--yashil);}
 .rolBadge.nazoratchi{background:var(--sariq-och); color:var(--sariq);}
 
-.yangi-badge {
-  background: var(--qizil); color: #fff;
-  font-size: 10px; font-weight: 800;
-  padding: 2px 6px; border-radius: 10px;
-  display: inline-flex; align-items: center; justify-content: center;
-  box-shadow: 0 2px 8px rgba(240,71,91,0.45);
-}
+.yangi-badge { background: var(--qizil); color: #fff; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(240,71,91,0.45); }
 
 .top-amallar { margin-left:auto; display:flex; gap:10px; align-items:center; }
-.theme-btn { background:var(--bg-input); color:var(--text-asosiy); border:1px solid var(--chiziq); width:38px; height:38px; border-radius:12px; display:flex; align-items:center; justify-content:center; }
+.theme-btn { background:var(--bg-input); color:var(--text-asosiy); border:1px solid var(--chiziq); width:38px; height:38px; border-radius:13px; display:flex; align-items:center; justify-content:center; }
 .theme-btn:hover { background:var(--bg-kard-hover); border-color:var(--kok); color:var(--kok); }
 
-.top .cta {
-  background: var(--bg-input);
-  color: var(--text-asosiy);
-  border-radius: 12px;
-  padding: 10px 16px;
-  font-weight: 700;
-  font-size: 13px;
-  border: 1px solid var(--chiziq);
-}
+.top .cta { background: var(--bg-input); color: var(--text-asosiy); border-radius: 13px; padding: 10px 16px; font-weight: 700; font-size: 13px; border: 1px solid var(--chiziq); }
 .top .cta:hover { background: var(--bg-kard-hover); border-color: var(--kok); }
+.top .cta.bell { position:relative; }
+.top .cta.bell .dotBadge{ position:absolute; top:6px; right:6px; width:8px; height:8px; border-radius:50%; background:var(--qizil); display:none; }
+.top .cta.bell.faol .dotBadge{ display:block; }
 
-.top .chiqishBtn {
-  background: var(--bg-input);
-  color: var(--qizil);
-  font-weight: 700;
-  font-size: 13px;
-  padding: 10px 16px;
-  border-radius: 12px;
-  border: 1px solid var(--chiziq);
-}
+.top .chiqishBtn { background: var(--bg-input); color: var(--qizil); font-weight: 700; font-size: 13px; padding: 10px 16px; border-radius: 13px; border: 1px solid var(--chiziq); }
 .top .chiqishBtn:hover { background: var(--qizil-och); border-color: var(--qizil); }
-#mobilMenyu{display:none; background:var(--bg-input); border:1px solid var(--chiziq); border-radius:12px; width:38px; height:38px; color:var(--text-asosiy)}
+#mobilMenyu{display:none; background:var(--bg-input); border:1px solid var(--chiziq); border-radius:13px; width:38px; height:38px; color:var(--text-asosiy)}
 
-main{
-  flex:1; display:flex; overflow:hidden;
-  padding:22px; gap:20px; max-width: 1680px; margin: 0 auto; width: 100%;
-}
+.globalQidiruvWrap{ position:relative; max-width:340px; width:100%; }
+.globalQidiruvWrap input{ width:100%; padding:10px 14px 10px 38px; border:1.5px solid var(--chiziq); border-radius:13px; font-size:13px; background:var(--bg-input); color:var(--text-asosiy); }
+.globalQidiruvWrap input:focus{ border-color:var(--kok); box-shadow:0 0 0 3px var(--kok-och); }
+.globalQidiruvWrap svg{ position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-ikkinchi); }
 
-.asosiy-kard {
-  background: var(--bg-kard);
-  border: 1px solid var(--chiziq-kard);
+main{ flex:1; display:flex; overflow:hidden; padding:22px; gap:20px; max-width: 1680px; margin: 0 auto; width: 100%; }
+
+.asosiy-kard{
   border-radius: var(--radius);
-  box-shadow: var(--soya-kard);
-  backdrop-filter: var(--blur-kard); -webkit-backdrop-filter: var(--blur-kard);
   display: flex; flex-direction: column;
-  overflow-y: auto; 
+  overflow-y: auto;
   position: relative;
 }
+.asosiy-kard { background: linear-gradient(150deg, var(--glass-sheen-dim), transparent 45%), var(--bg-kard); border: 1px solid var(--chiziq-kard); box-shadow: var(--soya-kard); backdrop-filter: var(--blur-kard); -webkit-backdrop-filter: var(--blur-kard); }
 
 #chap{ width:320px; flex-shrink: 0;}
-#chap .qidiruv{padding:18px; border-bottom:1px solid var(--chiziq); display:flex; flex-direction:column; gap:10px; position: sticky; top: 0; background: var(--bg-kard-shaffof); backdrop-filter:blur(10px); z-index: 10;}
-#chap .qidiruv input, #chap .qidiruv select{
-  width:100%; padding:11px 14px; border:1.5px solid var(--chiziq); border-radius:12px; font-size:13px; background:var(--bg-input); color:var(--text-asosiy)
-}
-#chap .qidiruv select {
-  appearance: none; -webkit-appearance: none;
-  background-image: url('data:image/svg+xml;utf8,<svg fill="none" stroke="%23767C8C" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>');
-  background-repeat: no-repeat; background-position: right 14px center; background-size: 16px; padding-right: 36px;
-}
+#chap .qidiruv{padding:18px; border-bottom:1px solid var(--chiziq); display:flex; flex-direction:column; gap:10px; position: sticky; top: 0; background: var(--bg-kard-shaffof); backdrop-filter:blur(16px); z-index: 10;}
+#chap .qidiruv input, #chap .qidiruv select{ width:100%; padding:11px 14px; border:1.5px solid var(--chiziq); border-radius:13px; font-size:13px; background:var(--bg-input); color:var(--text-asosiy) }
+#chap .qidiruv select { appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="none" stroke="%23767C8C" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>'); background-repeat: no-repeat; background-position: right 14px center; background-size: 16px; padding-right: 36px; }
 #chap .qidiruv input:focus, #chap .qidiruv select:focus{border-color:var(--kok); box-shadow:0 0 0 3px var(--kok-och);}
-.nazFiltrBar{ display:flex; gap:4px; background:var(--bg-input); padding:4px; border-radius:12px; border:1px solid var(--chiziq); }
+.nazFiltrBar{ display:flex; gap:4px; background:var(--bg-input); padding:4px; border-radius:13px; border:1px solid var(--chiziq); }
 .nazFiltrBar .nazFiltrBtn{ flex:1; background:transparent; border-radius:9px; padding:8px 6px; font-size:11.5px; font-weight:700; color:var(--text-ikkinchi); white-space:nowrap; }
-.nazFiltrBar .nazFiltrBtn.aktiv{ background:var(--bg-kard); color:var(--kok); box-shadow:0 3px 10px rgba(0,0,0,0.08); }
+.nazFiltrBar .nazFiltrBtn.aktiv{ background:var(--bg-kard-shaffof); color:var(--kok); box-shadow:0 3px 10px rgba(0,0,0,0.08); }
 #xodimlarList{flex:1; padding:10px;}
-.xodimRow{padding:11px; border-radius:14px; margin-bottom:5px; cursor:pointer; display:flex; gap:11px; align-items:center; border:1px solid transparent; background:transparent; transition:background .15s ease, border-color .15s ease;}
+.xodimRow{padding:11px; border-radius:15px; margin-bottom:5px; cursor:pointer; display:flex; gap:11px; align-items:center; border:1px solid transparent; background:transparent; transition:background .15s ease, border-color .15s ease;}
 .xodimRow:hover{background:var(--bg-kard-hover)}
 .xodimRow.aktiv{background:var(--kok-och); border-color:rgba(var(--kok-rgb),.35);}
 .nuqta{width:9px; height:9px; border-radius:50%; flex-shrink:0; position:relative;}
@@ -331,21 +286,25 @@ main{
 .xodimRow .fio{font-weight:700; font-size:13.5px; color:var(--text-asosiy)}
 .xodimRow .meta{color:var(--text-ikkinchi); font-size:11px; margin-top:2px; font-weight:500}
 .xodimRow .son{margin-left:auto; background:var(--bg-input); border:1px solid var(--chiziq); border-radius:14px; padding:5px 9px; font-size:11.5px; font-weight:800; color:var(--text-asosiy); display:flex; align-items:center; gap:6px; font-family:var(--font-mono);}
+.xodimRow .infoBtn{ width:24px; height:24px; border-radius:8px; background:var(--bg-input); border:1px solid var(--chiziq); color:var(--text-ikkinchi); flex-shrink:0; }
+.xodimRow .infoBtn:hover{ color:var(--kok); border-color:var(--kok); }
 
 .uzrli-badge { background: var(--binafsha-och); color: var(--binafsha); padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; border: 1px solid rgba(var(--binafsha-rgb), 0.3); }
 
-#ong, #dashboardPanel, #boshqaruv { flex:1; padding:28px; display:none; }
+#ong, #dashboardPanel, #boshqaruv, #xaritaPanel, #qidiruvPanel { flex:1; padding:28px; display:none; }
 .bosh-holat{text-align:center; color:var(--text-ikkinchi); margin-top:20vh; line-height:1.6; font-size: 15px;}
 .bosh-holat b{font-size:22px; color:var(--text-asosiy); display:block; margin-bottom:8px;}
 
 .bosh{display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid var(--chiziq)}
 .bosh h2{font-size:21px; color:var(--text-asosiy); letter-spacing:-0.02em;}
 .filtr{display:flex; gap:9px; align-items:center; flex-wrap:wrap;}
-.filtr input[type=date]{padding:10px 13px; border:1.5px solid var(--chiziq); border-radius:12px; font-size:13px; background:var(--bg-input); color:var(--text-asosiy)}
-.filtr button{background:var(--bg-input); border:1.5px solid var(--chiziq); border-radius:12px; padding:10px 15px; font-size:13px; font-weight:700; color:var(--text-asosiy)}
+.filtr input[type=date], .filtr input[type=text]{padding:10px 13px; border:1.5px solid var(--chiziq); border-radius:13px; font-size:13px; background:var(--bg-input); color:var(--text-asosiy)}
+.filtr button{background:var(--bg-input); border:1.5px solid var(--chiziq); border-radius:13px; padding:10px 15px; font-size:13px; font-weight:700; color:var(--text-asosiy)}
 .filtr button:hover{background:var(--bg-kard-hover); border-color:var(--kok);}
 .filtr button.excel{background:var(--yashil); color:#fff; border:none; box-shadow:0 10px 20px -8px rgba(34,197,94,.5);}
 .filtr button.excel:hover{ filter:brightness(1.08); }
+.filtr button.pdf{background:var(--qizil); color:#fff; border:none; box-shadow:0 10px 20px -8px rgba(239,68,68,.5);}
+.filtr button.pdf:hover{ filter:brightness(1.08); }
 .filtr button.refreshBtn{background:var(--kok-och); color:var(--kok); border:1px solid rgba(var(--kok-rgb), 0.25);}
 .filtr button.refreshBtn:hover{background:rgba(var(--kok-rgb), 0.22);}
 
@@ -358,21 +317,15 @@ main{
 .tSpine::before{content:''; position:absolute; left:13px; top:0; bottom:0; width:2px; background:linear-gradient(var(--chiziq), var(--chiziq))}
 .tNode{position:absolute; left:6px; top:28px; width:16px; height:16px; border-radius:50%; border:4px solid var(--bg-kard); box-shadow:0 0 0 1px var(--chiziq); z-index:1;}
 .tNode.YASHIL{background:var(--yashil)} .tNode.SARIQ{background:var(--sariq)} .tNode.QIZIL{background:var(--qizil)}
-.tRow:first-child .tNode::after{
-  content:''; position:absolute; inset:-5px; border-radius:50%; border:1.5px solid currentColor; opacity:.5;
-  animation:livePulse 2.2s ease-out infinite; color:inherit;
-}
+.tRow:first-child .tNode::after{ content:''; position:absolute; inset:-5px; border-radius:50%; border:1.5px solid currentColor; opacity:.5; animation:livePulse 2.2s ease-out infinite; color:inherit; }
 .tRow:first-child .tNode.YASHIL::after{color:var(--yashil)}
 .tRow:first-child .tNode.SARIQ::after{color:var(--sariq)}
 .tRow:first-child .tNode.QIZIL::after{color:var(--qizil)}
-.tCard{
-  flex:1; background:var(--bg-input); border:1px solid var(--chiziq-kard); border-radius:16px; padding:20px; margin:9px 0;
-  cursor:pointer; transition:transform .2s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease; position:relative;
-}
+.tCard{ flex:1; background:var(--bg-input); border:1px solid var(--chiziq-kard); border-radius:17px; padding:20px; margin:9px 0; cursor:pointer; transition:transform .2s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease; position:relative; }
 .tCard.unread { border-left: 3px solid var(--kok); }
 .tCard:hover{transform:translateY(-3px); box-shadow:var(--soya-hover); background:var(--bg-kard-hover); border-color:rgba(var(--kok-rgb),.25);}
 .tTop{display:flex; gap:16px; align-items:center}
-.tTop img{width:60px; height:60px; border-radius:14px; object-fit:cover; background:var(--chiziq);}
+.tTop img{width:60px; height:60px; border-radius:15px; object-fit:cover; background:var(--chiziq);}
 .tTop .icim{flex:1; min-width:0}
 .tTop .tur{font-weight:800; font-size:15.5px; color:var(--text-asosiy);}
 .tTop .tsh{color:var(--text-ikkinchi); font-size:12.5px; font-weight:600; margin-top:4px}
@@ -384,66 +337,43 @@ main{
 .badge{font-size:11.5px; font-weight:800; border-radius:30px; padding:6px 13px;}
 .badge.kech{background:var(--qizil-och); color:var(--qizil);}
 
-.bTabs{display:flex; gap:5px; margin-bottom:24px; flex-wrap:wrap; background:var(--bg-input); padding:5px; border-radius:16px; width: fit-content; border:1px solid var(--chiziq);}
-.bTabs button{background:transparent; border-radius:12px; padding:10px 18px; font-weight:700; font-size:13.5px; color:var(--text-ikkinchi)}
-.bTabs button.aktiv{background:var(--bg-kard); color:var(--text-asosiy); box-shadow:0 4px 14px rgba(0,0,0,0.08)}
+.bTabs{display:flex; gap:5px; margin-bottom:24px; flex-wrap:wrap; background:var(--bg-input); padding:5px; border-radius:17px; width: fit-content; border:1px solid var(--chiziq);}
+.bTabs button{background:transparent; border-radius:13px; padding:10px 18px; font-weight:700; font-size:13.5px; color:var(--text-ikkinchi)}
+.bTabs button.aktiv{background:var(--bg-kard-shaffof); color:var(--text-asosiy); box-shadow:0 4px 14px rgba(0,0,0,0.08)}
 .bPanel h3{font-size:19px; color:var(--text-asosiy); font-weight:800; letter-spacing:-0.02em;}
 .bPanel .izoh{color:var(--text-ikkinchi); font-size:13.5px; margin:6px 0 24px; font-weight:500}
 
 .dashFiltrBar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:22px; }
-.dashFiltrBar select{
-  padding:11px 34px 11px 14px; border:1.5px solid var(--chiziq); border-radius:13px; font-size:13px; font-weight:700;
-  background:var(--bg-input); color:var(--text-asosiy);
-  appearance: none; -webkit-appearance: none;
-  background-image: url('data:image/svg+xml;utf8,<svg fill="none" stroke="%236B7286" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>');
-  background-repeat: no-repeat; background-position: right 12px center; background-size: 15px;
-  min-width:170px;
-}
+.dashFiltrBar select{ padding:11px 34px 11px 14px; border:1.5px solid var(--chiziq); border-radius:14px; font-size:13px; font-weight:700; background:var(--bg-input); color:var(--text-asosiy); appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="none" stroke="%236B7286" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>'); background-repeat: no-repeat; background-position: right 12px center; background-size: 15px; min-width:170px; }
 .dashFiltrBar select:focus{ border-color:var(--kok); box-shadow:0 0 0 3px var(--kok-och); }
 .dashFiltrBar .filtrLabel{ font-size:11px; font-weight:800; color:var(--text-ikkinchi); text-transform:uppercase; letter-spacing:.06em; display:flex; align-items:center; gap:6px; }
-.dashFiltrBar .tozalaBtn{ background:var(--bg-input); border:1.5px solid var(--chiziq); border-radius:13px; padding:10px 15px; font-size:12.5px; font-weight:700; color:var(--text-ikkinchi); }
+.dashFiltrBar .tozalaBtn{ background:var(--bg-input); border:1.5px solid var(--chiziq); border-radius:14px; padding:10px 15px; font-size:12.5px; font-weight:700; color:var(--text-ikkinchi); }
 .dashFiltrBar .tozalaBtn:hover{ color:var(--qizil); border-color:rgba(var(--qizil-rgb),.3); }
 
-.chartKard{
-  background:var(--bg-kard); border:1px solid var(--chiziq-kard); border-radius:20px; padding:24px;
-  margin-bottom:32px; box-shadow:var(--soya-kard);
-}
+.chartKard{ background: linear-gradient(150deg, var(--glass-sheen-dim), transparent 45%), var(--bg-kard); border:1px solid var(--chiziq-kard); border-radius:22px; padding:24px; margin-bottom:32px; box-shadow:var(--soya-kard); backdrop-filter: var(--blur-kard); -webkit-backdrop-filter: var(--blur-kard); }
 .chartKard .chartBosh{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:18px; }
 .chartKard h3{ font-size:16.5px; margin:0; }
 .chartLegend{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
 .chartLegend span{ display:inline-flex; align-items:center; gap:7px; font-size:11.5px; font-weight:700; color:var(--text-ikkinchi); }
 .chartLegend i{ width:10px; height:10px; border-radius:3px; display:inline-block; }
 .chartWrap{ position:relative; height:280px; }
+.chartWrap.kichik{ height:210px; }
 .chartBosh_empty{ text-align:center; padding:50px 10px; color:var(--text-ikkinchi); font-size:13.5px; font-weight:600; }
 .dashHero{
   position:relative; overflow:hidden;
   display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;
-  background:
-    radial-gradient(560px 240px at 102% -10%, rgba(var(--kok-rgb),0.16), transparent 68%),
-    var(--bg-input);
-  border:1px solid var(--chiziq-kard); border-radius:22px; padding:28px 30px; margin-bottom:28px;
+  background: radial-gradient(560px 240px at 102% -10%, rgba(var(--kok-rgb),0.16), transparent 68%), var(--bg-input);
+  border:1px solid var(--chiziq-kard); border-radius:24px; padding:28px 30px; margin-bottom:28px;
 }
-.dashHero::before{
-  content:''; position:absolute; inset:0; opacity:.6; pointer-events:none;
-  background-image: radial-gradient(rgba(var(--kok-rgb),0.24) 1px, transparent 1.6px);
-  background-size: 18px 18px;
-  -webkit-mask-image: linear-gradient(115deg, transparent 30%, #000 60%, transparent 92%);
-  mask-image: linear-gradient(115deg, transparent 30%, #000 60%, transparent 92%);
-}
+.dashHero::before{ content:''; position:absolute; inset:0; opacity:.6; pointer-events:none; background-image: radial-gradient(rgba(var(--kok-rgb),0.24) 1px, transparent 1.6px); background-size: 18px 18px; -webkit-mask-image: linear-gradient(115deg, transparent 30%, #000 60%, transparent 92%); mask-image: linear-gradient(115deg, transparent 30%, #000 60%, transparent 92%); }
 .dashHero > div:first-child{ position:relative; z-index:1; }
 .dashHero .eyebrow{ display:inline-flex; align-items:center; gap:7px; font-size:10.5px; font-weight:800; letter-spacing:.09em; text-transform:uppercase; color:var(--kok); margin-bottom:8px; }
 .dashHero h3{margin:0; font-size:22px;}
 .dashHero .izoh{margin:6px 0 0; max-width:460px;}
-.dashHero .heroIco{
-  position:relative; z-index:1;
-  width:56px; height:56px; border-radius:17px; flex-shrink:0;
-  background:linear-gradient(135deg, var(--kok), #6AA3FF); color:#fff;
-  display:flex; align-items:center; justify-content:center;
-  box-shadow:0 18px 32px -12px rgba(var(--kok-rgb),.55);
-}
+.dashHero .heroIco{ position:relative; z-index:1; width:56px; height:56px; border-radius:18px; flex-shrink:0; background:linear-gradient(135deg, var(--kok), #6AA3FF); color:#fff; display:flex; align-items:center; justify-content:center; box-shadow:0 18px 32px -12px rgba(var(--kok-rgb),.55), inset 0 1px 0 rgba(255,255,255,.4); }
 
 .dashGrid{display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:18px; margin-bottom:32px}
-.dashCard{position:relative; overflow:hidden; background:var(--bg-kard); border:1px solid var(--chiziq-kard); border-radius:20px; padding:24px; transition:transform .2s ease, box-shadow .2s ease; box-shadow:var(--soya-kard);}
+.dashCard{position:relative; overflow:hidden; background: linear-gradient(150deg, var(--glass-sheen-dim), transparent 50%), var(--bg-kard); border:1px solid var(--chiziq-kard); border-radius:22px; padding:24px; transition:transform .2s ease, box-shadow .2s ease; box-shadow:var(--soya-kard); backdrop-filter: var(--blur-kard); -webkit-backdrop-filter: var(--blur-kard);}
 .dashCard::before{ content:''; position:absolute; left:0; top:0; right:0; height:3px; background:var(--chiziq); }
 .dashCard.blue::before{background:linear-gradient(90deg, var(--kok), #6AA3FF);}
 .dashCard.green::before{background:linear-gradient(90deg, var(--yashil), #4ADE80);}
@@ -454,7 +384,7 @@ main{
 .dashCard span{font-size:11.5px; font-weight:800; color:var(--text-ikkinchi); text-transform:uppercase; letter-spacing:0.06em}
 .dashCard b{font-size:36px; font-weight:800; color:var(--text-asosiy); display:block; margin-top:9px; letter-spacing:-0.03em; font-family:var(--font-mono); line-height:1;}
 .dashCard.green b{color:var(--yashil)} .dashCard.red b{color:var(--qizil)} .dashCard.blue b{color:var(--kok)} .dashCard.amber b{color:var(--sariq)} .dashCard.purple b{color:var(--binafsha)}
-.dcIco{width:44px; height:44px; border-radius:13px; display:flex; align-items:center; justify-content:center; margin-bottom:18px;}
+.dcIco{width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; margin-bottom:18px;}
 .dashCard.blue .dcIco{background:var(--kok-och); color:var(--kok);}
 .dashCard.green .dcIco{background:var(--yashil-och); color:var(--yashil);}
 .dashCard.red .dcIco{background:var(--qizil-och); color:var(--qizil);}
@@ -463,10 +393,16 @@ main{
 
 .jadval{width:100%; border-collapse:separate; border-spacing:0; font-size:13.5px}
 .jadval th{text-align:left; padding:14px 16px; background:var(--bg-input); font-size:10.5px; text-transform:uppercase; color:var(--text-ikkinchi); font-weight:800; letter-spacing:.06em; border-bottom:1px solid var(--chiziq);}
-.jadval th:first-child{border-radius:12px 0 0 12px} .jadval th:last-child{border-radius:0 12px 12px 0}
+.jadval th:first-child{border-radius:13px 0 0 13px} .jadval th:last-child{border-radius:0 13px 13px 0}
 .jadval td{padding:15px 16px; border-bottom:1px solid var(--chiziq); color:var(--text-asosiy); transition:background .12s ease;}
 .jadval tr:last-child td{ border-bottom:none; }
 .jadval tr:hover td{background:var(--bg-kard-hover)}
+
+.paginBar{ display:flex; align-items:center; justify-content:center; gap:10px; padding:16px; }
+.paginBar button{ background:var(--bg-input); border:1.5px solid var(--chiziq); border-radius:12px; padding:9px 16px; font-size:12.5px; font-weight:700; color:var(--text-asosiy); }
+.paginBar button:hover:not(:disabled){ border-color:var(--kok); color:var(--kok); }
+.paginBar button:disabled{ opacity:.4; cursor:default; }
+.paginBar .paginInfo{ font-size:12px; color:var(--text-ikkinchi); font-weight:700; }
 
 .mini{border-radius:9px; padding:7px 13px; font-size:11.5px; font-weight:700; margin:2px; display:inline-flex; align-items:center; border: none; gap:6px;}
 .mini.kok{background:var(--kok-och); color:var(--kok)}
@@ -474,72 +410,71 @@ main{
 .mini.yashil{background:var(--yashil-och); color:var(--yashil)}
 .mini.kul{background:var(--chiziq); color:var(--text-ikkinchi)}
 .mini.binafsha{background:var(--binafsha-och); color:var(--binafsha)}
-.qoshBtn{background:linear-gradient(135deg, var(--kok), #5B9BFF); color:#fff; border-radius:13px; padding:12px 22px; font-weight:700; font-size:13.5px; margin-bottom:22px; display: inline-flex; box-shadow:0 14px 26px -10px rgba(var(--kok-rgb),.5);}
+.mini.sirena{background:var(--sirena-och); color:var(--sirena)}
+.qoshBtn{background:linear-gradient(135deg, var(--kok), #5B9BFF); color:#fff; border-radius:14px; padding:12px 22px; font-weight:700; font-size:13.5px; margin-bottom:22px; display: inline-flex; box-shadow:0 14px 26px -10px rgba(var(--kok-rgb),.5), inset 0 1px 0 rgba(255,255,255,.35);}
 .qoshBtn:hover{ filter:brightness(1.07); }
 .holatTag{font-size:11px; font-weight:800; border-radius:20px; padding:6px 13px}
 .holatTag.faol{background:var(--yashil-och); color:var(--yashil)}
 .holatTag.blok{background:var(--qizil-och); color:var(--qizil)}
 
 /* ---- MODALS ---- */
-#formaFon, #modalFon, #customModalFon{position:fixed; inset:0; background:rgba(6,8,12,0.65); backdrop-filter:blur(12px); -webkit-backdrop-filter: blur(12px); display:none; align-items:center; justify-content:center; z-index:999; padding:20px}
-#forma, #customModal{background:var(--bg-kard); border-radius:24px; width:min(560px, 100%); padding:32px; box-shadow:var(--soya-hover); border:1px solid var(--chiziq-kard); max-height: 90vh; overflow-y:auto;}
+#formaFon, #modalFon, #customModalFon{position:fixed; inset:0; background:rgba(6,8,12,0.55); backdrop-filter:blur(16px) saturate(1.4); -webkit-backdrop-filter: blur(16px) saturate(1.4); display:none; align-items:center; justify-content:center; z-index:999; padding:20px}
+#forma, #customModal{background:var(--bg-kard-shaffof); border-radius:26px; width:min(560px, 100%); padding:32px; box-shadow: 0 1px 0 var(--glass-sheen) inset, var(--soya-hover); border:1px solid var(--glass-edge); max-height: 90vh; overflow-y:auto; backdrop-filter: blur(40px) saturate(1.7); -webkit-backdrop-filter: blur(40px) saturate(1.7);}
 #modal{
-  background:var(--bg-kard); border-radius:24px; width:min(920px, 100%);
-  max-height:90vh; overflow:hidden; box-shadow:var(--soya-hover); border:1px solid var(--chiziq-kard);
-  display:flex; flex-direction:column;
+  background:var(--bg-kard-shaffof); border-radius:26px; width:min(920px, 100%);
+  max-height:90vh; overflow:hidden; box-shadow: 0 1px 0 var(--glass-sheen) inset, var(--soya-hover); border:1px solid var(--glass-edge);
+  display:flex; flex-direction:column; backdrop-filter: blur(40px) saturate(1.7); -webkit-backdrop-filter: blur(40px) saturate(1.7);
 }
 
 #forma h3, #modal h3{font-size:21px; color:var(--text-asosiy); margin-bottom:20px; letter-spacing:-0.02em;}
 #forma label{display:block; font-weight:700; font-size:11.5px; margin:16px 0 8px; color:var(--text-ikkinchi); text-transform:uppercase; letter-spacing:.04em;}
-#forma input, #forma select, #forma textarea{width:100%; padding:13px 14px; border:1.5px solid var(--chiziq); border-radius:13px; font-size:14px; background:var(--bg-input); color:var(--text-asosiy)}
+#forma input, #forma select, #forma textarea{width:100%; padding:13px 14px; border:1.5px solid var(--chiziq); border-radius:14px; font-size:14px; background:var(--bg-input); color:var(--text-asosiy)}
 #forma input:focus, #forma select:focus{border-color:var(--kok); background:var(--bg-kard); box-shadow:0 0 0 3px var(--kok-och);}
 .fAmallar{display:flex; gap:12px; margin-top:28px}
-.fAmallar button{flex:1; padding:14px; border-radius:14px; font-weight:700; font-size:14.5px}
+.fAmallar button{flex:1; padding:14px; border-radius:15px; font-weight:700; font-size:14.5px}
 .saqlaB{background:linear-gradient(135deg, var(--kok), #5B9BFF); color:#fff; box-shadow:0 14px 26px -10px rgba(var(--kok-rgb),.5);}
 .saqlaB:hover{ filter:brightness(1.07); }
 .bekorB{background:var(--bg-input); color:var(--text-asosiy); border:1px solid var(--chiziq);}
 .bekorB:hover{ background:var(--bg-kard-hover); }
 
-#modal .mBosh{display:flex; justify-content:space-between; align-items:flex-start; padding:26px 30px 20px; border-bottom:1px solid var(--chiziq); background:var(--bg-kard); flex-shrink:0; z-index:10;}
+#modal .mBosh{display:flex; justify-content:space-between; align-items:flex-start; padding:26px 30px 20px; border-bottom:1px solid var(--chiziq); background:transparent; flex-shrink:0; z-index:10;}
 #modal .mBody{flex:1; overflow-y:auto;}
 #modal .mSub{color:var(--text-ikkinchi); font-size:13.5px; margin-top:8px;}
-#modal .yop{background:var(--bg-input); border:1px solid var(--chiziq); border-radius:12px; width:38px; height:38px; font-size:16px; color:var(--text-asosiy); display:flex; align-items:center; justify-content:center; flex-shrink: 0;}
+#modal .yop{background:var(--bg-input); border:1px solid var(--chiziq); border-radius:13px; width:38px; height:38px; font-size:16px; color:var(--text-asosiy); display:flex; align-items:center; justify-content:center; flex-shrink: 0;}
 #modal .yop:hover{background:var(--qizil-och); color:var(--qizil); border-color:transparent;}
+#modal .mAmallar{ display:flex; gap:8px; flex-shrink:0; }
 
 .stageBlok{margin:18px 30px; background:var(--bg-input); border-radius:18px; padding:22px; border:1px solid var(--chiziq-kard)}
 .stageBlok h4{font-size:15px; color:var(--text-asosiy); display:flex; align-items:center; gap:12px; margin-bottom:12px;}
 .stageBlok .stTag{font-size:10.5px; padding:6px 13px; border-radius:20px; font-weight:800;}
 .stageMeta{display:flex; align-items:center; flex-wrap:wrap; gap:9px; font-size:12px; color:var(--text-ikkinchi); margin-bottom:10px;}
 .stageMeta .gpsTxt{font-family:var(--font-mono); font-size:11.5px; background:var(--bg-kard); border:1px solid var(--chiziq); border-radius:8px; padding:3px 9px; color:var(--text-asosiy);}
-.gpsBtn{
-  display:inline-flex; align-items:center; gap:6px; background:var(--kok-och); color:var(--kok);
-  font-size:11.5px; font-weight:800; padding:6px 12px 6px 10px; border-radius:20px; border:1px solid rgba(var(--kok-rgb),.22);
-  text-decoration:none; transition:all .16s ease;
-}
+.gpsBtn{ display:inline-flex; align-items:center; gap:6px; background:var(--kok-och); color:var(--kok); font-size:11.5px; font-weight:800; padding:6px 12px 6px 10px; border-radius:20px; border:1px solid rgba(var(--kok-rgb),.22); text-decoration:none; transition:all .16s ease; }
 .gpsBtn:hover{ background:var(--kok); color:#fff; transform:translateY(-1px); box-shadow:0 10px 20px -10px rgba(var(--kok-rgb),.6); }
 .mGaler{display:flex; gap:11px; overflow-x:auto; margin:15px 0; padding-bottom:8px;}
-.mGaler img{height:150px; max-width: 100%; border-radius:14px; cursor:zoom-in; border:1px solid var(--chiziq); object-fit: cover; transition:transform .2s ease;}
+.mGaler img{height:150px; max-width: 100%; border-radius:15px; cursor:zoom-in; border:1px solid var(--chiziq); object-fit: cover; transition:transform .2s ease;}
 .mGaler img:hover{ transform:scale(1.03); }
-.stageBlok .tavsifTxt{background:var(--bg-kard); border-radius:13px; padding:15px; font-size:13.5px; line-height:1.6; color:var(--text-asosiy); border:1px solid var(--chiziq)}
+.stageBlok .tavsifTxt{background:var(--bg-kard); border-radius:14px; padding:15px; font-size:13.5px; line-height:1.6; color:var(--text-asosiy); border:1px solid var(--chiziq)}
 
 .xarita-wrap { padding: 0 30px 30px; }
 #mXarita{width: 100%; height: 250px; border-radius: 18px; border: 1px solid var(--chiziq); z-index: 1; background: #e5e5e5;}
+#umumXarita{width:100%; height:100%; min-height:520px; border-radius:18px; border:1px solid var(--chiziq); z-index:1; background:#e5e5e5;}
 
 #zoomFon { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 9999; display: none; align-items: center; justify-content: center; cursor: zoom-out; }
 #zoomImg { max-width: 90vw; max-height: 90vh; border-radius: 14px; object-fit: contain; box-shadow: 0 40px 90px rgba(0,0,0,0.6); }
 
 #customModal { display: flex; flex-direction: column; gap: 16px; width: 400px; }
 #customModal h4 { font-size: 16px; color: var(--text-asosiy); margin:0; font-weight:800; }
-#cmInput { width: 100%; padding: 13px; box-sizing: border-box; border:1.5px solid var(--chiziq); border-radius:13px; background:var(--bg-input); }
+#cmInput { width: 100%; padding: 13px; box-sizing: border-box; border:1.5px solid var(--chiziq); border-radius:14px; background:var(--bg-input); }
 #cmInput:focus{ border-color:var(--kok); box-shadow:0 0 0 3px var(--kok-och); }
 .cmAmallar { display: flex; gap: 12px; margin-top: 6px; justify-content: flex-end; }
-.cmAmallar button { padding: 12px 20px; border-radius: 13px; font-weight: 700; flex:none;}
+.cmAmallar button { padding: 12px 20px; border-radius: 14px; font-weight: 700; flex:none;}
 
 .yuklanmoqda{text-align:center; padding:60px; color:var(--text-ikkinchi); font-weight:600; font-size:14px;}
 .spinner{width:34px; height:34px; border:3px solid var(--chiziq); border-top-color:var(--kok); border-radius:50%; margin:0 auto 16px; animation:sp .8s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
 
-.toast{background:var(--bg-kard); padding:15px 22px; border-radius:16px; box-shadow:var(--soya-hover); display:flex; align-items:center; gap:14px; font-weight:700; font-size:13.5px; color:var(--text-asosiy); border:1px solid var(--chiziq-kard); z-index: 9999; animation: toastIn .3s cubic-bezier(.16,1,.3,1);}
+.toast{background:var(--bg-kard-shaffof); backdrop-filter: blur(24px) saturate(1.6); padding:15px 22px; border-radius:17px; box-shadow: 0 1px 0 var(--glass-sheen) inset, var(--soya-hover); display:flex; align-items:center; gap:14px; font-weight:700; font-size:13.5px; color:var(--text-asosiy); border:1px solid var(--glass-edge); z-index: 9999; animation: toastIn .3s cubic-bezier(.16,1,.3,1);}
 @keyframes toastIn{ from{opacity:0; transform:translateX(30px);} to{opacity:1; transform:translateX(0);} }
 .toast.muvaffaqiyat{border-left:3px solid var(--yashil)}
 .toast.xato{border-left:3px solid var(--qizil)}
@@ -547,9 +482,9 @@ main{
 
 /* AVATAR */
 .avatarWrap{position:relative; width:36px; min-width:36px; height:36px; min-height:36px; flex-shrink:0;}
-.avatarDumaloq{width:100%; height:100%; border-radius:11px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:12.5px; flex-shrink:0; letter-spacing:0; overflow:hidden;}
+.avatarDumaloq{width:100%; height:100%; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:12.5px; flex-shrink:0; letter-spacing:0; overflow:hidden;}
 .avatarWrap .nuqta{position:absolute; bottom:-2px; right:-2px; border:2px solid var(--bg-kard); width:11px; height:11px;}
-.avatarDumaloq.katta{width:52px; min-width:52px; height:52px; min-height:52px; font-size:17px; border-radius:15px;}
+.avatarDumaloq.katta{width:60px; min-width:60px; height:60px; min-height:60px; font-size:20px; border-radius:17px;}
 
 /* ============ RUXSATLAR (PERMISSIONS) ============ */
 .ruxsatSarlavha{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;}
@@ -557,7 +492,7 @@ main{
 .ruxsatAmallar{display:flex; gap:8px;}
 .ruxsatAmallar button{padding:7px 12px; font-size:11px; border-radius:10px; font-weight:700;}
 .ruxsatGrid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:10px; margin-top:14px;}
-.ruxsatItem{display:flex; gap:11px; align-items:flex-start; background:var(--bg-input); border:1.5px solid var(--chiziq); border-radius:14px; padding:13px; cursor:pointer; transition:all .15s ease;}
+.ruxsatItem{display:flex; gap:11px; align-items:flex-start; background:var(--bg-input); border:1.5px solid var(--chiziq); border-radius:15px; padding:13px; cursor:pointer; transition:all .15s ease;}
 .ruxsatItem:hover{border-color:var(--kok); background:var(--bg-kard-hover);}
 .ruxsatItem.tanlangan{border-color:var(--kok); background:var(--kok-och);}
 .ruxsatIco{width:26px; height:26px; border-radius:8px; background:var(--kok-och); color:var(--kok); display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;}
@@ -565,30 +500,46 @@ main{
 .ruxsatItem .ruxsatMatn small{display:block; font-size:11px; color:var(--text-ikkinchi); margin-top:2px; line-height:1.4;}
 .ruxsatBlok{margin-top:24px; padding-top:20px; border-top:1px solid var(--chiziq);}
 
-input[type="checkbox"].ruxsatChk,
-input[type="checkbox"].chk {
+input[type="checkbox"].ruxsatChk, input[type="checkbox"].chk {
   appearance:none; -webkit-appearance:none; margin:0; margin-top:1px;
   width:20px; height:20px; flex-shrink:0; border-radius:7px;
   border:1.8px solid var(--chiziq); background:var(--bg-kard);
   display:grid; place-content:center; cursor:pointer; position:relative;
   transition: all .16s ease;
 }
-input[type="checkbox"].ruxsatChk::after,
-input[type="checkbox"].chk::after {
+input[type="checkbox"].ruxsatChk::after, input[type="checkbox"].chk::after {
   content:''; width:11px; height:7px; opacity:0; scale:.6;
   border-left:2.4px solid #fff; border-bottom:2.4px solid #fff;
   transform:rotate(-45deg) translateY(-1px);
   transition: all .16s ease;
 }
-input[type="checkbox"].ruxsatChk:hover,
-input[type="checkbox"].chk:hover { border-color: var(--kok); }
-input[type="checkbox"].ruxsatChk:checked,
-input[type="checkbox"].chk:checked {
-  background: linear-gradient(135deg, var(--kok), #5B9BFF); border-color: transparent;
-}
-input[type="checkbox"].ruxsatChk:checked::after,
-input[type="checkbox"].chk:checked::after { opacity:1; scale:1; }
+input[type="checkbox"].ruxsatChk:hover, input[type="checkbox"].chk:hover { border-color: var(--kok); }
+input[type="checkbox"].ruxsatChk:checked, input[type="checkbox"].chk:checked { background: linear-gradient(135deg, var(--kok), #5B9BFF); border-color: transparent; }
+input[type="checkbox"].ruxsatChk:checked::after, input[type="checkbox"].chk:checked::after { opacity:1; scale:1; }
 input[type="checkbox"].chk{ width:18px; height:18px; border-radius:6px; }
+
+/* ============ XODIM PROFILI ============ */
+.profilBosh{ display:flex; align-items:center; gap:18px; padding:26px 30px; }
+.profilStatGrid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin:0 30px 20px; }
+.profilStat{ background:var(--bg-input); border:1px solid var(--chiziq-kard); border-radius:16px; padding:16px; }
+.profilStat span{ font-size:10.5px; font-weight:800; color:var(--text-ikkinchi); text-transform:uppercase; letter-spacing:.05em; }
+.profilStat b{ display:block; font-size:24px; margin-top:6px; font-family:var(--font-mono); }
+
+/* ============ QIDIRUV NATIJALARI ============ */
+.qidiruvNatija{ background:var(--bg-input); border:1px solid var(--chiziq-kard); border-radius:16px; padding:18px 20px; margin-bottom:10px; cursor:pointer; transition:all .15s ease; }
+.qidiruvNatija:hover{ background:var(--bg-kard-hover); border-color:rgba(var(--kok-rgb),.25); transform:translateY(-2px); }
+.qidiruvNatija .qTop{ display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+.qidiruvNatija .qFio{ font-weight:800; font-size:14px; }
+.qidiruvNatija .qMeta{ font-size:11.5px; color:var(--text-ikkinchi); font-weight:600; }
+.qidiruvNatija .qMatn{ font-size:13px; color:var(--text-asosiy); opacity:.85; }
+mark{ background:rgba(var(--kok-rgb),.28); color:inherit; border-radius:3px; padding:0 2px; }
+
+/* Print / PDF preview yashirin qatlami */
+#pdfPrintArea{ display:none; }
+@media print {
+  body > *:not(#pdfPrintArea){ display:none !important; }
+  #pdfPrintArea{ display:block !important; }
+}
 
 @media(max-width:900px){
   .sidebar{ position:fixed; z-index:60; }
@@ -597,6 +548,7 @@ input[type="checkbox"].chk{ width:18px; height:18px; border-radius:6px; }
   main { padding: 10px; overflow-y:auto;}
   .jadval{font-size:12px}
   #mobilMenyu{display:flex}
+  .globalQidiruvWrap{ display:none; }
 }
 @media(max-width:760px){
   .sidebar{ width:76px; padding:20px 10px; }
@@ -650,6 +602,12 @@ input[type="checkbox"].chk{ width:18px; height:18px; border-radius:6px; }
       <button id="navNazorat" onclick="bolimKorsat('nazorat')">
         <span class="navIcoBox nav-purple"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span> <span class="navLabel">Nazorat</span> <span id="mainBadge" class="yangi-badge" style="display:none;">0</span>
       </button>
+      <button id="navXarita" onclick="bolimKorsat('xarita')">
+        <span class="navIcoBox nav-teal"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></span> <span class="navLabel">Xarita</span>
+      </button>
+      <button id="navQidiruv" onclick="bolimKorsat('qidiruv')">
+        <span class="navIcoBox nav-pink"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> <span class="navLabel">Qidiruv</span>
+      </button>
       <button id="navBoshqaruv" onclick="bolimKorsat('boshqaruv')" style="display:none">
         <span class="navIcoBox nav-amber"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span> <span class="navLabel">Boshqaruv</span>
       </button>
@@ -687,14 +645,23 @@ input[type="checkbox"].chk{ width:18px; height:18px; border-radius:6px; }
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
       </button>
       <span class="livePill"><span class="liveDot"></span> Jonli monitoring</span>
+      <div class="globalQidiruvWrap">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="globalQidiruv" placeholder="Xodim, tashkilot yoki hisobot matnini qidirish..." oninput="globalQidiruvDebounce()" onkeydown="if(event.key==='Enter'){bolimKorsat('qidiruv'); qidiruvBajar();}">
+      </div>
       <div style="flex:1"></div>
-      <div class="top-amallar" id="topAmallarDesktop"></div>
+      <div class="top-amallar" id="topAmallarDesktop">
+        <button class="cta bell" id="bildBtn" onclick="bildirishnomaSorash()" title="Brauzer bildirishnomalarini yoqish">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="dotBadge"></span>
+        </button>
+      </div>
     </header>
 
     <main>
       <aside id="chap" class="asosiy-kard" style="display:none;">
         <div class="qidiruv">
-          <input id="qidiruv" placeholder="Xodim qidirish..." oninput="xodimlarChiz()">
+          <input id="qidiruv" placeholder="Xodim qidirish..." oninput="qidiruvDebounce()">
           <select id="fMfy" onchange="xodimlarChiz()"><option value="">Barcha tashkilotlar</option></select>
           <select id="fKategoriya" onchange="xodimlarChiz()"><option value="">Barcha kategoriya</option></select>
           <div class="nazFiltrBar">
@@ -704,6 +671,7 @@ input[type="checkbox"].chk{ width:18px; height:18px; border-radius:6px; }
           </div>
         </div>
         <div id="xodimlarList"><div class="yuklanmoqda"><div class="spinner"></div>Kuting...</div></div>
+        <div class="paginBar" id="xodimlarPagin" style="display:none"></div>
         <div class="eslatmaPanel" id="eslatmaPanel" style="display:none; padding:16px; margin-top:auto; border-top:1px solid var(--chiziq);">
           <button class="cta" style="width:100%; padding:12px;" onclick="guruhEslatma()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> Eslatma yuborish
@@ -724,14 +692,19 @@ input[type="checkbox"].chk{ width:18px; height:18px; border-radius:6px; }
               <button class="refreshBtn" onclick="hisobotlarniYangila()" title="Yangi hisobotlarni tekshirish">
                 <svg id="refIco" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Yangilash
               </button>
+              <input type="text" id="lentaIchQidiruv" placeholder="Tavsif ichidan qidirish..." style="min-width:180px" oninput="lentaIchQidiruvBajar()">
               <input type="date" id="fDan"> <span style="color:var(--text-ikkinchi)">—</span> <input type="date" id="fGacha">
               <button onclick="lentaYukla()">Filtrlash</button>
               <button class="excel" onclick="xodimExcel()">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Excel
               </button>
+              <button class="pdf" onclick="xodimPDF()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> PDF
+              </button>
             </div>
           </div>
           <div id="lenta"></div>
+          <div class="paginBar" id="lentaPagin" style="display:none"></div>
         </div>
       </section>
 
@@ -775,6 +748,17 @@ input[type="checkbox"].chk{ width:18px; height:18px; border-radius:6px; }
             <div class="chartWrap"><canvas id="dashChart"></canvas></div>
           </div>
 
+          <div class="chartKard">
+            <div class="chartBosh">
+              <h3>So'nggi 7 kunlik dinamika</h3>
+              <div class="chartLegend">
+                <span><i style="background:var(--kok)"></i> Jami hisobotlar</span>
+                <span><i style="background:var(--binafsha)"></i> Muammoli (flag)</span>
+              </div>
+            </div>
+            <div class="chartWrap kichik"><canvas id="trendChart"></canvas></div>
+          </div>
+
           <h3 style="margin-top:8px">Xodimlar holati (Bugun)</h3>
           <div class="izoh">Bugun hisobot topshirgan va topshirmagan xodimlar ro'yxati</div>
           <div class="bTabs" style="margin-bottom: 20px;">
@@ -796,6 +780,35 @@ input[type="checkbox"].chk{ width:18px; height:18px; border-radius:6px; }
               <tr><td colspan="4" class="yuklanmoqda"><div class="spinner"></div>Yuklanmoqda...</td></tr>
             </table>
           </div>
+        </div>
+      </section>
+
+      <section id="xaritaPanel" class="asosiy-kard" style="display:none;">
+        <div class="bPanel" style="display:flex; flex-direction:column; height:100%;">
+          <div class="bosh" style="margin-bottom:16px;">
+            <h2>Bugungi joylashuv xaritasi</h2>
+            <div class="filtr">
+              <select id="xFiltrMfy" onchange="xaritaYukla()"><option value="">Barcha tashkilotlar</option></select>
+              <button class="refreshBtn" onclick="xaritaYukla()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Yangilash
+              </button>
+            </div>
+          </div>
+          <div class="izoh" style="margin-bottom:14px">Bugun "Boshlandi" bosqichida GPS yuborilgan barcha hisobotlar xaritada belgi bilan ko'rsatiladi</div>
+          <div style="flex:1; min-height:400px;"><div id="umumXarita"></div></div>
+        </div>
+      </section>
+
+      <section id="qidiruvPanel" class="asosiy-kard" style="display:none;">
+        <div class="bPanel">
+          <div class="bosh" style="margin-bottom:16px;">
+            <h2>Kengaytirilgan qidiruv</h2>
+          </div>
+          <div class="filtr" style="margin-bottom:20px;">
+            <input type="text" id="qidiruvInput" placeholder="Xodim ismi, tashkilot yoki hisobot tavsifi bo'yicha qidiring..." style="flex:1; min-width:280px" oninput="qidiruvDebounce2()" onkeydown="if(event.key==='Enter')qidiruvBajar()">
+            <button onclick="qidiruvBajar()">Qidirish</button>
+          </div>
+          <div id="qidiruvNatijalar"><div class="bosh-holat"><b>Qidiruvni boshlang</b>Xodim ismi, tashkilot yoki hisobot tavsifidagi so'zlarni kiriting</div></div>
         </div>
       </section>
 
@@ -822,6 +835,8 @@ input[type="checkbox"].chk{ width:18px; height:18px; border-radius:6px; }
     </div>
   </div>
 </div>
+
+<div id="pdfPrintArea"></div>
 
 <script>
 // SVG ICONS
@@ -867,16 +882,45 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('themeIcon').innerHTML = savedTheme === 'dark' 
   ? '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>'
   : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+  if (Notification && Notification.permission === 'granted') {
+    document.getElementById('bildBtn').classList.add('faol');
+  }
 });
 
 let API = 'https://xisobot-api.onrender.com/api';
 
 let SESSIYA = null;
-let xodimlar = [], mfylar = [], kategoriyalar = [], tanlangan = null, joriyHisobotlar = [], bJoriy = '';
+let xodimlar = [], mfylar = [], kategoriyalar = [], tanlangan = null, joriyHisobotlar = [], lentaKorsatiladigan = [], bJoriy = '';
 let dashYuklagan = [], dashYuklamagan = [], dashUzrlilar = [];
 
 let seenReports = new Set();
 let fetchedReportIds = new Set();
+
+/* ================= YORDAMCHI: DEBOUNCE ================= */
+function debounce(fn, ms=280) {
+  let vaqt;
+  return (...args) => { clearTimeout(vaqt); vaqt = setTimeout(() => fn(...args), ms); };
+}
+const qidiruvDebounce = debounce(() => xodimlarChiz(), 250);
+const qidiruvDebounce2 = debounce(() => {}, 250);
+const globalQidiruvDebounce = debounce(() => {
+  const q = document.getElementById('globalQidiruv').value.trim();
+  if (q.length >= 2) { document.getElementById('qidiruvInput').value = q; }
+}, 300);
+const lentaIchQidiruvBajarDebounced = debounce(() => lentaChiz(), 220);
+function lentaIchQidiruvBajar(){ lentaIchQidiruvBajarDebounced(); }
+
+/* ================= YORDAMCHI: SODDA SAHIFALASH ================= */
+function paginatorYarat(containerEl, jamiSoni, sahifaHajmi, joriySahifa, onSahifaAlmash) {
+  const jamiSahifa = Math.max(1, Math.ceil(jamiSoni / sahifaHajmi));
+  if (jamiSoni <= sahifaHajmi) { containerEl.style.display = 'none'; return; }
+  containerEl.style.display = 'flex';
+  containerEl.innerHTML = `
+    <button ${joriySahifa<=1?'disabled':''} onclick="(${onSahifaAlmash.toString()})(${joriySahifa-1})">← Oldingi</button>
+    <span class="paginInfo">${joriySahifa} / ${jamiSahifa} sahifa · ${jamiSoni} ta</span>
+    <button ${joriySahifa>=jamiSahifa?'disabled':''} onclick="(${onSahifaAlmash.toString()})(${joriySahifa+1})">Keyingi →</button>
+  `;
+}
 
 const AVATAR_RANGLAR = ['#2E7CF6','#22C55E','#F5A623','#F0475B','#8B6CF6','#23C6D6','#F76C9F','#5AC8FA'];
 function avatarRang(matn) {
@@ -915,6 +959,27 @@ function toast(matn, turi='muvaffaqiyat') {
   setTimeout(() => { t.style.opacity='0'; t.style.transform='translateX(100%)'; setTimeout(() => t.remove(), 300); }, 3500);
 }
 
+/* ================= BRAUZER BILDIRISHNOMALARI ================= */
+async function bildirishnomaSorash() {
+  if (!('Notification' in window)) return toast("Brauzeringiz bildirishnomalarni qo'llamaydi", 'xato');
+  if (Notification.permission === 'granted') return toast('Bildirishnomalar allaqachon yoqilgan');
+  const ruxsat = await Notification.requestPermission();
+  if (ruxsat === 'granted') {
+    document.getElementById('bildBtn').classList.add('faol');
+    toast('Brauzer bildirishnomalari yoqildi');
+    new Notification('Xisobot Nazorat', { body: "Endi yangi hisobotlar haqida shu qurilmada xabar olasiz." });
+  } else {
+    toast("Ruxsat berilmadi. Brauzer sozlamalaridan qayta yoqishingiz mumkin.", 'xato');
+  }
+  // Eslatma: bu foreground (faol tab) bildirishnoma. Tab yopiq holatda ham ishlashi uchun
+  // backendda Web Push (VAPID) + Service Worker integratsiyasi kerak bo'ladi.
+}
+function brauzerBildirishnoma(sarlavha, matn) {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    try { new Notification(sarlavha, { body: matn }); } catch(e) {}
+  }
+}
+
 function glassPrompt(sarlavha, defaultVal='', callback, isPrompt=true) {
   const fon = document.getElementById('customModalFon');
   const txt = document.getElementById('cmSarlavha');
@@ -931,6 +996,11 @@ function glassPrompt(sarlavha, defaultVal='', callback, isPrompt=true) {
 function toshkentBugun() {
   const hozir = new Date();
   const toshkent = new Date(hozir.getTime() + 5 * 60 * 60 * 1000);
+  return toshkent.toISOString().slice(0, 10);
+}
+function toshkentSananiOl(kunOldin=0) {
+  const hozir = new Date();
+  const toshkent = new Date(hozir.getTime() + 5 * 60 * 60 * 1000 - kunOldin*86400000);
   return toshkent.toISOString().slice(0, 10);
 }
 
@@ -1043,6 +1113,8 @@ async function boshla() {
   document.getElementById('chap').style.display = 'none';
   document.getElementById('ong').style.display = 'none';
   document.getElementById('boshqaruv').style.display = 'none';
+  document.getElementById('xaritaPanel').style.display = 'none';
+  document.getElementById('qidiruvPanel').style.display = 'none';
   document.getElementById('dashboardPanel').style.display = 'flex';
 
   const [m, k] = await Promise.all([api('mfylar'), api('kategoriyalar')]);
@@ -1057,6 +1129,7 @@ async function boshla() {
       mfylar = m.mfylar;
       fillSelect('fMfy', mfylar, true);
     }
+    fillSelect('xFiltrMfy', mfylar, true);
   }
   if (k.ok && Array.isArray(k.kategoriyalar)) { 
     kategoriyalar = k.kategoriyalar; 
@@ -1080,6 +1153,8 @@ function fillSelect(id, list, keepFirst) {
 function bolimKorsat(nom) {
   document.getElementById('navDashboard').classList.toggle('aktiv', nom==='dashboard');
   document.getElementById('navNazorat').classList.toggle('aktiv', nom==='nazorat');
+  document.getElementById('navXarita').classList.toggle('aktiv', nom==='xarita');
+  document.getElementById('navQidiruv').classList.toggle('aktiv', nom==='qidiruv');
   const navBosh = document.getElementById('navBoshqaruv');
   if(navBosh) navBosh.classList.toggle('aktiv', nom==='boshqaruv');
   
@@ -1087,9 +1162,12 @@ function bolimKorsat(nom) {
   document.getElementById('ong').style.display = nom==='nazorat' ? 'block' : 'none';
   document.getElementById('dashboardPanel').style.display = nom==='dashboard' ? 'block' : 'none';
   document.getElementById('boshqaruv').style.display = nom==='boshqaruv' ? 'block' : 'none';
+  document.getElementById('xaritaPanel').style.display = nom==='xarita' ? 'flex' : 'none';
+  document.getElementById('qidiruvPanel').style.display = nom==='qidiruv' ? 'block' : 'none';
   
   if (nom==='dashboard') dashboardYukla();
   if (nom==='boshqaruv') boshqaruvTablariniChiz();
+  if (nom==='xarita') xaritaYukla();
 }
 
 function boshqaruvTablariniChiz() {
@@ -1102,6 +1180,7 @@ function boshqaruvTablariniChiz() {
   if (ruxsatlar.includes('mfy_boshqar') || SESSIYA.rol === 'superadmin') tabsHTML += `<button onclick="bTab('mfy',this)">${SVG.building} Tashkilotlar</button>`;
   if (ruxsatlar.includes('kategoriya_boshqar') || SESSIYA.rol === 'superadmin') tabsHTML += `<button onclick="bTab('kategoriyalar',this)">${SVG.tags} Kategoriyalar</button>`;
   if (ruxsatlar.includes('eslatma_yuborish') || SESSIYA.rol === 'superadmin') tabsHTML += `<button onclick="bTab('bildirishnoma',this)">${SVG.bell} Bildirishnoma</button>`;
+  if (ruxsatlar.includes('eslatma_yuborish') || SESSIYA.rol === 'superadmin') tabsHTML += `<button onclick="bTab('eslatmalar',this)">${SVG.bell} Eslatmalar tarixi</button>`;
   if (ruxsatlar.includes('sozlamalar') || SESSIYA.rol === 'superadmin') tabsHTML += `<button onclick="bTab('sozlamalar',this)">${SVG.settings} Sozlamalar</button>`;
   tabsHTML += `<button onclick="bTab('tahrir',this)">${SVG.edit} Tahrir so'rovlari</button>`;
   if (SESSIYA.rol === 'superadmin') tabsHTML += `<button onclick="bTab('audit',this)">${SVG.audit} Audit</button>`;
@@ -1150,12 +1229,14 @@ async function dashboardYukla() {
 
   const bugunStr = toshkentBugun();
   let xodims = rx.xodimlar || [];
-  let hisobots = rh.hisobotlar || [];
+  let hisobotsHammasi = rh.hisobotlar || [];
+  let hisobots = hisobotsHammasi;
 
   if (SESSIYA.rol === 'nazoratchi') {
     const myMfy = String(SESSIYA.mfyId);
     xodims = xodims.filter(x => String(x.mfyId) === myMfy);
     hisobots = hisobots.filter(h => String(h.mfyId) === myMfy);
+    hisobotsHammasi = hisobots;
   }
 
   const dFiltrMfySel = document.getElementById('dFiltrMfy');
@@ -1202,6 +1283,7 @@ async function dashboardYukla() {
   dashTab('yuklamaganlar');
 
   dashChartChiz(xodims, hisobots, bugunStr);
+  trendChartChiz(hisobotsHammasi);
 
   const mfyStat = {};
   mfylar.forEach(m => {
@@ -1266,42 +1348,57 @@ function dashChartChiz(xodims, hisobots, bugunStr) {
     data: {
       labels,
       datasets: [
-        {
-          label: "Hisobotlar soni",
-          data,
-          backgroundColor: renglar,
-          borderRadius: 7,
-          maxBarThickness: 34,
-          order: 2
-        },
-        {
-          label: "Norma chizig'i",
-          type: 'line',
-          data: labels.map(() => DASH_NORMA),
-          borderColor: sariqRang,
-          borderWidth: 2,
-          borderDash: [7, 5],
-          pointRadius: 0,
-          fill: false,
-          order: 1
-        }
+        { label: "Hisobotlar soni", data, backgroundColor: renglar, borderRadius: 7, maxBarThickness: 34, order: 2 },
+        { label: "Norma chizig'i", type: 'line', data: labels.map(() => DASH_NORMA), borderColor: sariqRang, borderWidth: 2, borderDash: [7, 5], pointRadius: 0, fill: false, order: 1 }
       ]
     },
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            title: (items) => items[0].label,
-            label: (item) => item.datasetIndex === 0 ? `${item.raw} ta hisobot` : `Norma: ${item.raw} ta`
-          }
-        }
-      },
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { title: (items) => items[0].label, label: (item) => item.datasetIndex === 0 ? `${item.raw} ta hisobot` : `Norma: ${item.raw} ta` } } },
       scales: {
         x: { ticks: { color: matnRang, font: { size: 10.5, family: "'Plus Jakarta Sans'" }, maxRotation: 45, minRotation: 0 }, grid: { display: false } },
         y: { beginAtZero: true, ticks: { color: matnRang, precision: 0, font: { size: 11 } }, grid: { color: chiziqRang } }
+      }
+    }
+  });
+}
+
+/* ================= 7 KUNLIK TREND GRAFIGI ================= */
+let trendChart = null;
+function trendChartChiz(hisobotlarHammasi) {
+  const canvas = document.getElementById('trendChart');
+  if (!canvas || typeof Chart === 'undefined') return;
+
+  const kunlar = [];
+  for (let i = 6; i >= 0; i--) kunlar.push(toshkentSananiOl(i));
+
+  const jamiPerKun = kunlar.map(s => (hisobotlarHammasi || []).filter(h => h.sana === s).length);
+  const flagPerKun = kunlar.map(s => (hisobotlarHammasi || []).filter(h => h.sana === s && h.reyting && h.reyting !== 'YASHIL').length);
+
+  const rootStyles = getComputedStyle(document.documentElement);
+  const kokRang = rootStyles.getPropertyValue('--kok').trim() || '#2F6FEF';
+  const binafshaRang = rootStyles.getPropertyValue('--binafsha').trim() || '#8B5CF6';
+  const matnRang = rootStyles.getPropertyValue('--text-ikkinchi').trim() || '#6B7286';
+  const chiziqRang = rootStyles.getPropertyValue('--chiziq').trim() || 'rgba(0,0,0,0.08)';
+
+  const labels = kunlar.map(s => s.slice(5).split('-').reverse().join('.'));
+
+  if (trendChart) { trendChart.destroy(); trendChart = null; }
+  trendChart = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label:'Jami', data: jamiPerKun, borderColor: kokRang, backgroundColor: 'rgba(47,111,239,0.14)', fill:true, tension:.35, pointRadius:4, pointBackgroundColor:kokRang },
+        { label:'Flag', data: flagPerKun, borderColor: binafshaRang, backgroundColor:'rgba(139,92,246,0.10)', fill:true, tension:.35, pointRadius:4, pointBackgroundColor:binafshaRang }
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false} },
+      scales:{
+        x:{ ticks:{ color:matnRang, font:{size:11} }, grid:{ display:false } },
+        y:{ beginAtZero:true, ticks:{ color:matnRang, precision:0, font:{size:11} }, grid:{ color:chiziqRang } }
       }
     }
   });
@@ -1334,11 +1431,11 @@ async function xodimlarYukla() {
         x.bugunBor = xHisobotlari.some(h => h.sana === toshkentBugun());
         x.unread = xHisobotlari.filter(h => !seenReports.has(h.id)).length;
         x.flagBor = xHisobotlari.some(h => h.sana === toshkentBugun() && h.reyting && h.reyting !== 'YASHIL');
-        jamiOqilmagan += x.unread;
       });
     } else {
         xodimlar.forEach(x => { x.ishHolati = x.ish_holati || 'ishda'; });
     }
+    xodimlar.forEach(x => { jamiOqilmagan += x.unread || 0; });
 
     const mBadge = document.getElementById('mainBadge');
     if (jamiOqilmagan > 0) {
@@ -1359,10 +1456,12 @@ async function checkNewReports() {
   const rh = await api('hisobotlar');
   if(!rh.ok || !Array.isArray(rh.hisobotlar)) return;
   let yangiSoni = 0;
+  let yangiFio = '';
   rh.hisobotlar.forEach(h => {
     if (SESSIYA.rol === 'nazoratchi' && String(h.mfyId) !== String(SESSIYA.mfyId)) return;
     if(!fetchedReportIds.has(h.id)) {
       yangiSoni++;
+      yangiFio = h.xodimFio || yangiFio;
       fetchedReportIds.add(h.id);
     }
   });
@@ -1370,6 +1469,7 @@ async function checkNewReports() {
   if(yangiSoni > 0) {
     playBeep();
     toast(`${yangiSoni} ta yangi hisobot keldi!`, "info");
+    brauzerBildirishnoma('Yangi hisobot keldi', yangiSoni === 1 ? `${yangiFio} yangi hisobot yubordi` : `${yangiSoni} ta yangi hisobot keldi`);
     await xodimlarYukla();
     if(tanlangan) {
       await lentaYukla();
@@ -1394,8 +1494,14 @@ let nazoratFiltr = 'barchasi';
 function nazoratFiltrOrnat(tur) {
   nazoratFiltr = tur;
   document.querySelectorAll('.nazFiltrBtn').forEach(b => b.classList.toggle('aktiv', b.dataset.tur === tur));
+  xodimlarSahifa = 1;
   xodimlarChiz();
 }
+
+/* ================= XODIMLAR RO'YXATI + SAHIFALASH ================= */
+let xodimlarSahifa = 1;
+const XODIM_SAHIFA_HAJMI = 40;
+let xodimlarFiltrlanganKesh = [];
 
 function xodimlarChiz() {
   const q = (document.getElementById('qidiruv').value || '').toLowerCase();
@@ -1409,10 +1515,15 @@ function xodimlarChiz() {
   else if (nazoratFiltr === 'yuklamagan') list = list.filter(x => !x.bugunBor);
 
   list = list.slice().sort((a, b) => (b.bugunBor === true) - (a.bugunBor === true));
-  
+  xodimlarFiltrlanganKesh = list;
+
+  if (xodimlarSahifa > Math.ceil(list.length / XODIM_SAHIFA_HAJMI)) xodimlarSahifa = 1;
+  const boshi = (xodimlarSahifa - 1) * XODIM_SAHIFA_HAJMI;
+  const sahifaligi = list.slice(boshi, boshi + XODIM_SAHIFA_HAJMI);
+
   const eslatmaKerak = SESSIYA.rol !== 'nazoratchi' || (SESSIYA.ruxsatlar||[]).includes('eslatma_yuborish');
   
-  document.getElementById('xodimlarList').innerHTML = list.map(x => `
+  document.getElementById('xodimlarList').innerHTML = sahifaligi.map(x => `
     <div class="xodimRow ${tanlangan?.id===x.id?'aktiv':''}" onclick="xodimTanla('${x.id}')">
       ${eslatmaKerak ? `<input type="checkbox" class="chk" value="${x.id}" onclick="event.stopPropagation()">` : ''}
       <div class="avatarWrap">
@@ -1423,11 +1534,16 @@ function xodimlarChiz() {
         <div class="fio">${x.fio}</div>
         <div class="meta">${x.mfyNomi||''} ${x.ishHolati && x.ishHolati !== 'ishda' ? `<span class="uzrli-badge" style="margin-left:6px">${x.ishHolati}</span>` : ''}</div>
       </div>
+      <button class="infoBtn" title="Xodim profili" onclick="event.stopPropagation(); profilOch('${x.id}')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      </button>
       <div class="son">
         ${x.soni||0}
         ${x.unread > 0 ? `<span class="yangi-badge">+${x.unread}</span>` : ''}
       </div>
     </div>`).join('') || '<div class="yuklanmoqda">Topilmadi</div>';
+
+  paginatorYarat(document.getElementById('xodimlarPagin'), list.length, XODIM_SAHIFA_HAJMI, xodimlarSahifa, (yangiSahifa) => { xodimlarSahifa = yangiSahifa; xodimlarChiz(); });
 }
 
 async function guruhEslatma() {
@@ -1436,9 +1552,29 @@ async function guruhEslatma() {
   glassPrompt('Eslatma matnini kiriting:', 'Hisobotni yuklashni unutmang', async (matn) => {
     if (!matn) return;
     const r = await apiPost('eslatmaYuborGuruh', { xodimIdlar: idlar, matn });
-    if (r.ok) toast(r.yuborildi + " ta xodimga eslatma yuborildi");
+    if (r.ok) {
+      toast(r.yuborildi + " ta xodimga eslatma yuborildi");
+      eslatmaTarixigaYoz(idlar, matn, r.yuborildi);
+    }
     else toast('Xato: ' + r.xato, 'xato');
   });
+}
+
+/* ================= ESLATMALAR TARIXI (mahalliy jurnal) =================
+   Eslatma: backendda alohida "eslatmalar" jadvali/endpointi bo'lmagani sababli,
+   yuborilgan eslatmalar shu qurilmada (localStorage) saqlanadi. To'liq, barcha
+   adminlar ko'radigan umumiy tarix uchun backendga eslatmaTarixi endpointi qo'shish tavsiya etiladi.
+=========================================================================== */
+function eslatmaTarixigaYoz(xodimIdlar, matn, yuborildiSoni) {
+  const kalitNomi = 'ESLATMA_TARIX_' + (SESSIYA?.kalit || 'anon');
+  const tarix = JSON.parse(localStorage.getItem(kalitNomi) || '[]');
+  const fioLar = xodimIdlar.map(id => xodimlar.find(x => String(x.id) === String(id))?.fio || id);
+  tarix.unshift({ vaqt: new Date().toLocaleString('uz-UZ'), kim: SESSIYA.fio, matn, soni: yuborildiSoni, fioLar });
+  localStorage.setItem(kalitNomi, JSON.stringify(tarix.slice(0, 200)));
+}
+function eslatmaTarixiniOlish() {
+  const kalitNomi = 'ESLATMA_TARIX_' + (SESSIYA?.kalit || 'anon');
+  return JSON.parse(localStorage.getItem(kalitNomi) || '[]');
 }
 
 async function xodimTanla(id) {
@@ -1447,6 +1583,7 @@ async function xodimTanla(id) {
   document.getElementById('boshHolat').style.display='none';
   document.getElementById('lentaWrap').style.display='block';
   document.getElementById('lentaFio').textContent = tanlangan.fio;
+  document.getElementById('lentaIchQidiruv').value = '';
   xodimlarChiz();
   await lentaYukla();
 }
@@ -1460,20 +1597,46 @@ async function lentaYukla() {
   const r = await api('hisobotlar', params);
   if (!r.ok) { lenta.innerHTML = '<div class="yuklanmoqda">Xato: '+(r.xato||'')+'</div>'; return; }
   joriyHisobotlar = r.hisobotlar || [];
+  lentaSahifa = 1;
   lentaChiz();
 }
 
 const OYLAR = ['Yanvar','Fevral','Mart','Aprel','May','Iyun','Iyul','Avgust','Sentabr','Oktabr','Noyabr','Dekabr'];
 
+let lentaSahifa = 1;
+const LENTA_SAHIFA_HAJMI = 25;
+
 function lentaChiz() {
   const lenta = document.getElementById('lenta');
-  if (!joriyHisobotlar || joriyHisobotlar.length === 0) { lenta.innerHTML = '<div class="bosh-holat"><b>Hisobot topilmadi</b></div>'; return; }
+  const qMatn = (document.getElementById('lentaIchQidiruv').value || '').toLowerCase().trim();
+
+  let ro_yxat = joriyHisobotlar;
+  if (qMatn) {
+    ro_yxat = ro_yxat.filter(h =>
+      (h.b_tavsif||'').toLowerCase().includes(qMatn) ||
+      (h.d_tavsif||'').toLowerCase().includes(qMatn) ||
+      (h.y_tavsif||'').toLowerCase().includes(qMatn) ||
+      (h.ishNomi||h.ishTuri||'').toLowerCase().includes(qMatn)
+    );
+  }
+  lentaKorsatiladigan = ro_yxat;
+
+  if (!ro_yxat || ro_yxat.length === 0) {
+    lenta.innerHTML = `<div class="bosh-holat"><b>Hisobot topilmadi</b>${qMatn ? "Qidiruv bo'yicha mos hisobot yo'q" : ''}</div>`;
+    document.getElementById('lentaPagin').style.display = 'none';
+    return;
+  }
+
+  if (lentaSahifa > Math.ceil(ro_yxat.length / LENTA_SAHIFA_HAJMI)) lentaSahifa = 1;
+  const boshi = (lentaSahifa - 1) * LENTA_SAHIFA_HAJMI;
+  const sahifaligi = ro_yxat.slice(boshi, boshi + LENTA_SAHIFA_HAJMI);
+
   let html = '', oldingiOy = '';
-  joriyHisobotlar.forEach(h => {
+  sahifaligi.forEach(h => {
     const oy = h.sana.slice(0,7);
     if (oy !== oldingiOy) {
       const [y,m] = oy.split('-');
-      const oySoni = joriyHisobotlar.filter(x => x.sana.startsWith(oy)).length;
+      const oySoni = ro_yxat.filter(x => x.sana.startsWith(oy)).length;
       html += `<div class="oySarlavha">${OYLAR[+m-1]} ${y} · ${oySoni} ta ish</div>`;
       oldingiOy = oy;
     }
@@ -1503,6 +1666,8 @@ function lentaChiz() {
     </div>`;
   });
   lenta.innerHTML = html;
+
+  paginatorYarat(document.getElementById('lentaPagin'), ro_yxat.length, LENTA_SAHIFA_HAJMI, lentaSahifa, (yangiSahifa) => { lentaSahifa = yangiSahifa; lentaChiz(); });
 }
 
 let mXarita = null;
@@ -1538,7 +1703,10 @@ function modalOch(id) {
   m.innerHTML = `
     <div class="mBosh">
       <div><h3 style="margin-bottom:0;">${h.ishNomi || h.ishTuri}</h3><div class="mSub">${h.xodimFio} · ${h.mfyNomi||''} · ${h.kategoriyaNomi||''}</div></div>
-      <button class="yop" onclick="modalYop()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <div class="mAmallar">
+        <button class="yop" title="PDF sifatida yuklash" onclick="hisobotPDF(${JSON.stringify(h.id)})"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></button>
+        <button class="yop" onclick="modalYop()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
     </div>
     <div class="mBody">
       ${stage('1. Boshlandi', formatVaqt(h.b_vaqt), h.b_tavsif, h.b_lat, h.b_lng, h.b_rasmlar)}
@@ -1610,6 +1778,64 @@ async function hammasiExcel() {
   excelSaqla(exportData.map(hisobotSatr), 'Barcha_hisobotlar_'+new Date().toISOString().slice(0,10));
 }
 
+/* ================= PDF EKSPORT (jsPDF) ================= */
+function pdfSarlavhaChiz(doc, sarlavha, subtitle) {
+  doc.setFillColor(47,111,239);
+  doc.rect(0, 0, 210, 28, 'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(16);
+  doc.text(sarlavha, 14, 14);
+  doc.setFontSize(10);
+  doc.text(subtitle || '', 14, 21);
+  doc.setTextColor(20,20,20);
+}
+
+function xodimPDF() {
+  if (!lentaKorsatiladigan.length) return toast("PDF uchun hisobot yo'q", "xato");
+  if (typeof window.jspdf === 'undefined') return toast("PDF kutubxonasi yuklanmadi", "xato");
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  pdfSarlavhaChiz(doc, tanlangan.fio, (tanlangan.mfyNomi||'') + ' — ' + new Date().toLocaleDateString('uz-UZ'));
+  let y = 38;
+  doc.setFontSize(11);
+  lentaKorsatiladigan.slice(0, 200).forEach(h => {
+    if (y > 275) { doc.addPage(); y = 20; }
+    doc.setFont(undefined, 'bold');
+    doc.text(`${h.sana}  ·  ${h.ishNomi || h.ishTuri}  ·  ${h.reyting}`, 14, y);
+    doc.setFont(undefined, 'normal');
+    y += 6;
+    const tavsif = (h.b_tavsif || h.d_tavsif || h.y_tavsif || '').slice(0, 160);
+    const satrlar = doc.splitTextToSize(tavsif, 180);
+    doc.text(satrlar, 14, y);
+    y += satrlar.length * 5 + 6;
+  });
+  doc.save(`Hisobot_${tanlangan.fio.replace(/\s+/g,'_')}.pdf`);
+  toast('PDF tayyorlandi');
+}
+
+function hisobotPDF(id) {
+  const h = joriyHisobotlar.find(x => x.id === id);
+  if (!h || typeof window.jspdf === 'undefined') return toast("PDF yaratib bo'lmadi", "xato");
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  pdfSarlavhaChiz(doc, h.ishNomi || h.ishTuri, `${h.xodimFio} · ${h.mfyNomi||''} · ${h.sana}`);
+  let y = 40;
+  [['1. Boshlandi', h.b_vaqt, h.b_tavsif, h.b_lat, h.b_lng],
+   ['2. Davom etmoqda', h.d_vaqt, h.d_tavsif, h.d_lat, h.d_lng],
+   ['3. Tugatildi', h.y_vaqt, h.y_tavsif, h.y_lat, h.y_lng]].forEach(([nom, vaqt, tavsif, lat, lng]) => {
+    doc.setFont(undefined, 'bold'); doc.setFontSize(12);
+    doc.text(`${nom}  ${vaqt ? '('+formatVaqt(vaqt)+')' : '— yuklanmagan'}`, 14, y); y += 7;
+    doc.setFont(undefined, 'normal'); doc.setFontSize(10.5);
+    if (tavsif) { const s = doc.splitTextToSize(tavsif, 180); doc.text(s, 14, y); y += s.length*5+3; }
+    if (lat) { doc.text(`GPS: ${(+lat).toFixed(5)}, ${(+lng).toFixed(5)}`, 14, y); y += 7; }
+    y += 5;
+  });
+  doc.setFontSize(10.5);
+  doc.text(`Reyting: ${h.reyting}` + (h.flagSabab ? `  ·  Sabab: ${h.flagSabab}` : ''), 14, y);
+  doc.save(`Hisobot_${(h.xodimFio||'').replace(/\s+/g,'_')}_${h.sana}.pdf`);
+  toast('PDF tayyorlandi');
+}
+
 function bTab(nom, btn) {
   document.querySelectorAll('.bTabs button').forEach(b => b.classList.remove('aktiv'));
   if (btn) btn.classList.add('aktiv'); 
@@ -1633,6 +1859,11 @@ function ruxsatlarBadgeHTML(a) {
   }).join('');
 }
 
+/* ================= BOSHQARUV: SAHIFALASH holati ================= */
+let bXodimlarSahifa = 1, bAdminlarSahifa = 1, bAuditSahifa = 1;
+const B_SAHIFA_HAJMI = 30;
+let auditFiltrKim = '', auditFiltrAmal = '', auditHammasi = [];
+
 async function bYukla() {
   const panel = document.getElementById('bPanel');
   panel.innerHTML = '<div class="yuklanmoqda"><div class="spinner"></div></div>';
@@ -1643,11 +1874,16 @@ async function bYukla() {
     let sXodimlar = r.xodimlar || [];
     if(SESSIYA.rol === 'nazoratchi') sXodimlar = sXodimlar.filter(x => String(x.mfyId) === String(SESSIYA.mfyId));
 
-    panel.innerHTML = `<h3>Xodimlar (${sXodimlar.length})</h3>
+    const jamiSoni = sXodimlar.length;
+    if (bXodimlarSahifa > Math.ceil(jamiSoni / B_SAHIFA_HAJMI)) bXodimlarSahifa = 1;
+    const boshi = (bXodimlarSahifa-1)*B_SAHIFA_HAJMI;
+    const sahifaligi = sXodimlar.slice(boshi, boshi+B_SAHIFA_HAJMI);
+
+    panel.innerHTML = `<h3>Xodimlar (${jamiSoni})</h3>
       <button class="qoshBtn" onclick="xodimForma()">${SVG.plus} Yangi xodim</button>
       <div style="overflow-x:auto"><table class="jadval">
         <tr><th>FIO</th><th>PINFL</th><th>Tashkilot</th><th>Holat</th><th>Sababli</th><th>Qurilma</th><th>Amallar</th></tr>
-        ${sXodimlar.map(x => `<tr>
+        ${sahifaligi.map(x => `<tr>
           <td style="display:flex;align-items:center;gap:10px;border-bottom:none">
             <div class="avatarWrap"><div class="avatarDumaloq" style="background:${avatarRang(x.fio)}">${initials(x.fio)}</div></div>
             <b>${x.fio}</b>
@@ -1658,12 +1894,15 @@ async function bYukla() {
           <td>${(x.ish_holati && x.ish_holati !== 'ishda') ? `<span class="mini binafsha">${x.ish_holati}</span>` : `<span class="mini kul">Yo'q</span>`}</td>
           <td>${x.deviceBor?"📱":'—'}</td>
           <td style="white-space:nowrap">
+            <button class="mini binafsha" onclick="profilOch('${x.id}')">Profil</button>
             <button class="mini kok" onclick='xodimForma(${JSON.stringify(x)})'>Tahrirlash</button>
             ${x.deviceBor?`<button class="mini kul" onclick="deviceReset('${x.id}')">Reset</button>`:''}
             <button class="mini ${x.holat==='faol'?'qizil':'yashil'}" onclick="xodimHolat('${x.id}','${x.holat==='faol'?'bloklangan':'faol'}')">${x.holat==='faol'?'Bloklash':'Faollash'}</button>
           </td>
         </tr>`).join('')}
-      </table></div>`;
+      </table></div>
+      <div class="paginBar" id="bXodimPagin"></div>`;
+    paginatorYarat(document.getElementById('bXodimPagin'), jamiSoni, B_SAHIFA_HAJMI, bXodimlarSahifa, (s)=>{bXodimlarSahifa=s; bYukla();});
   }
 
   if (bJoriy === 'adminlar') {
@@ -1744,6 +1983,23 @@ async function bYukla() {
       <br><button class="qoshBtn" onclick="bildirishnomaSaqla()">Saqlash</button>`;
   }
 
+  if (bJoriy === 'eslatmalar') {
+    const tarix = eslatmaTarixiniOlish();
+    panel.innerHTML = `<h3>Eslatmalar tarixi (${tarix.length})</h3>
+      <div class="izoh">Shu qurilmadan yuborilgan eslatmalar ro'yxati. Umumiy (barcha adminlar ko'radigan) tarix uchun serverga alohida jurnal qo'shish tavsiya etiladi.</div>
+      ${tarix.length === 0 ? '<div class="bosh-holat" style="margin-top:8px"><b>Hozircha eslatma yo\'q</b></div>' : `
+      <div style="overflow-x:auto"><table class="jadval">
+        <tr><th>Vaqt</th><th>Kim yubordi</th><th>Matn</th><th>Nechta xodimga</th><th>Xodimlar</th></tr>
+        ${tarix.map(t => `<tr>
+          <td style="white-space:nowrap;font-family:monospace;font-size:11px">${t.vaqt}</td>
+          <td><b>${t.kim}</b></td>
+          <td>${t.matn}</td>
+          <td><span class="mini sirena">${t.soni} ta</span></td>
+          <td style="max-width:260px;font-size:12px;color:var(--text-ikkinchi)">${(t.fioLar||[]).slice(0,4).join(', ')}${(t.fioLar||[]).length>4?` +${t.fioLar.length-4}`:''}</td>
+        </tr>`).join('')}
+      </table></div>`}`;
+  }
+
   if (bJoriy === 'sozlamalar') {
     const r = await api('sozlamaOl');
     let daqiqa = r.ok ? (r.interval || 1) : 1;
@@ -1776,16 +2032,43 @@ async function bYukla() {
   if (bJoriy === 'audit') {
     const r = await api('auditlar');
     if (!r.ok) return panel.innerHTML = 'Xato: ' + r.xato;
-    const sAudit = r.audit || [];
-    panel.innerHTML = `<h3>Audit log (${sAudit.length})</h3>
-      <div style="overflow-x:auto"><table class="jadval">
-        <tr><th>Vaqt</th><th>Kim</th><th>Amal</th><th>Tafsilot</th></tr>
-        ${sAudit.map(a => `<tr>
-          <td style="white-space:nowrap;font-family:monospace;font-size:11px">${a.vaqt}</td>
-          <td><b>${a.kim}</b></td><td>${a.amal}</td><td>${a.tafsilot||''}</td>
-        </tr>`).join('')}
-      </table></div>`;
+    auditHammasi = r.audit || [];
+    auditPanelChiz(panel);
   }
+}
+
+function auditPanelChiz(panel) {
+  let filtrlangan = auditHammasi.filter(a =>
+    (!auditFiltrKim || (a.kim||'').toLowerCase().includes(auditFiltrKim.toLowerCase())) &&
+    (!auditFiltrAmal || (a.amal||'').toLowerCase().includes(auditFiltrAmal.toLowerCase()))
+  );
+
+  if (bAuditSahifa > Math.ceil(filtrlangan.length / B_SAHIFA_HAJMI)) bAuditSahifa = 1;
+  const boshi = (bAuditSahifa-1)*B_SAHIFA_HAJMI;
+  const sahifaligi = filtrlangan.slice(boshi, boshi+B_SAHIFA_HAJMI);
+
+  panel.innerHTML = `<h3>Audit log (${filtrlangan.length} / ${auditHammasi.length})</h3>
+    <div class="filtr" style="margin-bottom:18px;">
+      <input type="text" id="auditKimInput" placeholder="Kim bo'yicha filtr..." value="${auditFiltrKim}">
+      <input type="text" id="auditAmalInput" placeholder="Amal bo'yicha filtr..." value="${auditFiltrAmal}">
+      <button onclick="auditFiltrla()">Filtrlash</button>
+      <button onclick="document.getElementById('auditKimInput').value='';document.getElementById('auditAmalInput').value='';auditFiltrKim='';auditFiltrAmal='';bAuditSahifa=1;bYukla();">Tozalash</button>
+    </div>
+    <div style="overflow-x:auto"><table class="jadval">
+      <tr><th>Vaqt</th><th>Kim</th><th>Amal</th><th>Tafsilot</th></tr>
+      ${sahifaligi.map(a => `<tr>
+        <td style="white-space:nowrap;font-family:monospace;font-size:11px">${a.vaqt}</td>
+        <td><b>${a.kim}</b></td><td>${a.amal}</td><td>${a.tafsilot||''}</td>
+      </tr>`).join('') || '<tr><td colspan="4" class="yuklanmoqda">Mos yozuv topilmadi</td></tr>'}
+    </table></div>
+    <div class="paginBar" id="bAuditPagin"></div>`;
+  paginatorYarat(document.getElementById('bAuditPagin'), filtrlangan.length, B_SAHIFA_HAJMI, bAuditSahifa, (s)=>{bAuditSahifa=s; auditPanelChiz(document.getElementById('bPanel'));});
+}
+function auditFiltrla() {
+  auditFiltrKim = document.getElementById('auditKimInput').value.trim();
+  auditFiltrAmal = document.getElementById('auditAmalInput').value.trim();
+  bAuditSahifa = 1;
+  auditPanelChiz(document.getElementById('bPanel'));
 }
 
 async function tizimSozlamaSaqla() {
@@ -1837,6 +2120,7 @@ async function mfyOchir(id, nomi) {
       if (ym.ok && Array.isArray(ym.mfylar)) {
         mfylar = ym.mfylar;
         fillSelect('fMfy', mfylar, true);
+        fillSelect('xFiltrMfy', mfylar, true);
       }
       bYukla(); 
       toast("O'chirildi");
@@ -2021,6 +2305,7 @@ function mfyForma(t) {
       if(ym.ok && Array.isArray(ym.mfylar)) { 
         mfylar = ym.mfylar; 
         fillSelect('fMfy', mfylar, true); 
+        fillSelect('xFiltrMfy', mfylar, true);
       }
       bYukla(); toast("Saqlandi!"); 
     } else toast('Xato: ' + (r.xato || ''), 'xato');
@@ -2043,6 +2328,158 @@ function kategoriyaForma(k) {
       bYukla(); toast("Saqlandi!"); 
     } else toast('Xato: ' + (r.xato || ''), 'xato');
   });
+}
+
+/* ================= XODIM PROFILI ================= */
+async function profilOch(xodimId) {
+  const x = xodimlar.find(z => String(z.id) === String(xodimId));
+  if (!x) return toast('Xodim topilmadi', 'xato');
+
+  const r = await api('hisobotlar', { xodim: xodimId });
+  const hisobotlar = r.ok ? (r.hisobotlar || []) : [];
+
+  const jamiKun = 30;
+  let bajarilganKun = 0, kechikkanSoni = 0, flagSoni = 0;
+  const kunSet = new Set();
+  hisobotlar.forEach(h => {
+    kunSet.add(h.sana);
+    if (h.reyting && h.reyting !== 'YASHIL') flagSoni++;
+    if (h.kechikkan) kechikkanSoni++;
+  });
+  bajarilganKun = kunSet.size;
+  const bajarilishFoizi = jamiKun > 0 ? Math.round((bajarilganKun / jamiKun) * 100) : 0;
+
+  const kunlar = [];
+  for (let i = 13; i >= 0; i--) kunlar.push(toshkentSananiOl(i));
+  const kunBoyicha = kunlar.map(s => hisobotlar.filter(h => h.sana === s).length);
+
+  const m = document.getElementById('modal');
+  m.innerHTML = `
+    <div class="mBosh">
+      <div style="display:flex; align-items:center; gap:16px;">
+        <div class="avatarDumaloq katta" style="background:${avatarRang(x.fio)}">${initials(x.fio)}</div>
+        <div><h3 style="margin-bottom:2px;">${x.fio}</h3><div class="mSub">${x.mfyNomi||''} · ${x.kategoriyaNomi||'—'}</div></div>
+      </div>
+      <button class="yop" onclick="modalYop()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="mBody">
+      <div class="profilStatGrid">
+        <div class="profilStat"><span>Jami hisobot</span><b style="color:var(--kok)">${hisobotlar.length}</b></div>
+        <div class="profilStat"><span>So'nggi 30 kun bajarilishi</span><b style="color:var(--yashil)">${bajarilishFoizi}%</b></div>
+        <div class="profilStat"><span>Kechikkan hisobotlar</span><b style="color:var(--sariq)">${kechikkanSoni}</b></div>
+        <div class="profilStat"><span>Muammoli (flag)</span><b style="color:var(--qizil)">${flagSoni}</b></div>
+      </div>
+      <div style="margin:0 30px 30px; background:var(--bg-input); border:1px solid var(--chiziq-kard); border-radius:18px; padding:20px;">
+        <h4 style="margin:0 0 14px; font-size:14px;">So'nggi 14 kunlik faollik</h4>
+        <div style="height:180px"><canvas id="profilChart"></canvas></div>
+      </div>
+    </div>
+  `;
+  document.getElementById('modalFon').style.display='flex';
+
+  setTimeout(() => {
+    const canvas = document.getElementById('profilChart');
+    if (!canvas || typeof Chart === 'undefined') return;
+    const rootStyles = getComputedStyle(document.documentElement);
+    const kokRang = rootStyles.getPropertyValue('--kok').trim() || '#2F6FEF';
+    const matnRang = rootStyles.getPropertyValue('--text-ikkinchi').trim() || '#6B7286';
+    new Chart(canvas, {
+      type: 'bar',
+      data: { labels: kunlar.map(s => s.slice(8)+'.'+s.slice(5,7)), datasets: [{ data: kunBoyicha, backgroundColor: kokRang, borderRadius:6, maxBarThickness:22 }] },
+      options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{ ticks:{color:matnRang, font:{size:10}}, grid:{display:false} }, y:{ beginAtZero:true, ticks:{color:matnRang, precision:0} } } }
+    });
+  }, 80);
+}
+
+/* ================= UMUMIY JONLI XARITA ================= */
+let umumXaritaObj = null;
+async function xaritaYukla() {
+  const r = await api('hisobotlar');
+  if (!r.ok) { toast('Xarita uchun ma\'lumot yuklanmadi: ' + (r.xato||''), 'xato'); return; }
+  const bugunStr = toshkentBugun();
+  const fMfy = document.getElementById('xFiltrMfy').value;
+  let hisobots = (r.hisobotlar || []).filter(h => h.sana === bugunStr && h.b_lat);
+  if (SESSIYA.rol === 'nazoratchi') hisobots = hisobots.filter(h => String(h.mfyId) === String(SESSIYA.mfyId));
+  if (fMfy) hisobots = hisobots.filter(h => String(h.mfyId) === String(fMfy));
+
+  if (!umumXaritaObj) {
+    umumXaritaObj = L.map('umumXarita').setView([41.3111, 69.2797], 11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution:'© OSM'}).addTo(umumXaritaObj);
+  }
+  umumXaritaObj.eachLayer(l => { if (l instanceof L.Marker) umumXaritaObj.removeLayer(l); });
+
+  if (!hisobots.length) {
+    toast("Bugun uchun GPS bilan hisobot topilmadi", "info");
+  } else {
+    const bounds = [];
+    hisobots.forEach(h => {
+      const lat = +h.b_lat, lng = +h.b_lng;
+      bounds.push([lat, lng]);
+      const rangIco = (h.reyting && h.reyting !== 'YASHIL') ? '#EF4444' : '#17A34E';
+      const ico = L.divIcon({
+        html: `<div style="width:16px;height:16px;border-radius:50%;background:${rangIco};border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,.4)"></div>`,
+        className: '', iconSize:[16,16], iconAnchor:[8,8]
+      });
+      L.marker([lat, lng], { icon: ico }).addTo(umumXaritaObj)
+        .bindPopup(`<b>${h.xodimFio||''}</b><br>${h.ishNomi||h.ishTuri||''}<br>${h.mfyNomi||''}<br><small>${formatVaqt(h.b_vaqt)}</small>`);
+    });
+    if (bounds.length) umumXaritaObj.fitBounds(bounds, { padding:[40,40], maxZoom:15 });
+  }
+  setTimeout(() => { if (umumXaritaObj) umumXaritaObj.invalidateSize(); }, 150);
+}
+
+/* ================= KENGAYTIRILGAN QIDIRUV ================= */
+function matnBelgila(matn, soz) {
+  if (!soz) return matn;
+  try {
+    const re = new RegExp('(' + soz.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig');
+    return (matn||'').replace(re, '<mark>$1</mark>');
+  } catch(e) { return matn; }
+}
+
+async function qidiruvBajar() {
+  const q = (document.getElementById('qidiruvInput').value || '').trim().toLowerCase();
+  const natijaEl = document.getElementById('qidiruvNatijalar');
+  if (!q || q.length < 2) { natijaEl.innerHTML = '<div class="bosh-holat"><b>Kamida 2 ta belgi kiriting</b></div>'; return; }
+  natijaEl.innerHTML = '<div class="yuklanmoqda"><div class="spinner"></div>Qidirilmoqda...</div>';
+
+  const [rx, rh] = await Promise.all([api('xodimlar'), api('hisobotlar')]);
+  let xodims = rx.ok ? (rx.xodimlar||[]) : [];
+  let hisobots = rh.ok ? (rh.hisobotlar||[]) : [];
+  if (SESSIYA.rol === 'nazoratchi') {
+    xodims = xodims.filter(x => String(x.mfyId) === String(SESSIYA.mfyId));
+    hisobots = hisobots.filter(h => String(h.mfyId) === String(SESSIYA.mfyId));
+  }
+
+  const xodimNatijalari = xodims.filter(x => x.fio.toLowerCase().includes(q) || (x.mfyNomi||'').toLowerCase().includes(q));
+  const hisobotNatijalari = hisobots.filter(h =>
+    (h.b_tavsif||'').toLowerCase().includes(q) || (h.d_tavsif||'').toLowerCase().includes(q) ||
+    (h.y_tavsif||'').toLowerCase().includes(q) || (h.ishNomi||h.ishTuri||'').toLowerCase().includes(q) ||
+    (h.xodimFio||'').toLowerCase().includes(q)
+  ).slice(0, 60);
+
+  if (!xodimNatijalari.length && !hisobotNatijalari.length) {
+    natijaEl.innerHTML = '<div class="bosh-holat"><b>Hech narsa topilmadi</b>Boshqa kalit so\'z bilan urinib ko\'ring</div>';
+    return;
+  }
+
+  let html = '';
+  if (xodimNatijalari.length) {
+    html += `<h3 style="font-size:14px;margin:0 0 10px;">Xodimlar (${xodimNatijalari.length})</h3>`;
+    html += xodimNatijalari.slice(0,30).map(x => `
+      <div class="qidiruvNatija" onclick="bolimKorsat('nazorat'); setTimeout(()=>xodimTanla('${x.id}'),50)">
+        <div class="qTop"><span class="qFio">${matnBelgila(x.fio, q)}</span><span class="qMeta">${x.mfyNomi||''}</span></div>
+      </div>`).join('');
+  }
+  if (hisobotNatijalari.length) {
+    html += `<h3 style="font-size:14px;margin:20px 0 10px;">Hisobotlar (${hisobotNatijalari.length})</h3>`;
+    html += hisobotNatijalari.map(h => `
+      <div class="qidiruvNatija" onclick="bolimKorsat('nazorat'); setTimeout(async ()=>{await xodimTanla('${h.xodimId}'); setTimeout(()=>modalOch(${JSON.stringify(h.id)}),300);},50)">
+        <div class="qTop"><span class="qFio">${matnBelgila(h.xodimFio||'', q)}</span><span class="qMeta">${h.sana} · ${h.mfyNomi||''}</span></div>
+        <div class="qMatn">${matnBelgila((h.b_tavsif||h.d_tavsif||h.y_tavsif||h.ishNomi||h.ishTuri||'').slice(0,180), q)}</div>
+      </div>`).join('');
+  }
+  natijaEl.innerHTML = html;
 }
 
 (async () => {
