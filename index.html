@@ -1157,12 +1157,17 @@ async function boshla() {
     }
     fillSelect('xFiltrMfy', mfylar, true);
   }
-  if (k.ok && Array.isArray(k.kategoriyalar)) { 
+if (k.ok && Array.isArray(k.kategoriyalar)) { 
     kategoriyalar = k.kategoriyalar; 
     fillSelect('fKategoriya', kategoriyalar, true); 
   }
   
-  bolimKorsat('dashboard');
+  // Yangi: Oxirgi oynani xotiradan o'qish
+  let oxirgi = localStorage.getItem('oxirgiBolim') || 'dashboard';
+  // Agar nazoratchi 'boshqaruv'da qolib ketgan bo'lsa, uni dashboardga qaytarish (xavfsizlik)
+  if (SESSIYA.rol === 'nazoratchi' && oxirgi === 'boshqaruv') oxirgi = 'dashboard';
+  bolimKorsat(oxirgi);
+
   await xodimlarYukla();
 
   setInterval(checkNewReports, 15000);
@@ -1177,6 +1182,8 @@ function fillSelect(id, list, keepFirst) {
 }
 
 function bolimKorsat(nom) {
+   // Yangi: ochilgan oyna nomini xotiraga yozib qoyish
+  localStorage.setItem('oxirgiBolim', nom);
   document.getElementById('navDashboard').classList.toggle('aktiv', nom==='dashboard');
   document.getElementById('navNazorat').classList.toggle('aktiv', nom==='nazorat');
   document.getElementById('navXarita').classList.toggle('aktiv', nom==='xarita');
