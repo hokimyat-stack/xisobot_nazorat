@@ -1161,7 +1161,7 @@ async function loginParol() {
   try {
     const res = await apiPost('admin-login', { login, parol });
     if (!res.ok) throw new Error(res.xato);
-    SESSIYA = { kalit: res.admin.kalit, rol: res.admin.rol, fio: res.admin.fio, mfyId: res.admin.mfyId, ruxsatlar: res.admin.ruxsatlar||[] };
+    SESSIYA = { kalit: res.admin.kalit, rol: res.admin.rol, fio: res.admin.fio, mfyId: res.admin.mfyId, ruxsatlar: ruxsatlarniOlish(res.admin.ruxsatlar) };
     sessionStorage.setItem('SESSIYA', JSON.stringify(SESSIYA));
     boshla();
   } catch(e) { xato.textContent = 'Xato: ' + e.message; xato.style.display='block'; }
@@ -2120,7 +2120,12 @@ function bTab(nom, btn) {
 function ruxsatlarniOlish(obj) {
   if (!obj) return [];
   if (Array.isArray(obj)) return obj;
-  try { const p = JSON.parse(obj); return Array.isArray(p) ? p : []; } catch(e) { return []; }
+  try {
+    const p = JSON.parse(obj);
+    if (Array.isArray(p)) return p;
+  } catch(e) {}
+  // Eski (vergul bilan ajratilgan) formatdagi ma'lumotlar uchun zaxira yo'l
+  return String(obj).split(',').map(s => s.trim()).filter(Boolean);
 }
 
 function ruxsatlarBadgeHTML(a) {
@@ -2575,31 +2580,6 @@ function formaChiz(sarlavha, maydonlar, onSaqla) {
 
 function formaYop(){ document.getElementById('formaFon').style.display='none'; }
 
-function xodimForma(x) {
-  const mfyVariantlar = SESSIYA.rol === 'nazoratchi' 
-    ? mfylar.filter(m => String(m.id) === String(SESSIYA.mfyId)).map(m=>({val:m.id,nom:m.nomi}))
-    : [{val:'',nom:'— tanlang —'},...mfylar.map(m=>({val:m.id,nom:m.nomi}))];
-    
-  const ishHolatiV = [{val:'ishda',nom:'Faol (Ishda)'},{val:'kasal',nom:'Kasal (Uzrli)'},{val:'tatil',nom:"Ta'tilda"},{val:'sababli',nom:'Boshqa sabab'}];
-
-  formaChiz(x ? 'Xodimni tahrirlash' : 'Yangi xodim', [
-    { id:'fio', label:'F.I.Sh.', qiymat:x?.fio, majburiy:true },
-    { id:'pinfl', label:'PINFL (14 raqam)', qiymat:x?.pinfl, majburiy:!x },
-    { id:'parol', label: x?"Yangi parol (bo'sh = o'zgarmaydi)":'Parol', qiymat:'', majburiy:!x },
-    { id:'tel', label:'Telefon', qiymat:x?.tel },
-    { id:'mfyId', label:'Tashkilot', turi:'select', qiymat:x?.mfyId || SESSIYA.mfyId, variantlar: mfyVariantlar },
-    { id:'kategoriyaId', label:'Kategoriya', turi:'select', qiymat:x?.kategoriyaId, variantlar:[{val:'',nom:'— tanlang —'},...kategoriyalar.map(k=>({val:k.id,nom:k.nomi}))] },
-    { id:'ishHolati', label:'Ish Holati (Sababli)', turi:'select', qiymat:x?.ish_holati || 'ishda', variantlar: ishHolatiV }
-  ], async (q) => {
-    const r = x ? await apiPost('xodimTahrir', { xodimId:x.id, ...q }) : await apiPost('xodimQosh', q);
-    if (r.ok) { 
-      formaYop(); 
-      const yX = await api('xodimlar'); if(yX.ok) xodimlar = yX.xodimlar;
-      bYukla(); xodimlarChiz(); toast("Saqlandi!"); 
-    } else toast('Xato: ' + (r.xato || ''), 'xato');
-  });
-}
-
 function adminForma(a) {
   const ruxsatlarMavjud = ruxsatlarniOlish(a?.ruxsatlar);
   const f = document.getElementById('forma');
@@ -2665,8 +2645,8 @@ function adminForma(a) {
     if (!a && !parol) return toast('Parol majburiy', 'xato');
     if (parol && parol.length < 6) return toast('Parol kamida 6 belgidan iborat bo\'lishi kerak', 'xato');
 
-    const ruxsatlar = Array.from(document.querySelectorAll('.ruxsatChk:checked')).map(c => c.value);
-    const qiymatlar = { fio, rol, mfyId, login, parol, ruxsatlar: ruxsatlar.join(',') };
+const ruxsatlar = Array.from(document.querySelectorAll('.ruxsatChk:checked')).map(c => c.value);
+    const qiymatlar = { fio, rol, mfyId, login, parol, ruxsatlar: JSON.stringify(ruxsatlar) };
 
     const r = a ? await apiPost('adminTahrir', { adminId:a.id, ...qiymatlar }) : await apiPost('adminQosh', qiymatlar);
     if (r.ok) { formaYop(); bYukla(); toast("Saqlandi!"); } else toast('Xato: ' + (r.xato || ''), 'xato');
