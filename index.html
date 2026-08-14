@@ -478,6 +478,22 @@ main{ flex:1; display:flex; overflow:hidden; padding:22px; gap:20px; max-width: 
 .cmAmallar { display: flex; gap: 12px; margin-top: 6px; justify-content: flex-end; }
 .cmAmallar button { padding: 12px 20px; border-radius: 14px; font-weight: 700; flex:none;}
 
+   /* Boshqaruv paneli pastki qotirilgan paginatsiya paneli */
+.boshqaruv-foot {
+  position: sticky;
+  bottom: 0;
+  background: var(--bg-kard-shaffof);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--chiziq);
+  z-index: 10;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  flex-shrink: 0;
+}
+
 /* XARITA UCHUN TUNGI REJIM MOSLASHUVI */
 [data-theme="dark"] .leaflet-tile-pane {
   filter: invert(100%) hue-rotate(180deg) brightness(85%) contrast(90%);
@@ -841,16 +857,20 @@ mark{ background:rgba(var(--kok-rgb),.28); color:inherit; border-radius:3px; pad
       </section>
 
 <section id="boshqaruv" class="asosiy-kard" style="display:none; padding:0; overflow:hidden; flex-direction:column;">
-        <div style="background:var(--bg-kard-shaffof); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-bottom:1px solid var(--chiziq-kard); z-index:10; padding:24px 28px 16px; flex-shrink:0;">
-          <div class="bTabs" id="bTabsContainer" style="margin-bottom:14px;"></div>
-          <div id="bSarlavhaTop" style="display:flex; flex-direction:column; gap:12px; align-items:flex-start;"></div>
-        </div>
-        <div class="bPanel" id="bPanel" style="flex:1; min-height:0; overflow-y:auto; padding:20px 28px;">
-          <div class="yuklanmoqda"><div class="spinner"></div></div>
-        </div>
-        <!-- YANILIK: Sahifalash tugmalari doim pastda qotib turishi uchun -->
-        <div id="bPaginContainer" style="background:var(--bg-kard-shaffof); border-top:1px solid var(--chiziq-kard); flex-shrink:0; display:none;"></div>
-      </section>
+  <!-- Tepadagi qotirilgan menyu va sarlavha -->
+  <div style="background:var(--bg-kard-shaffof); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-bottom:1px solid var(--chiziq-kard); z-index:10; padding:24px 28px 16px; flex-shrink:0;">
+    <div class="bTabs" id="bTabsContainer" style="margin-bottom:14px;"></div>
+    <div id="bSarlavhaTop" style="display:flex; flex-direction:column; gap:12px; align-items:flex-start;"></div>
+  </div>
+
+  <!-- O'rtadagi to'liq skrol bo'ladigan jadval qismi -->
+  <div class="bPanel" id="bPanel" style="flex:1; min-height:0; overflow-y:auto; padding:20px 28px;">
+    <div class="yuklanmoqda"><div class="spinner"></div></div>
+  </div>
+
+  <!-- Eng pastda qotib turadigan Paginatsiya (sahifalash) paneli -->
+  <div class="boshqaruv-foot" id="bPaginContainer"></div>
+</section>
     </main>
   </div>
 </div>
@@ -948,7 +968,11 @@ function lentaIchQidiruvBajar(){ lentaIchQidiruvBajarDebounced(); }
 
 function paginatorYarat(containerEl, jamiSoni, sahifaHajmi, joriySahifa, onSahifaAlmash) {
   const jamiSahifa = Math.max(1, Math.ceil(jamiSoni / sahifaHajmi));
-  if (jamiSoni <= sahifaHajmi) { containerEl.style.display = 'none'; return; }
+  if (!containerEl) return;
+  if (jamiSoni <= sahifaHajmi) { 
+    containerEl.style.display = 'none'; 
+    return; 
+  }
   containerEl.style.display = 'flex';
   containerEl.innerHTML = `
     <button ${joriySahifa<=1?'disabled':''} onclick="(${onSahifaAlmash.toString()})(${joriySahifa-1})">← Oldingi</button>
@@ -2098,6 +2122,10 @@ let auditFiltrKim = '', auditFiltrAmal = '', auditHammasi = [];
 async function bYukla() {
   const panel = document.getElementById('bPanel');
   panel.innerHTML = '<div class="yuklanmoqda"><div class="spinner"></div></div>';
+  
+  // Yangi: Har safar bo'lim o'zgarganda pastdagi paginatsiyani vaqtincha yashirib turish
+  const paginCont = document.getElementById('bPaginContainer');
+  if (paginCont) paginCont.style.display = 'none';
 
   if (bJoriy === 'xodimlar') {
     const r = await api('xodimlar');
