@@ -1034,7 +1034,7 @@ function formatVaqt(isoStr) {
   const now = new Date();
   const diffMs = now - date;
   const diffMins = Math.floor(diffMs / 60000);
-  if (diffMins < 1) return 'Hozirginada';
+  if (diffMins < 1) return 'Hozirgina';
   if (diffMins < 60) return `${diffMins} daq oldin`;
   const diffHrs = Math.floor(diffMins / 60);
   if (diffHrs < 24) return `${diffHrs} soat oldin`;
