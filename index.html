@@ -268,7 +268,8 @@ main{ flex:1; display:flex; overflow:hidden; padding:22px; gap:20px; max-width: 
 .nuqta.yoq{background:var(--text-ikkinchi); opacity:.5;}
 .nuqta.flag{background:var(--qizil); box-shadow:0 0 0 3px var(--qizil-och)}
 
-.xodimRow .fio{font-weight:700; font-size:14px; color:var(--text-asosiy); line-height:1.3; margin-bottom:3px;}
+.xodimRow .fio{font-weight:700; font-size:13.5px; color:var(--text-asosiy); line-height:1.2; margin-bottom:4px; word-wrap:break-word;}
+.xodimRow .vaqtBadge {font-size:10px; font-weight:700; font-family:var(--font-mono); color:var(--kok); background:var(--kok-och); padding:4px 8px; border-radius:8px; margin-top:6px; display:inline-block;}
 .xodimRow .meta{color:var(--text-ikkinchi); font-size:11.5px; font-weight:500; display:block; line-height:1.4;}
 .xodimRow .son{margin-left:auto; background:var(--bg-input); border:1px solid var(--chiziq); border-radius:14px; padding:6px 10px; font-size:12px; font-weight:800; color:var(--text-asosiy); display:flex; align-items:center; gap:6px; font-family:var(--font-mono);}
 .xodimRow .infoBtn{ width:26px; height:26px; border-radius:8px; background:var(--bg-input); border:1px solid var(--chiziq); color:var(--text-ikkinchi); flex-shrink:0; }
@@ -1014,6 +1015,18 @@ function formatVaqt(isoStr) {
     return isoStr.substring(11, 16);
   }
 }
+   function timeAgo(dateString) {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffMins = Math.floor(diffMs / 60000);
+  if (diffMins < 1) return 'Hozirginada';
+  if (diffMins < 60) return `${diffMins} daq oldin`;
+  const diffHrs = Math.floor(diffMins / 60);
+  if (diffHrs < 24) return `${diffHrs} soat oldin`;
+  return `${Math.floor(diffHrs / 24)} kun oldin`;
+}
 
 const rasmURL = (id, w=800) => id || '';
 const rasmFullURL = (id) => id || '';
@@ -1437,17 +1450,25 @@ async function xodimlarYukla() {
       kelganHisobotlar.forEach(h => fetchedReportIds.add(h.id));
     }
 
-    if (kelganHisobotlar.length > 0) {
+if (kelganHisobotlar.length > 0) {
       xodimlar.forEach(x => {
         x.ishHolati = x.ish_holati || 'ishda';
         const xHisobotlari = kelganHisobotlar.filter(h => String(h.xodimId) === String(x.id));
+        
+        // Yangi: Oxirgi hisobot vaqtini aniqlab olish
+        xHisobotlari.sort((a,b) => new Date(b.b_vaqt) - new Date(a.b_vaqt));
+        
         x.soni = xHisobotlari.length;
+        x.oxirgiVaqt = xHisobotlari.length > 0 ? xHisobotlari[0].b_vaqt : null;
         x.bugunBor = xHisobotlari.some(h => h.sana === toshkentBugun());
         x.unread = xHisobotlari.filter(h => !seenReports.has(h.id)).length;
         x.flagBor = xHisobotlari.some(h => h.sana === toshkentBugun() && h.reyting && h.reyting !== 'YASHIL');
       });
     } else {
-        xodimlar.forEach(x => { x.ishHolati = x.ish_holati || 'ishda'; });
+        xodimlar.forEach(x => { 
+          x.ishHolati = x.ish_holati || 'ishda'; 
+          x.oxirgiVaqt = null;
+        });
     }
     xodimlar.forEach(x => { jamiOqilmagan += x.unread || 0; });
 
@@ -1528,7 +1549,14 @@ function xodimlarChiz() {
   if (nazoratFiltr === 'yuklagan') list = list.filter(x => x.bugunBor);
   else if (nazoratFiltr === 'yuklamagan') list = list.filter(x => !x.bugunBor);
 
-  list = list.slice().sort((a, b) => (b.bugunBor === true) - (a.bugunBor === true));
+  // Yangi qism: Eng oxirgi yuklaganlarni (vaqti bo'yicha) ro'yxatning eng tepasiga chiqarish
+  list = list.slice().sort((a, b) => {
+    if(a.oxirgiVaqt && b.oxirgiVaqt) return new Date(b.oxirgiVaqt) - new Date(a.oxirgiVaqt);
+    if(a.oxirgiVaqt) return -1;
+    if(b.oxirgiVaqt) return 1;
+    return (b.bugunBor === true) - (a.bugunBor === true);
+  });
+  
   xodimlarFiltrlanganKesh = list;
 
   if (xodimlarSahifa > Math.ceil(list.length / XODIM_SAHIFA_HAJMI)) xodimlarSahifa = 1;
@@ -1547,7 +1575,8 @@ function xodimlarChiz() {
       <div style="flex:1; min-width:0">
         <div class="fio">${x.fio}</div>
         <div class="meta">${x.mfyNomi||'—'}${x.kategoriyaNomi ? ' · ' + x.kategoriyaNomi : ''}</div>
-        ${x.ishHolati && x.ishHolati !== 'ishda' ? `<span class="uzrli-badge">${x.ishHolati}</span>` : ''}
+        ${x.ishHolati && x.ishHolati !== 'ishda' ? `<span class="uzrli-badge">${x.ishHolati}</span><br>` : ''}
+        ${x.oxirgiVaqt ? `<div class="vaqtBadge">${formatVaqt(x.oxirgiVaqt)} • ${timeAgo(x.oxirgiVaqt)}</div>` : ''}
       </div>
       <button class="infoBtn" title="Xodim profili" onclick="event.stopPropagation(); profilOch('${x.id}')">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
