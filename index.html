@@ -1590,17 +1590,6 @@ async function checkNewReports() {
     }
   }
 }
-  
-  if(yangiSoni > 0) {
-    playBeep();
-    toast(`${yangiSoni} ta yangi hisobot keldi!`, "info");
-    brauzerBildirishnoma('Yangi hisobot keldi', yangiSoni === 1 ? `${yangiFio} yangi hisobot yubordi` : `${yangiSoni} ta yangi hisobot keldi`);
-    await xodimlarYukla();
-    if(tanlangan) {
-      await lentaYukla();
-    }
-  }
-}
 
 async function hisobotlarniYangila() {
   const ico = document.getElementById('refIco');
