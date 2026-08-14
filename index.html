@@ -579,6 +579,26 @@ mark{ background:rgba(var(--kok-rgb),.28); color:inherit; border-radius:3px; pad
   .navTabs button{ justify-content:center; padding:12px; }
   .user-card{ justify-content:center; }
 }
+/* DASHBOARD BENTO GRID DIZAYNI */
+.dash-header-top { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
+.dash-header-top .sarlavha h2 { margin: 0 0 6px; font-size: 22px; color: var(--text-asosiy); letter-spacing:-0.02em; }
+.dash-header-top .sarlavha p { margin: 0; color: var(--text-ikkinchi); font-size: 13px; font-weight: 500;}
+.bento-grid { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
+.bento-left { flex: 2; min-width: 0; display: flex; flex-direction: column; gap: 24px; }
+.bento-right { flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 24px; }
+.dashCard { cursor: pointer; } /* Kartochkalarni bosiladigan qilish */
+
+/* MFY PROGRESS REYTINGI */
+.mfy-rating-list { display: flex; flex-direction: column; gap: 16px; }
+.mfy-rating-item { display: flex; flex-direction: column; gap: 8px; }
+.mfy-rating-top { display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 700; color: var(--text-asosiy); }
+.mfy-rating-meta { color: var(--text-ikkinchi); font-size: 11.5px; font-weight: 600; }
+.mfy-progress-bg { height: 8px; background: var(--bg-input); border-radius: 10px; overflow: hidden; display:flex;}
+.mfy-progress-bar { height: 100%; background: var(--yashil); border-radius: 10px; transition: width 0.5s ease;}
+
+@media(max-width: 1024px) {
+  .bento-left, .bento-right { flex: 1 1 100%; }
+}
 </style>
 </head>
 <body>
@@ -742,79 +762,85 @@ mark{ background:rgba(var(--kok-rgb),.28); color:inherit; border-radius:3px; pad
         </div>
       </section>
        
-      <section id="dashboardPanel" class="asosiy-kard" style="display:block">
-        <div class="bPanel">
-          <div class="dashHero">
-            <div>
-              <span class="eyebrow"><span class="liveDot"></span> Bugungi holat</span>
-              <h3 id="dashSarlavha">Umumiy Ko'rsatkichlar</h3>
-              <div class="izoh" id="dashIzoh">Tizimdagi joriy kunlik hisobotlar va xodimlar statistikasi</div>
-            </div>
-            <div class="heroIco">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.1-2.8-2.8L7 14"/></svg>
-            </div>
+     <section id="dashboardPanel" class="asosiy-kard" style="display:block; padding:28px;">
+        
+        <!-- YANILIK: Ixcham Header va Filtrlar -->
+        <div class="dash-header-top">
+          <div class="sarlavha">
+            <h2 id="dashSarlavha">Umumiy Ko'rsatkichlar</h2>
+            <p>Tizimdagi joriy kunlik hisobotlar va xodimlar statistikasi</p>
           </div>
-
-          <div class="dashFiltrBar">
+          <div class="dashFiltrBar" style="margin-bottom:0;">
             <span class="filtrLabel"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg> Filtr:</span>
             <select id="dFiltrMfy" onchange="dashboardYukla()"><option value="">Barcha tashkilotlar</option></select>
             <select id="dFiltrKategoriya" onchange="dashboardYukla()"><option value="">Barcha kategoriya</option></select>
             <button class="tozalaBtn" onclick="document.getElementById('dFiltrMfy').value='';document.getElementById('dFiltrKategoriya').value='';dashboardYukla()">Tozalash</button>
           </div>
+        </div>
 
-          <div class="dashGrid" id="dashGrid">
-            <div class="dashCard blue"><div class="dcIco"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><span>Jami Xodimlar</span><b id="dJamiXodim">0</b></div>
-            <div class="dashCard green"><div class="dcIco"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><span>Bugun Yuklaganlar</span><b id="dBugunYuklagan">0</b></div>
-            <div class="dashCard red"><div class="dcIco"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span>Yuklamaganlar</span><b id="dBugunYuklamagan">0</b></div>
-            <div class="dashCard amber"><div class="dcIco"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><span>Muammoli (Flag)</span><b id="dFlagSoni">0</b></div>
-            <div class="dashCard purple"><div class="dcIco"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h4l2-9 5 18 3-10h4"/></svg></div><span>Sabablilar (Uzrli)</span><b id="dSababli">0</b></div>
-          </div>
+        <!-- YANILIK: Asosiy kartochkalar endi bosiladi (interaktiv) -->
+        <div class="dashGrid" id="dashGrid">
+          <div class="dashCard blue" onclick="dashTab('yuklamaganlar')"><div class="dcIco"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><span>Jami Xodimlar</span><b id="dJamiXodim">0</b></div>
+          <div class="dashCard green" onclick="dashTab('yuklaganlar')"><div class="dcIco"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><span>Yuklaganlar</span><b id="dBugunYuklagan">0</b></div>
+          <div class="dashCard red" onclick="dashTab('yuklamaganlar')"><div class="dcIco"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span>Yuklamaganlar</span><b id="dBugunYuklamagan">0</b></div>
+          <div class="dashCard amber"><div class="dcIco"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><span>Muammoli (Flag)</span><b id="dFlagSoni">0</b></div>
+          <div class="dashCard purple" onclick="dashTab('uzrlilar')"><div class="dcIco"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h4l2-9 5 18 3-10h4"/></svg></div><span>Sabablilar (Uzrli)</span><b id="dSababli">0</b></div>
+        </div>
 
-          <div class="chartKard">
-            <div class="chartBosh">
-              <h3>Xodimlar bo'yicha bugungi hisobotlar soni</h3>
-              <div class="chartLegend">
-                <span><i style="background:var(--kok)"></i> Norma bajarilgan</span>
-                <span><i style="background:var(--qizil)"></i> Norma bajarilmagan</span>
-                <span><i style="background:var(--sariq); border-radius:0; height:2px; width:14px;"></i> Norma chizig'i</span>
+        <!-- YANILIK: BENTO GRID (2 ustunli tartib) -->
+        <div class="bento-grid">
+          
+          <!-- CHAP USTUN (65%): Xodimlar jadvali -->
+          <div class="bento-left">
+            <div class="chartKard" style="width: 100%; margin:0; padding: 24px;">
+              <div class="chartBosh" style="margin-bottom:20px;">
+                <h3 style="margin:0;">Xodimlar holati (Bugun)</h3>
+              </div>
+              <div class="bTabs" style="margin-bottom: 20px;">
+                <button id="tabYuklamaganlar" class="aktiv" onclick="dashTab('yuklamaganlar')">Topshirmaganlar</button>
+                <button id="tabUzrlilar" onclick="dashTab('uzrlilar')">Sabablilar (Uzrli)</button>
+                <button id="tabYuklaganlar" onclick="dashTab('yuklaganlar')">Topshirganlar</button>
+              </div>
+              <div style="overflow-x:auto; border:1px solid var(--chiziq-kard); border-radius:16px;">
+                <table class="jadval" id="dashXodimlarJadval">
+                  <tr><td class="yuklanmoqda"><div class="spinner"></div>Kuting...</td></tr>
+                </table>
               </div>
             </div>
-            <div class="chartWrap"><canvas id="dashChart"></canvas></div>
           </div>
 
-          <div class="chartKard">
-            <div class="chartBosh">
-              <h3>So'nggi 7 kunlik dinamika</h3>
-              <div class="chartLegend">
-                <span><i style="background:var(--kok)"></i> Jami hisobotlar</span>
-                <span><i style="background:var(--binafsha)"></i> Muammoli (flag)</span>
+          <!-- O'NG USTUN (35%): Diagrammalar va Tashkilot reytingi -->
+          <div class="bento-right">
+            
+            <!-- YANGI DOUGHNUT CHART -->
+            <div class="chartKard" style="width:100%; margin:0; padding:24px;">
+              <div class="chartBosh">
+                <h3>Umumiy holat</h3>
+              </div>
+              <div class="chartWrap kichik" style="height:220px;"><canvas id="dashDoughnut"></canvas></div>
+            </div>
+
+            <!-- TREND CHART (7 KUNLIK) -->
+            <div class="chartKard" style="width:100%; margin:0; padding:24px;">
+              <div class="chartBosh">
+                <h3>7 kunlik dinamika</h3>
+              </div>
+              <div class="chartWrap kichik" style="height:170px;"><canvas id="trendChart"></canvas></div>
+            </div>
+
+            <!-- YANILIK: PROGRESS BAR (TASHKILOT REYTINGI) -->
+            <div class="chartKard" style="width:100%; margin:0; padding:24px;">
+              <div class="chartBosh" style="margin-bottom:20px;">
+                <h3>Tashkilotlar faolligi</h3>
+              </div>
+              <div class="mfy-rating-list" id="mfyRatingList">
+                <div class="yuklanmoqda"><div class="spinner"></div>Yuklanmoqda...</div>
               </div>
             </div>
-            <div class="chartWrap kichik"><canvas id="trendChart"></canvas></div>
-          </div>
 
-          <h3 style="margin-top:8px">Xodimlar holati (Bugun)</h3>
-          <div class="izoh">Bugun hisobot topshirgan va topshirmagan xodimlar ro'yxati</div>
-          <div class="bTabs" style="margin-bottom: 20px;">
-            <button id="tabYuklamaganlar" class="aktiv" onclick="dashTab('yuklamaganlar')">Topshirmaganlar</button>
-            <button id="tabUzrlilar" onclick="dashTab('uzrlilar')">Sabablilar (Uzrli)</button>
-            <button id="tabYuklaganlar" onclick="dashTab('yuklaganlar')">Topshirganlar</button>
-          </div>
-          <div style="overflow-x:auto; margin-bottom: 40px; border:1px solid var(--chiziq-kard); border-radius:16px;">
-            <table class="jadval" id="dashXodimlarJadval">
-              <tr><td class="yuklanmoqda"><div class="spinner"></div>Kuting...</td></tr>
-            </table>
-          </div>
-
-          <h3>Tashkilotlar kesimida bugungi holat</h3>
-          <div class="izoh">Qaysi tashkilot xodimlari faol ekanligi</div>
-          <div style="overflow-x:auto; border:1px solid var(--chiziq-kard); border-radius:16px;">
-            <table class="jadval" id="dashJadval">
-              <tr><th>Tashkilot</th><th>Jami Xodim</th><th>Bugun Yuklagan</th><th>Foiz</th></tr>
-              <tr><td colspan="4" class="yuklanmoqda"><div class="spinner"></div>Yuklanmoqda...</td></tr>
-            </table>
           </div>
         </div>
+
       </section>
 
       <section id="xaritaPanel" class="asosiy-kard" style="display:none;">
@@ -1253,8 +1279,10 @@ function bolimKorsat(nom) {
   if(navBosh) navBosh.classList.toggle('aktiv', nom==='boshqaruv');
   
   document.getElementById('chap').style.display = nom==='nazorat' ? 'flex' : 'none';
+  // O'ZGARISH MANA SHU YERDA: 'block' o'rniga 'flex' qo'yildi
   document.getElementById('ong').style.display = nom==='nazorat' ? 'flex' : 'none';
   document.getElementById('dashboardPanel').style.display = nom==='dashboard' ? 'block' : 'none';
+  // YANA BIR O'ZGARISH: 'block' o'rniga 'flex' qo'yildi
   document.getElementById('boshqaruv').style.display = nom==='boshqaruv' ? 'flex' : 'none';
   document.getElementById('xaritaPanel').style.display = nom==='xarita' ? 'flex' : 'none';
   document.getElementById('qidiruvPanel').style.display = nom==='qidiruv' ? 'block' : 'none';
@@ -1379,9 +1407,11 @@ async function dashboardYukla() {
 
   dashTab('yuklamaganlar');
 
-  dashChartChiz(xodims, hisobots, bugunStr);
+  // Yangi Aylanma va Chiziqli chartlarni chaqirish
+  dashChartChiz(bugunYuklagan, dashUzrlilar.length, dashYuklamagan.length);
   trendChartChiz(hisobotsHammasi);
 
+  // MFY reytingi uchun ma'lumotlarni tayyorlash
   const mfyStat = {};
   mfylar.forEach(m => {
     if (SESSIYA.rol === 'nazoratchi' && String(m.id) !== String(SESSIYA.mfyId)) return;
@@ -1392,311 +1422,30 @@ async function dashboardYukla() {
   xodims.forEach(x => { if (x.mfyId && mfyStat[x.mfyId]) mfyStat[x.mfyId].jami++; });
   hisobots.forEach(h => { if (h.sana === bugunStr && h.mfyId && mfyStat[h.mfyId]) mfyStat[h.mfyId].yuklagan.add(String(h.xodimId)); });
 
-  let jHTML = '';
-  Object.values(mfyStat).forEach(st => {
-    const yuklaganSoni = st.yuklagan.size;
-    const foiz = st.jami > 0 ? Math.round((yuklaganSoni / st.jami) * 100) : 0;
-    jHTML += `<tr><td><b>${st.nomi}</b></td><td>${st.jami} ta</td><td><span class="mini yashil">${yuklaganSoni} ta yuklagan</span></td><td><b>${foiz}%</b></td></tr>`;
-  });
-
-  document.getElementById('dashJadval').innerHTML = jHTML || '<tr><td colspan="4" class="yuklanmoqda">Ma\'lumot topilmadi</td></tr>';
-}
-
-let dashChart = null;
-const DASH_NORMA = 1;
-function dashChartChiz(xodims, hisobots, bugunStr) {
-  const canvas = document.getElementById('dashChart');
-  if (!canvas || typeof Chart === 'undefined') return;
-
-  const bugunHisobotlar = hisobots.filter(h => h.sana === bugunStr);
-  const sonlar = {};
-  bugunHisobotlar.forEach(h => { const id = String(h.xodimId); sonlar[id] = (sonlar[id] || 0) + 1; });
-
-  let ishtirokchilar = xodims.map(x => ({ fio: x.fio, soni: sonlar[String(x.id)] || 0 }));
-  ishtirokchilar.sort((a, b) => b.soni - a.soni);
-  ishtirokchilar = ishtirokchilar.slice(0, 25);
-
-  const wrap = canvas.closest('.chartKard').querySelector('.chartWrap');
-  if (!ishtirokchilar.length || ishtirokchilar.every(x => x.soni === 0)) {
-    if (dashChart) { dashChart.destroy(); dashChart = null; }
-    wrap.innerHTML = '<div class="chartBosh_empty">Bugun uchun ma\'lumot topilmadi</div>';
-    return;
-  }
-  if (!wrap.querySelector('#dashChart')) {
-    wrap.innerHTML = '<canvas id="dashChart"></canvas>';
-  }
-  const ctx = document.getElementById('dashChart');
-  if (!ctx) return;
-
-  const rootStyles = getComputedStyle(document.documentElement);
-  const kokRang = rootStyles.getPropertyValue('--kok').trim() || '#2F6FEF';
-  const qizilRang = rootStyles.getPropertyValue('--qizil').trim() || '#EF4444';
-  const sariqRang = rootStyles.getPropertyValue('--sariq').trim() || '#E7930A';
-  const matnRang = rootStyles.getPropertyValue('--text-ikkinchi').trim() || '#6B7286';
-  const chiziqRang = rootStyles.getPropertyValue('--chiziq').trim() || 'rgba(0,0,0,0.08)';
-
-  const labels = ishtirokchilar.map(x => x.fio);
-  const data = ishtirokchilar.map(x => x.soni);
-  const renglar = data.map(v => v >= DASH_NORMA ? kokRang : qizilRang);
-
-  if (dashChart) { dashChart.destroy(); dashChart = null; }
-  dashChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [
-        { label: "Hisobotlar soni", data, backgroundColor: renglar, borderRadius: 7, maxBarThickness: 34, order: 2 },
-        { label: "Norma chizig'i", type: 'line', data: labels.map(() => DASH_NORMA), borderColor: sariqRang, borderWidth: 2, borderDash: [7, 5], pointRadius: 0, fill: false, order: 1 }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { title: (items) => items[0].label, label: (item) => item.datasetIndex === 0 ? `${item.raw} ta hisobot` : `Norma: ${item.raw} ta` } } },
-      scales: {
-        x: { ticks: { color: matnRang, font: { size: 10.5, family: "'Plus Jakarta Sans'" }, maxRotation: 45, minRotation: 0 }, grid: { display: false } },
-        y: { beginAtZero: true, ticks: { color: matnRang, precision: 0, font: { size: 11 } }, grid: { color: chiziqRang } }
-      }
-    }
-  });
-}
-
-let trendChart = null;
-function trendChartChiz(hisobotlarHammasi) {
-  const canvas = document.getElementById('trendChart');
-  if (!canvas || typeof Chart === 'undefined') return;
-
-  const kunlar = [];
-  for (let i = 6; i >= 0; i--) kunlar.push(toshkentSananiOl(i));
-
-  const jamiPerKun = kunlar.map(s => (hisobotlarHammasi || []).filter(h => h.sana === s).length);
-  const flagPerKun = kunlar.map(s => (hisobotlarHammasi || []).filter(h => h.sana === s && h.reyting && h.reyting !== 'YASHIL').length);
-
-  const wrap = canvas.closest('.chartKard').querySelector('.chartWrap');
-  if (jamiPerKun.every(x => x === 0)) {
-     if (trendChart) { trendChart.destroy(); trendChart = null; }
-     wrap.innerHTML = '<div class="chartBosh_empty">So\'nggi 7 kunda ma\'lumot topilmadi</div>';
-     return;
-  }
-  if (!wrap.querySelector('#trendChart')) {
-     wrap.innerHTML = '<canvas id="trendChart"></canvas>';
-  }
-  const ctx = document.getElementById('trendChart');
-  if(!ctx) return;
-
-  const rootStyles = getComputedStyle(document.documentElement);
-  const kokRang = rootStyles.getPropertyValue('--kok').trim() || '#2F6FEF';
-  const binafshaRang = rootStyles.getPropertyValue('--binafsha').trim() || '#8B5CF6';
-  const matnRang = rootStyles.getPropertyValue('--text-ikkinchi').trim() || '#6B7286';
-  const chiziqRang = rootStyles.getPropertyValue('--chiziq').trim() || 'rgba(0,0,0,0.08)';
-
-  const labels = kunlar.map(s => s.slice(5).split('-').reverse().join('.'));
-
-  if (trendChart) { trendChart.destroy(); trendChart = null; }
-  trendChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [
-        { label:'Jami', data: jamiPerKun, borderColor: kokRang, backgroundColor: 'rgba(47,111,239,0.14)', fill:true, tension:.35, pointRadius:4, pointBackgroundColor:kokRang },
-        { label:'Flag', data: flagPerKun, borderColor: binafshaRang, backgroundColor:'rgba(139,92,246,0.10)', fill:true, tension:.35, pointRadius:4, pointBackgroundColor:binafshaRang }
-      ]
-    },
-    options: {
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false} },
-      scales:{
-        x:{ ticks:{ color:matnRang, font:{size:11} }, grid:{ display:false } },
-        y:{ beginAtZero:true, ticks:{ color:matnRang, precision:0, font:{size:11} }, grid:{ color:chiziqRang } }
-      }
-    }
-  });
-}
-
-async function xodimlarYukla() {
-  const [rx, rh] = await Promise.all([api('xodimlar'), api('hisobotlar')]);
-  if (rx.ok) {
-    let kelganXodimlar = rx.xodimlar || [];
-    let kelganHisobotlar = (rh.ok && Array.isArray(rh.hisobotlar)) ? rh.hisobotlar : [];
-
-    if (SESSIYA.rol === 'nazoratchi') {
-      const myMfy = String(SESSIYA.mfyId);
-      kelganXodimlar = kelganXodimlar.filter(x => String(x.mfyId) === myMfy);
-      kelganHisobotlar = kelganHisobotlar.filter(h => String(h.mfyId) === myMfy);
-    }
-
-    xodimlar = kelganXodimlar;
-    let jamiOqilmagan = 0;
-
-    if (fetchedReportIds.size === 0 && kelganHisobotlar.length > 0) {
-      kelganHisobotlar.forEach(h => fetchedReportIds.add(h.id));
-    }
-
-if (kelganHisobotlar.length > 0) {
-      xodimlar.forEach(x => {
-        x.ishHolati = x.ish_holati || 'ishda';
-        const xHisobotlari = kelganHisobotlar.filter(h => String(h.xodimId) === String(x.id));
-        
-        // Yangi: Oxirgi hisobot vaqtini aniqlab olish
-        xHisobotlari.sort((a,b) => new Date(b.b_vaqt) - new Date(a.b_vaqt));
-        
-        x.soni = xHisobotlari.length;
-        x.oxirgiVaqt = xHisobotlari.length > 0 ? xHisobotlari[0].b_vaqt : null;
-        x.bugunBor = xHisobotlari.some(h => h.sana === toshkentBugun());
-        x.unread = xHisobotlari.filter(h => !seenReports.has(h.id)).length;
-        x.flagBor = xHisobotlari.some(h => h.sana === toshkentBugun() && h.reyting && h.reyting !== 'YASHIL');
-      });
-    } else {
-        xodimlar.forEach(x => { 
-          x.ishHolati = x.ish_holati || 'ishda'; 
-          x.oxirgiVaqt = null;
-        });
-    }
-    xodimlar.forEach(x => { jamiOqilmagan += x.unread || 0; });
-
-    const mBadge = document.getElementById('mainBadge');
-    if (jamiOqilmagan > 0) {
-      mBadge.textContent = jamiOqilmagan;
-      mBadge.style.display = 'inline-flex';
-    } else {
-      mBadge.style.display = 'none';
-    }
-
-    xodimlarChiz();
-  } else {
-    toast("Xodimlarni yuklashda xato: " + (rx.xato || ''), 'xato');
-    document.getElementById('xodimlarList').innerHTML = `<div class="yuklanmoqda">Xato: ${rx.xato||''}</div>`;
-  }
-}
-
-async function checkNewReports() {
-  // Faqatgina bugungi sanada turganda yangiliklarni tekshiramiz
-  const tanlanganSana = document.getElementById('qSana')?.value || toshkentBugun();
-  if (tanlanganSana !== toshkentBugun()) return;
-
-  const rh = await api('hisobotlar', { dan: toshkentBugun(), gacha: toshkentBugun() });
-  if(!rh.ok || !Array.isArray(rh.hisobotlar)) return;
-  
-  let yangiHisobotlar = [];
-  rh.hisobotlar.forEach(h => {
-    if (SESSIYA.rol === 'nazoratchi' && String(h.mfyId) !== String(SESSIYA.mfyId)) return;
-    if(!fetchedReportIds.has(h.id)) {
-      fetchedReportIds.add(h.id);
-      yangiHisobotlar.push(h);
-    }
+  // Arrayga o'tkazib, foiz bo'yicha saralaymiz (Reyting)
+  let mfyArr = Object.values(mfyStat).map(st => {
+      const yuklaganSoni = st.yuklagan.size;
+      const foiz = st.jami > 0 ? Math.round((yuklaganSoni / st.jami) * 100) : 0;
+      return { nomi: st.nomi, jami: st.jami, yuklagan: yuklaganSoni, foiz: foiz };
   });
   
-  if(yangiHisobotlar.length > 0) {
-    playBeep();
-    
-    // Avval xodimlar ro'yxatini (chap panelni) yangilab olamiz
-    await xodimlarYukla();
-    
-    // Har bir yangi hisobot uchun alohida to'liq axborotli bildirishnoma yasaymiz
-    yangiHisobotlar.forEach(h => {
-      const xObj = xodimlar.find(x => String(x.id) === String(h.xodimId));
-      const katAdi = xObj?.kategoriyaNomi || h.kategoriyaNomi || '';
-      const tashAdi = xObj?.mfyNomi || h.mfyNomi || '';
-      
-      const c = document.getElementById('toastContainer');
-      const t = document.createElement('div');
-      t.className = `toast`;
-      t.style.cursor = 'pointer';
-      t.style.borderLeft = '3px solid var(--kok)';
-      
-      // Ism, Tashkilot va Kategoriyani qo'shib chiroyli shablon yasaymiz
-      t.innerHTML = `
-        <span style="font-size:22px;">🔔</span> 
-        <div style="line-height:1.4;">
-          <b style="color:var(--kok); font-size:14px;">${h.xodimFio}</b><br>
-          <span style="font-size:11px; color:var(--text-ikkinchi); font-weight:700; text-transform:uppercase;">
-            ${tashAdi}${katAdi ? ' · ' + katAdi : ''}
-          </span>
-          <div style="font-size:13px; margin-top:3px; color:var(--text-asosiy); font-weight:600;">Yangi hisobot yukladi</div>
+  mfyArr.sort((a, b) => b.foiz - a.foiz); // Eng faollari tepada
+
+  let pHTML = mfyArr.map(st => `
+      <div class="mfy-rating-item">
+        <div class="mfy-rating-top">
+          <span>${st.nomi}</span>
+          <span style="color:var(--yashil)">${st.foiz}%</span>
         </div>
-      `;
-      
-      // Bildirishnoma ustiga bossa, to'g'ridan-to'g'ri o'sha xodimning lentasini ochadi
-      t.onclick = () => { 
-        bolimKorsat('nazorat'); 
-        xodimTanla(h.xodimId); 
-        t.remove(); 
-      };
-      
-      c.appendChild(t);
-      
-      // 6 soniyadan keyin o'zi silliq yo'qoladi
-      setTimeout(() => { 
-        t.style.opacity='0'; 
-        t.style.transform='translateX(100%)'; 
-        setTimeout(() => t.remove(), 300); 
-      }, 6000);
-    });
-    
-    // Brauzer orqali kompyuterga bildirishnoma
-    if (yangiHisobotlar.length === 1) {
-        brauzerBildirishnoma('Yangi hisobot', `${yangiHisobotlar[0].xodimFio} hisobot yubordi`);
-    } else {
-        brauzerBildirishnoma('Yangi hisobotlar', `${yangiHisobotlar.length} ta yangi hisobot tushdi`);
-    }
-    
-    if(tanlangan) {
-      await lentaYukla();
-    }
-  }
+        <div class="mfy-progress-bg">
+          <div class="mfy-progress-bar" style="width: ${st.foiz}%"></div>
+        </div>
+        <div class="mfy-rating-meta">${st.yuklagan} / ${st.jami} xodim topshirdi</div>
+      </div>
+  `).join('');
+
+  document.getElementById('mfyRatingList').innerHTML = pHTML || '<div class="bosh-holat">Tashkilotlar topilmadi</div>';
 }
-
-async function hisobotlarniYangila() {
-  const ico = document.getElementById('refIco');
-  if(ico) ico.style.animation = 'sp 0.6s linear infinite';
-  await xodimlarYukla();
-  if (tanlangan) {
-    await lentaYukla();
-  }
-  setTimeout(() => {
-    if(ico) ico.style.animation = 'none';
-    toast("Hisobotlar yangilandi!", "muvaffaqiyat");
-  }, 400);
-}
-
-let nazoratFiltr = 'barchasi';
-function nazoratFiltrOrnat(tur) {
-  nazoratFiltr = tur;
-  document.querySelectorAll('.nazFiltrBtn').forEach(b => b.classList.toggle('aktiv', b.dataset.tur === tur));
-  xodimlarSahifa = 1;
-  xodimlarChiz();
-}
-
-/* ================= XODIMLAR RO'YXATI + KATEGORIYA BILAN ================= */
-let xodimlarSahifa = 1;
-const XODIM_SAHIFA_HAJMI = 40;
-let xodimlarFiltrlanganKesh = [];
-
-function xodimlarChiz() {
-  const q = (document.getElementById('qidiruv').value || '').toLowerCase();
-  const fMfy = document.getElementById('fMfy').value;
-  const fKat = document.getElementById('fKategoriya').value;
-  let list = xodimlar.filter(x =>
-    (x.fio.toLowerCase().includes(q) || (x.mfyNomi||'').toLowerCase().includes(q) || (x.kategoriyaNomi||'').toLowerCase().includes(q)) &&
-    (!fMfy || String(x.mfyId) === String(fMfy)) && (!fKat || String(x.kategoriyaId) === String(fKat)));
-
-  if (nazoratFiltr === 'yuklagan') list = list.filter(x => x.bugunBor);
-  else if (nazoratFiltr === 'yuklamagan') list = list.filter(x => !x.bugunBor);
-
-  // Yangi qism: Eng oxirgi yuklaganlarni (vaqti bo'yicha) ro'yxatning eng tepasiga chiqarish
-  list = list.slice().sort((a, b) => {
-    if(a.oxirgiVaqt && b.oxirgiVaqt) return new Date(b.oxirgiVaqt) - new Date(a.oxirgiVaqt);
-    if(a.oxirgiVaqt) return -1;
-    if(b.oxirgiVaqt) return 1;
-    return (b.bugunBor === true) - (a.bugunBor === true);
-  });
-  
-  xodimlarFiltrlanganKesh = list;
-
-  if (xodimlarSahifa > Math.ceil(list.length / XODIM_SAHIFA_HAJMI)) xodimlarSahifa = 1;
-  const boshi = (xodimlarSahifa - 1) * XODIM_SAHIFA_HAJMI;
-  const sahifaligi = list.slice(boshi, boshi + XODIM_SAHIFA_HAJMI);
-
-  const eslatmaKerak = SESSIYA.rol !== 'nazoratchi' || (SESSIYA.ruxsatlar||[]).includes('eslatma_yuborish');
   
   document.getElementById('xodimlarList').innerHTML = sahifaligi.map(x => `
     <div class="xodimRow ${tanlangan?.id===x.id?'aktiv':''}" onclick="xodimTanla('${x.id}')">
