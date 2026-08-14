@@ -338,9 +338,11 @@ main{ flex:1; display:flex; overflow:hidden; padding:22px; gap:20px; max-width: 
 .bPanel h3{font-size:19px; color:var(--text-asosiy); font-weight:800; letter-spacing:-0.02em;}
 .bPanel .izoh{color:var(--text-ikkinchi); font-size:13.5px; margin:6px 0 24px; font-weight:500}
 #bPanel {
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0;
-  overflow-y: auto;
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  padding: 20px 28px;
   display: flex;
   flex-direction: column;
 }
