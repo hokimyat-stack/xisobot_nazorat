@@ -337,18 +337,6 @@ main{ flex:1; display:flex; overflow:hidden; padding:22px; gap:20px; max-width: 
 .bTabs button.aktiv{background:var(--bg-kard-shaffof); color:var(--text-asosiy); box-shadow:0 4px 14px rgba(0,0,0,0.08)}
 .bPanel h3{font-size:19px; color:var(--text-asosiy); font-weight:800; letter-spacing:-0.02em;}
 .bPanel .izoh{color:var(--text-ikkinchi); font-size:13.5px; margin:6px 0 24px; font-weight:500}
-#bPanel {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: auto !important;
-  overflow-x: hidden;
-  padding: 20px 28px;
-  display: flex;
-  flex-direction: column;
-}
-#bPanel > div {
-  flex-shrink: 0;
-}
 
 .dashFiltrBar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:22px; }
 .dashFiltrBar select{ padding:11px 34px 11px 14px; border:1.5px solid var(--chiziq); border-radius:14px; font-size:13px; font-weight:700; background:var(--bg-input); color:var(--text-asosiy); appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="none" stroke="%236B7286" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>'); background-repeat: no-repeat; background-position: right 12px center; background-size: 15px; min-width:170px; }
@@ -858,21 +846,50 @@ mark{ background:rgba(var(--kok-rgb),.28); color:inherit; border-radius:3px; pad
         </div>
       </section>
 
-<section id="boshqaruv" class="asosiy-kard" style="display:none; padding:0; overflow:hidden; flex-direction:column;">
-  <!-- Tepadagi qotirilgan menyu va sarlavha -->
-  <div style="background:var(--bg-kard-shaffof); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-bottom:1px solid var(--chiziq-kard); z-index:10; padding:24px 28px 16px; flex-shrink:0;">
-    <div class="bTabs" id="bTabsContainer" style="margin-bottom:14px;"></div>
-    <div id="bSarlavhaTop" style="display:flex; flex-direction:column; gap:12px; align-items:flex-start;"></div>
-  </div>
+<section id="ong" class="asosiy-kard" style="display:none; padding:0; overflow:hidden; flex-direction:column;">
+        <div class="bosh-holat" id="boshHolat" style="padding: 28px;">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-ikkinchi)" stroke-width="1" style="margin-bottom:16px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <b>Xodimni tanlang</b>
+          Chap paneldan xodim tanlansa, uning barcha hisobotlari<br>shu yerda ko'rinadi
+        </div>
+        <div id="lentaWrap" style="display:none; flex-direction:column; flex:1; min-height:0;">
+          <div class="bosh" style="margin:0; padding:24px 28px; background:var(--bg-kard-shaffof); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-bottom:1px solid var(--chiziq-kard); z-index:10; flex-shrink:0;">
+            <div>
+              <h2 id="lentaFio" style="margin:0 0 4px 0;"></h2>
+              <div id="lentaAltInfo" style="color:var(--text-ikkinchi); font-size:13px; font-weight:600;"></div>
+            </div>
+            <div class="filtr">
+              <button class="refreshBtn" onclick="hisobotlarniYangila()" title="Yangi hisobotlarni tekshirish">
+                <svg id="refIco" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Yangilash
+              </button>
+              <input type="text" id="lentaIchQidiruv" placeholder="Tavsif ichidan qidirish..." style="min-width:160px" oninput="lentaIchQidiruvBajar()">
+              <input type="date" id="fDan" onchange="lentaYukla()"> <span style="color:var(--text-ikkinchi)">—</span> <input type="date" id="fGacha" onchange="lentaYukla()">
+              <button onclick="lentaYukla()">Filtrlash</button>
+            </div>
+          </div>
+          
+          <!-- LENTA: O'rtadagi aylantiriladigan qism -->
+          <div id="lenta" style="flex:1; min-height:0; overflow-y:auto; padding:20px 28px; display:block !important;"></div>
+          
+          <!-- LENTA: Pastda qotib turadigan paginatsiya -->
+          <div class="paginBar" id="lentaPagin" style="display:none; margin:0; padding:16px 28px; background:var(--bg-kard-shaffof); border-top:1px solid var(--chiziq-kard); flex-shrink:0;"></div>
+        </div>
+      </section>
 
-  <!-- O'rtadagi to'liq skrol bo'ladigan jadval qismi -->
-  <div class="bPanel" id="bPanel" style="flex:1; min-height:0; overflow-y:auto; padding:20px 28px;">
-    <div class="yuklanmoqda"><div class="spinner"></div></div>
-  </div>
-
-  <!-- Eng pastda qotib turadigan Paginatsiya (sahifalash) paneli -->
-  <div class="boshqaruv-foot" id="bPaginContainer"></div>
-</section>
+      <section id="boshqaruv" class="asosiy-kard" style="display:none; padding:0; overflow:hidden; flex-direction:column;">
+        <div style="background:var(--bg-kard-shaffof); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-bottom:1px solid var(--chiziq-kard); z-index:10; padding:24px 28px 16px; flex-shrink:0;">
+          <div class="bTabs" id="bTabsContainer" style="margin-bottom:14px;"></div>
+          <div id="bSarlavhaTop" style="display:flex; flex-direction:column; gap:12px; align-items:flex-start;"></div>
+        </div>
+        
+        <!-- BOSHQARUV: O'rtadagi to'liq skrol bo'ladigan jadval qismi -->
+        <div class="bPanel" id="bPanel" style="flex:1; min-height:0; overflow-y:auto; overflow-x:auto; padding:20px 28px; display:block !important;">
+          <div class="yuklanmoqda"><div class="spinner"></div></div>
+        </div>
+        
+        <!-- BOSHQARUV: Eng pastda qotib turadigan paginatsiya paneli -->
+        <div class="paginBar" id="bPaginContainer" style="background:var(--bg-kard-shaffof); border-top:1px solid var(--chiziq-kard); flex-shrink:0; display:none; padding:16px 28px; margin:0;"></div>
+      </section>
     </main>
   </div>
 </div>
@@ -1236,9 +1253,9 @@ function bolimKorsat(nom) {
   if(navBosh) navBosh.classList.toggle('aktiv', nom==='boshqaruv');
   
   document.getElementById('chap').style.display = nom==='nazorat' ? 'flex' : 'none';
-  document.getElementById('ong').style.display = nom==='nazorat' ? 'block' : 'none';
+  document.getElementById('ong').style.display = nom==='nazorat' ? 'flex' : 'none';
   document.getElementById('dashboardPanel').style.display = nom==='dashboard' ? 'block' : 'none';
-  document.getElementById('boshqaruv').style.display = nom==='boshqaruv' ? 'block' : 'none';
+  document.getElementById('boshqaruv').style.display = nom==='boshqaruv' ? 'flex' : 'none';
   document.getElementById('xaritaPanel').style.display = nom==='xarita' ? 'flex' : 'none';
   document.getElementById('qidiruvPanel').style.display = nom==='qidiruv' ? 'block' : 'none';
   
@@ -1736,7 +1753,7 @@ async function xodimTanla(id) {
   tanlangan = xodimlar.find(x => x.id === id);
   document.getElementById('chap').classList.remove('ochiq');
   document.getElementById('boshHolat').style.display='none';
-  document.getElementById('lentaWrap').style.display='block';
+  document.getElementById('lentaWrap').style.display='flex';
   document.getElementById('lentaFio').textContent = tanlangan.fio;
   
   // Xodimning tashkilot va kategoriyasini sarlavha ostiga chiqarish
