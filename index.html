@@ -2120,12 +2120,14 @@ function bTab(nom, btn) {
 function ruxsatlarniOlish(obj) {
   if (!obj) return [];
   if (Array.isArray(obj)) return obj;
-  try {
-    const p = JSON.parse(obj);
-    if (Array.isArray(p)) return p;
-  } catch(e) {}
-  // Eski (vergul bilan ajratilgan) formatdagi ma'lumotlar uchun zaxira yo'l
-  return String(obj).split(',').map(s => s.trim()).filter(Boolean);
+  if (typeof obj === 'string') {
+    if (obj.startsWith('[')) {
+      try { return JSON.parse(obj); } catch(e) { return []; }
+    }
+    // Vergul orqali kelgan stringni massivga aylantirish:
+    return obj.split(',').map(s => s.trim()).filter(Boolean);
+  }
+  return [];
 }
 
 function ruxsatlarBadgeHTML(a) {
@@ -2178,7 +2180,7 @@ async function bYukla() {
           <td>${x.deviceBor?"📱":'—'}</td>
           <td style="white-space:nowrap">
             <button class="mini binafsha" onclick="profilOch('${x.id}')">Profil</button>
-            <button class="mini kok" onclick='xodimForma(${JSON.stringify(x)})'>Tahrirlash</button>
+            <button class="mini kok" onclick='xodimForma(${JSON.stringify(x).replace(/'/g, "&#39;")})'>Tahrirlash</button>
             ${x.deviceBor?`<button class="mini kul" onclick="deviceReset('${x.id}')">Reset</button>`:''}
             <button class="mini ${x.holat==='faol'?'qizil':'yashil'}" onclick="xodimHolat('${x.id}','${x.holat==='faol'?'bloklangan':'faol'}')">${x.holat==='faol'?'Bloklash':'Faollash'}</button>
           </td>
@@ -2235,7 +2237,7 @@ async function bYukla() {
 </td>
           <td><span class="holatTag ${a.holat==='faol'?'faol':'blok'}">${a.holat}</span></td>
           <td style="white-space:nowrap">
-            <button class="mini kok" onclick='adminForma(${JSON.stringify(a)})'>Tahrirlash</button>
+            <button class="mini kok" onclick='adminForma(${JSON.stringify(a).replace(/'/g, "&#39;")})'>Tahrirlash</button>
             <button class="mini kul" onclick="adminParolTiklash('${a.id}')">Parol</button>
             <button class="mini ${a.holat==='faol'?'qizil':'yashil'}" onclick="adminHolat('${a.id}','${a.holat==='faol'?'bloklangan':'faol'}')">${a.holat==='faol'?'Blok':'Faol'}</button>
             <button class="mini qizil" onclick="adminOchir('${a.id}','${a.fio}')">O'chirish</button>
@@ -2256,7 +2258,7 @@ async function bYukla() {
         ${sMfylar.map(t => `<tr>
           <td><b>${t.nomi}</b></td><td>${t.rahbar||'—'}</td><td>${t.tel||'—'}</td>
           <td style="white-space:nowrap">
-            <button class="mini kok" onclick='mfyForma(${JSON.stringify(t)})'>Tahrirlash</button>
+            <button class="mini kok" onclick='mfyForma(${JSON.stringify(t).replace(/'/g, "&#39;")})'>Tahrirlash</button>
             <button class="mini qizil" onclick="mfyOchir('${t.id}','${t.nomi}')">O'chirish</button>
           </td>
         </tr>`).join('')}
@@ -2275,7 +2277,7 @@ async function bYukla() {
         ${sKategoriyalar.map(k => `<tr>
           <td><b>${k.nomi}</b></td><td>${k.tavsif||'—'}</td>
           <td style="white-space:nowrap">
-            <button class="mini kok" onclick='kategoriyaForma(${JSON.stringify(k)})'>Tahrirlash</button>
+            <button class="mini kok" onclick='kategoriyaForma(${JSON.stringify(k).replace(/'/g, "&#39;")})'>Tahrirlash</button>
             <button class="mini qizil" onclick="kategoriyaOchir('${k.id}','${k.nomi}')">O'chirish</button>
           </td>
         </tr>`).join('')}
@@ -2777,11 +2779,20 @@ async function qidiruvBajar() {
   natijaEl.innerHTML = html;
 }
 
-(async () => {
+window.onload = async () => {
   if (await superadminUrlTekshir()) return boshla();
   const s = sessionStorage.getItem('SESSIYA');
-  if (s) { SESSIYA = JSON.parse(s); return boshla(); }
-})();
+  if (s) { 
+    try {
+      SESSIYA = JSON.parse(s); 
+      // Ruxsatlarni to'g'ri formatda yuklash uchun:
+      SESSIYA.ruxsatlar = ruxsatlarniOlish(SESSIYA.ruxsatlar); 
+      boshla(); 
+    } catch(e) {
+      sessionStorage.removeItem('SESSIYA');
+    }
+  }
+};
 </script>
 </body>
 </html>
