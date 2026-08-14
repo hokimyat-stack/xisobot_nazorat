@@ -249,7 +249,7 @@ main{ flex:1; display:flex; overflow:hidden; padding:22px; gap:20px; max-width: 
 .asosiy-kard { background: linear-gradient(150deg, var(--glass-sheen-dim), transparent 45%), var(--bg-kard); border: 1px solid var(--chiziq-kard); box-shadow: var(--soya-kard); backdrop-filter: var(--blur-kard); -webkit-backdrop-filter: var(--blur-kard); }
 
 /* XODIMLAR PANELINI KENGAYTIRISH */
-#chap{ width:460px; flex-shrink: 0;}
+#chap{ width:460px; flex-shrink: 0; display:flex; flex-direction:column;}
 #chap .qidiruv{padding:18px; border-bottom:1px solid var(--chiziq); display:flex; flex-direction:column; gap:10px; position: sticky; top: 0; background: var(--bg-kard-shaffof); backdrop-filter:blur(16px); z-index: 10;}
 #chap .qidiruv input, #chap .qidiruv select{ width:100%; padding:11px 14px; border:1.5px solid var(--chiziq); border-radius:13px; font-size:13px; background:var(--bg-input); color:var(--text-asosiy) }
 #chap .qidiruv select { appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="none" stroke="%23767C8C" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>'); background-repeat: no-repeat; background-position: right 14px center; background-size: 16px; padding-right: 36px; }
@@ -284,9 +284,17 @@ main{ flex:1; display:flex; overflow:hidden; padding:22px; gap:20px; max-width: 
 /* Pastda qotib turadigan panel uchun */
 .nazorat-foot { position:sticky; bottom:0; background:var(--bg-kard-shaffof); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-top:1px solid var(--chiziq); z-index:10; display:flex; flex-direction:column; padding-bottom:8px;}
 
-.uzrli-badge { background: var(--binafsha-och); color: var(--binafsha); padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; border: 1px solid rgba(var(--binafsha-rgb), 0.3); display:inline-block; margin-top:4px;}
+/* DASHBOARD VA BOSHQA PANELDAGI QISMLAR SCROLL BO'LISHI UCHUN */
+#ong, #boshqaruv { flex:1; display:none; flex-direction:column; overflow:hidden; }
+#dashboardPanel { flex:1; padding:28px; display:none; overflow-y:auto; }
+#xaritaPanel, #qidiruvPanel { flex:1; padding:28px; display:none; flex-direction:column; }
 
-#ong, #dashboardPanel, #boshqaruv, #xaritaPanel, #qidiruvPanel { flex:1; padding:28px; display:none; }
+#lentaWrap { flex:1; display:flex; flex-direction:column; overflow:hidden; min-height:0; }
+#lenta { flex:1; overflow-y:auto; padding:20px 28px; }
+
+#bPanel { flex:1; overflow-y:auto; padding:20px 28px; }
+#bPanel table.jadval { width:100%; display:table; }
+
 .bosh-holat{text-align:center; color:var(--text-ikkinchi); margin-top:15vh; line-height:1.6; font-size: 15px;}
 .bosh-holat b{font-size:22px; color:var(--text-asosiy); display:block; margin-bottom:8px;}
 
@@ -338,6 +346,32 @@ main{ flex:1; display:flex; overflow:hidden; padding:22px; gap:20px; max-width: 
 .bPanel h3{font-size:19px; color:var(--text-asosiy); font-weight:800; letter-spacing:-0.02em;}
 .bPanel .izoh{color:var(--text-ikkinchi); font-size:13.5px; margin:6px 0 24px; font-weight:500}
 
+/* Boshqaruv paneli pastki qotirilgan paginatsiya paneli */
+.boshqaruv-foot {
+  position: sticky;
+  bottom: 0;
+  background: var(--bg-kard-shaffof);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--chiziq-kard);
+  z-index: 10;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 28px;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+/* DASHBOARD BENTO GRID DIZAYNI */
+.dash-header-top { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
+.dash-header-top .sarlavha h2 { margin: 0 0 6px; font-size: 22px; color: var(--text-asosiy); letter-spacing:-0.02em; }
+.dash-header-top .sarlavha p { margin: 0; color: var(--text-ikkinchi); font-size: 13px; font-weight: 500;}
+.bento-grid { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
+.bento-left { flex: 2; min-width: 0; display: flex; flex-direction: column; gap: 24px; }
+.bento-right { flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 24px; }
+.dashCard { cursor: pointer; } 
+
 .dashFiltrBar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:22px; }
 .dashFiltrBar select{ padding:11px 34px 11px 14px; border:1.5px solid var(--chiziq); border-radius:14px; font-size:13px; font-weight:700; background:var(--bg-input); color:var(--text-asosiy); appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="none" stroke="%236B7286" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>'); background-repeat: no-repeat; background-position: right 12px center; background-size: 15px; min-width:170px; }
 .dashFiltrBar select:focus{ border-color:var(--kok); box-shadow:0 0 0 3px var(--kok-och); }
@@ -357,18 +391,13 @@ main{ flex:1; display:flex; overflow:hidden; padding:22px; gap:20px; max-width: 
 .chartWrap canvas { width: 100% !important; height: 100% !important; }
 .chartBosh_empty{ text-align:center; padding:50px 10px; color:var(--text-ikkinchi); font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center; height:100%; background:var(--bg-input); border-radius:14px; border:1px dashed var(--chiziq);}
 
-.dashHero{
-  position:relative; overflow:hidden;
-  display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;
-  background: radial-gradient(560px 240px at 102% -10%, rgba(var(--kok-rgb),0.16), transparent 68%), var(--bg-input);
-  border:1px solid var(--chiziq-kard); border-radius:24px; padding:28px 30px; margin-bottom:28px;
-}
-.dashHero::before{ content:''; position:absolute; inset:0; opacity:.6; pointer-events:none; background-image: radial-gradient(rgba(var(--kok-rgb),0.24) 1px, transparent 1.6px); background-size: 18px 18px; -webkit-mask-image: linear-gradient(115deg, transparent 30%, #000 60%, transparent 92%); mask-image: linear-gradient(115deg, transparent 30%, #000 60%, transparent 92%); }
-.dashHero > div:first-child{ position:relative; z-index:1; }
-.dashHero .eyebrow{ display:inline-flex; align-items:center; gap:7px; font-size:10.5px; font-weight:800; letter-spacing:.09em; text-transform:uppercase; color:var(--kok); margin-bottom:8px; }
-.dashHero h3{margin:0; font-size:22px;}
-.dashHero .izoh{margin:6px 0 0; max-width:460px;}
-.dashHero .heroIco{ position:relative; z-index:1; width:56px; height:56px; border-radius:18px; flex-shrink:0; background:linear-gradient(135deg, var(--kok), #6AA3FF); color:#fff; display:flex; align-items:center; justify-content:center; box-shadow:0 18px 32px -12px rgba(var(--kok-rgb),.55), inset 0 1px 0 rgba(255,255,255,.4); }
+/* MFY PROGRESS REYTINGI */
+.mfy-rating-list { display: flex; flex-direction: column; gap: 16px; }
+.mfy-rating-item { display: flex; flex-direction: column; gap: 8px; }
+.mfy-rating-top { display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 700; color: var(--text-asosiy); }
+.mfy-rating-meta { color: var(--text-ikkinchi); font-size: 11.5px; font-weight: 600; }
+.mfy-progress-bg { height: 8px; background: var(--bg-input); border-radius: 10px; overflow: hidden; display:flex;}
+.mfy-progress-bar { height: 100%; background: var(--yashil); border-radius: 10px; transition: width 0.5s ease;}
 
 .dashGrid{display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:18px; margin-bottom:32px}
 .dashCard{position:relative; overflow:hidden; background: linear-gradient(150deg, var(--glass-sheen-dim), transparent 50%), var(--bg-kard); border:1px solid var(--chiziq-kard); border-radius:22px; padding:24px; transition:transform .2s ease, box-shadow .2s ease; box-shadow:var(--soya-kard); backdrop-filter: var(--blur-kard); -webkit-backdrop-filter: var(--blur-kard);}
@@ -468,22 +497,6 @@ main{ flex:1; display:flex; overflow:hidden; padding:22px; gap:20px; max-width: 
 .cmAmallar { display: flex; gap: 12px; margin-top: 6px; justify-content: flex-end; }
 .cmAmallar button { padding: 12px 20px; border-radius: 14px; font-weight: 700; flex:none;}
 
-   /* Boshqaruv paneli pastki qotirilgan paginatsiya paneli */
-.boshqaruv-foot {
-  position: sticky;
-  bottom: 0;
-  background: var(--bg-kard-shaffof);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-top: 1px solid var(--chiziq);
-  z-index: 10;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 16px;
-  flex-shrink: 0;
-}
-
 /* XARITA UCHUN TUNGI REJIM MOSLASHUVI */
 [data-theme="dark"] .leaflet-tile-pane {
   filter: invert(100%) hue-rotate(180deg) brightness(85%) contrast(90%);
@@ -563,6 +576,9 @@ mark{ background:rgba(var(--kok-rgb),.28); color:inherit; border-radius:3px; pad
   #pdfPrintArea{ display:block !important; }
 }
 
+@media(max-width:1024px){
+  .bento-left, .bento-right { flex: 1 1 100%; }
+}
 @media(max-width:900px){
   .sidebar{ position:fixed; z-index:60; }
   #chap{width:100%; position:absolute; z-index:15; height:calc(100vh - 65px); display:none}
@@ -578,26 +594,6 @@ mark{ background:rgba(var(--kok-rgb),.28); color:inherit; border-radius:3px; pad
   .sidebar-brand{ justify-content:center; }
   .navTabs button{ justify-content:center; padding:12px; }
   .user-card{ justify-content:center; }
-}
-/* DASHBOARD BENTO GRID DIZAYNI */
-.dash-header-top { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
-.dash-header-top .sarlavha h2 { margin: 0 0 6px; font-size: 22px; color: var(--text-asosiy); letter-spacing:-0.02em; }
-.dash-header-top .sarlavha p { margin: 0; color: var(--text-ikkinchi); font-size: 13px; font-weight: 500;}
-.bento-grid { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
-.bento-left { flex: 2; min-width: 0; display: flex; flex-direction: column; gap: 24px; }
-.bento-right { flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 24px; }
-.dashCard { cursor: pointer; } /* Kartochkalarni bosiladigan qilish */
-
-/* MFY PROGRESS REYTINGI */
-.mfy-rating-list { display: flex; flex-direction: column; gap: 16px; }
-.mfy-rating-item { display: flex; flex-direction: column; gap: 8px; }
-.mfy-rating-top { display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 700; color: var(--text-asosiy); }
-.mfy-rating-meta { color: var(--text-ikkinchi); font-size: 11.5px; font-weight: 600; }
-.mfy-progress-bg { height: 8px; background: var(--bg-input); border-radius: 10px; overflow: hidden; display:flex;}
-.mfy-progress-bar { height: 100%; background: var(--yashil); border-radius: 10px; transition: width 0.5s ease;}
-
-@media(max-width: 1024px) {
-  .bento-left, .bento-right { flex: 1 1 100%; }
 }
 </style>
 </head>
@@ -650,7 +646,7 @@ mark{ background:rgba(var(--kok-rgb),.28); color:inherit; border-radius:3px; pad
       <button id="navQidiruv" onclick="bolimKorsat('qidiruv')">
         <span class="navIcoBox nav-pink"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> <span class="navLabel">Qidiruv</span>
       </button>
-<button id="navBoshqaruv" onclick="bolimKorsat('boshqaruv')" style="display:none">
+      <button id="navBoshqaruv" onclick="bolimKorsat('boshqaruv')" style="display:none">
         <span class="navIcoBox nav-amber"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span> <span class="navLabel">Boshqaruv</span>
       </button>
     </nav>
@@ -658,31 +654,28 @@ mark{ background:rgba(var(--kok-rgb),.28); color:inherit; border-radius:3px; pad
     <!-- Pastga itarib beruvchi bo'shliq -->
     <div class="sidebar-spacer"></div>
 
-    <!-- TELEGRAM TUGMASI (Endi faqat o'zining joyida, pastda turadi) -->
     <a href="https://t.me/Hisobot_Tizimi" target="_blank" style="margin-bottom: 16px; padding: 12px 14px; border-radius: 12px; background: rgba(44, 165, 224, 0.1); color: #2CA5E0; font-weight: 700; font-size: 13.5px; text-decoration: none; border: 1px solid rgba(44, 165, 224, 0.2); display: flex; align-items: center; gap: 10px; transition: all 0.2s;">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
       Telegram Support
     </a>
 
-<div class="sidebar-foot" style="border-top: 1px solid var(--chiziq); padding-top: 18px; margin-top: 12px;">
-      
-      <div class="user-card" style="display:flex; align-items:center; gap:12px; padding: 0 4px; margin-bottom: 12px;">
-        <div class="user-avatar" style="width:40px; height:40px; border-radius:12px; flex-shrink:0; background:var(--bg-input); border:1px solid var(--chiziq); display:flex; align-items:center; justify-content:center; color:var(--text-ikkinchi);">
+    <div class="sidebar-foot">
+      <div class="user-card">
+        <div class="user-avatar">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </div>
         
-        <div class="user-meta" style="display:flex; flex-direction:column; min-width:0; flex:1;">
-          <b id="brandSub" style="font-size:13.5px; color:var(--text-asosiy); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:800;">Foydalanuvchi</b>
-          <span class="rolBadge" id="rolBadge" style="border-radius:12px; padding:2px 8px; font-size:10px; font-weight:800; letter-spacing:0.04em; width:fit-content; margin-top:4px;"></span>
+        <div class="user-meta">
+          <b id="brandSub">Foydalanuvchi</b>
+          <span class="rolBadge" id="rolBadge"></span>
         </div>
 
-        <!-- YANILANGAN: DUMALOQ THEME TUGMASI O'NG TARAFGA KO'CHIRILDI -->
-        <button id="themeToggle" onclick="toggleTheme()" title="Tungi/Kunduzgi rejim" style="width:36px; height:36px; border-radius:50%; background:var(--bg-input); border:1px solid var(--chiziq); color:var(--text-asosiy); display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.2s; cursor:pointer;" onmouseover="this.style.borderColor='var(--text-ikkinchi)'" onmouseout="this.style.borderColor='var(--chiziq)'">
+        <button id="themeToggle" onclick="toggleTheme()" title="Tungi/Kunduzgi rejim" style="width:36px; height:36px; border-radius:50%; background:var(--bg-input); border:1px solid var(--chiziq); color:var(--text-asosiy); display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.2s; cursor:pointer;">
           <svg id="themeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"></svg>
         </button>
       </div>
 
-      <button class="chiqishBtn" onclick="chiqish()" style="background: transparent; color: var(--qizil); font-weight: 600; font-size: 13px; padding: 12px; border-radius: 12px; border: 1px solid var(--chiziq); display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;" onmouseover="this.style.background='var(--qizil-och)'; this.style.borderColor='var(--qizil)'" onmouseout="this.style.background='transparent'; this.style.borderColor='var(--chiziq)'">
+      <button class="chiqishBtn" onclick="chiqish()">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Chiqish
       </button>
     </div>
@@ -699,7 +692,7 @@ mark{ background:rgba(var(--kok-rgb),.28); color:inherit; border-radius:3px; pad
         <input id="globalQidiruv" placeholder="Xodim, tashkilot yoki hisobot matnini qidirish..." oninput="globalQidiruvDebounce()" onkeydown="if(event.key==='Enter'){bolimKorsat('qidiruv'); qidiruvBajar();}">
       </div>
       <div style="flex:1"></div>
-<div class="top-amallar" id="topAmallarDesktop" style="display: flex; gap: 16px; align-items: center;">
+      <div class="top-amallar" id="topAmallarDesktop">
         <button onclick="excelModalOch()" style="background: var(--yashil); color: white; border: none; padding: 10px 18px; border-radius: 13px; font-weight: 700; font-size: 13px; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(23,163,78,0.3); transition: all 0.2s;">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Excelni yuklash
@@ -712,6 +705,7 @@ mark{ background:rgba(var(--kok-rgb),.28); color:inherit; border-radius:3px; pad
     </header>
 
     <main>
+      <!-- XODIMLAR RO'YXATI -->
       <aside id="chap" class="asosiy-kard" style="display:none;">
         <div class="qidiruv">
           <input id="qidiruv" placeholder="Xodim qidirish..." oninput="qidiruvDebounce()">
@@ -723,12 +717,11 @@ mark{ background:rgba(var(--kok-rgb),.28); color:inherit; border-radius:3px; pad
             <button class="nazFiltrBtn" data-tur="yuklamagan" onclick="nazoratFiltrOrnat('yuklamagan')">Yuklamaganlar</button>
           </div>
         </div>
-<div id="xodimlarList"><div class="yuklanmoqda"><div class="spinner"></div>Kuting...</div></div>
+        <div id="xodimlarList"><div class="yuklanmoqda"><div class="spinner"></div>Kuting...</div></div>
         
-        <!-- YANIG QISQARTIRILGAN VA QOTIRILGAN PASTKI PANEL -->
         <div class="nazorat-foot">
           <div class="paginBar" id="xodimlarPagin" style="display:none; padding: 12px 16px;"></div>
- <div class="eslatmaPanel" id="eslatmaPanel" style="display:none; padding: 0 16px 16px;">
+          <div class="eslatmaPanel" id="eslatmaPanel" style="display:none; padding: 0 16px 16px;">
             <button class="qoshBtn" style="width:100%; margin-bottom:0; justify-content:center; padding:12px; font-size:13.5px;" onclick="guruhEslatma()">
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> Eslatma yuborish
             </button>
@@ -736,14 +729,15 @@ mark{ background:rgba(var(--kok-rgb),.28); color:inherit; border-radius:3px; pad
         </div>
       </aside>
 
-<section id="ong" class="asosiy-kard" style="display:none; padding:0; overflow:hidden; flex-direction:column;">
+      <!-- NAZORAT PANELLAR (LENTA) -->
+      <section id="ong" class="asosiy-kard" style="display:none;">
         <div class="bosh-holat" id="boshHolat" style="padding: 28px;">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-ikkinchi)" stroke-width="1" style="margin-bottom:16px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
           <b>Xodimni tanlang</b>
           Chap paneldan xodim tanlansa, uning barcha hisobotlari<br>shu yerda ko'rinadi
         </div>
-        <div id="lentaWrap" style="display:none; flex-direction:column; flex:1; min-height:0;">
-          <div class="bosh" style="margin:0; padding:24px 28px; background:var(--bg-kard-shaffof); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-bottom:1px solid var(--chiziq-kard); z-index:10; flex-shrink:0;">
+        <div id="lentaWrap" style="display:none;">
+          <div class="bosh" style="margin:0; padding:24px 28px; background:var(--bg-kard-shaffof); backdrop-filter:blur(24px); border-bottom:1px solid var(--chiziq-kard); z-index:10; flex-shrink:0;">
             <div>
               <h2 id="lentaFio" style="margin:0 0 4px 0;"></h2>
               <div id="lentaAltInfo" style="color:var(--text-ikkinchi); font-size:13px; font-weight:600;"></div>
@@ -757,14 +751,16 @@ mark{ background:rgba(var(--kok-rgb),.28); color:inherit; border-radius:3px; pad
               <button onclick="lentaYukla()">Filtrlash</button>
             </div>
           </div>
-          <div id="lenta" style="flex:1; min-height:0; overflow-y:auto; padding:20px 28px;"></div>
+          
+          <div id="lenta"></div>
+          
           <div class="paginBar" id="lentaPagin" style="display:none; margin:0; padding:16px 28px; background:var(--bg-kard-shaffof); border-top:1px solid var(--chiziq-kard); flex-shrink:0;"></div>
         </div>
       </section>
        
-     <section id="dashboardPanel" class="asosiy-kard" style="display:block; padding:28px;">
+      <!-- DASHBOARD PANEL -->
+      <section id="dashboardPanel" class="asosiy-kard" style="display:block;">
         
-        <!-- YANILIK: Ixcham Header va Filtrlar -->
         <div class="dash-header-top">
           <div class="sarlavha">
             <h2 id="dashSarlavha">Umumiy Ko'rsatkichlar</h2>
@@ -778,7 +774,6 @@ mark{ background:rgba(var(--kok-rgb),.28); color:inherit; border-radius:3px; pad
           </div>
         </div>
 
-        <!-- YANILIK: Asosiy kartochkalar endi bosiladi (interaktiv) -->
         <div class="dashGrid" id="dashGrid">
           <div class="dashCard blue" onclick="dashTab('yuklamaganlar')"><div class="dcIco"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><span>Jami Xodimlar</span><b id="dJamiXodim">0</b></div>
           <div class="dashCard green" onclick="dashTab('yuklaganlar')"><div class="dcIco"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><span>Yuklaganlar</span><b id="dBugunYuklagan">0</b></div>
@@ -787,10 +782,7 @@ mark{ background:rgba(var(--kok-rgb),.28); color:inherit; border-radius:3px; pad
           <div class="dashCard purple" onclick="dashTab('uzrlilar')"><div class="dcIco"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h4l2-9 5 18 3-10h4"/></svg></div><span>Sabablilar (Uzrli)</span><b id="dSababli">0</b></div>
         </div>
 
-        <!-- YANILIK: BENTO GRID (2 ustunli tartib) -->
         <div class="bento-grid">
-          
-          <!-- CHAP USTUN (65%): Xodimlar jadvali -->
           <div class="bento-left">
             <div class="chartKard" style="width: 100%; margin:0; padding: 24px;">
               <div class="chartBosh" style="margin-bottom:20px;">
@@ -809,10 +801,7 @@ mark{ background:rgba(var(--kok-rgb),.28); color:inherit; border-radius:3px; pad
             </div>
           </div>
 
-          <!-- O'NG USTUN (35%): Diagrammalar va Tashkilot reytingi -->
           <div class="bento-right">
-            
-            <!-- YANGI DOUGHNUT CHART -->
             <div class="chartKard" style="width:100%; margin:0; padding:24px;">
               <div class="chartBosh">
                 <h3>Umumiy holat</h3>
@@ -820,7 +809,6 @@ mark{ background:rgba(var(--kok-rgb),.28); color:inherit; border-radius:3px; pad
               <div class="chartWrap kichik" style="height:220px;"><canvas id="dashDoughnut"></canvas></div>
             </div>
 
-            <!-- TREND CHART (7 KUNLIK) -->
             <div class="chartKard" style="width:100%; margin:0; padding:24px;">
               <div class="chartBosh">
                 <h3>7 kunlik dinamika</h3>
@@ -828,7 +816,6 @@ mark{ background:rgba(var(--kok-rgb),.28); color:inherit; border-radius:3px; pad
               <div class="chartWrap kichik" style="height:170px;"><canvas id="trendChart"></canvas></div>
             </div>
 
-            <!-- YANILIK: PROGRESS BAR (TASHKILOT REYTINGI) -->
             <div class="chartKard" style="width:100%; margin:0; padding:24px;">
               <div class="chartBosh" style="margin-bottom:20px;">
                 <h3>Tashkilotlar faolligi</h3>
@@ -837,14 +824,13 @@ mark{ background:rgba(var(--kok-rgb),.28); color:inherit; border-radius:3px; pad
                 <div class="yuklanmoqda"><div class="spinner"></div>Yuklanmoqda...</div>
               </div>
             </div>
-
           </div>
         </div>
-
       </section>
 
+      <!-- XARITA PANEL -->
       <section id="xaritaPanel" class="asosiy-kard" style="display:none;">
-        <div class="bPanel" style="display:flex; flex-direction:column; height:100%;">
+        <div id="bPanel" style="display:flex; flex-direction:column; height:100%;">
           <div class="bosh" style="margin-bottom:16px;">
             <h2>Bugungi joylashuv xaritasi</h2>
             <div class="filtr">
@@ -859,8 +845,9 @@ mark{ background:rgba(var(--kok-rgb),.28); color:inherit; border-radius:3px; pad
         </div>
       </section>
 
+      <!-- QIDIRUV PANEL -->
       <section id="qidiruvPanel" class="asosiy-kard" style="display:none;">
-        <div class="bPanel">
+        <div id="bPanel">
           <div class="bosh" style="margin-bottom:16px;">
             <h2>Kengaytirilgan qidiruv</h2>
           </div>
@@ -872,49 +859,18 @@ mark{ background:rgba(var(--kok-rgb),.28); color:inherit; border-radius:3px; pad
         </div>
       </section>
 
-<section id="ong" class="asosiy-kard" style="display:none; padding:0; overflow:hidden; flex-direction:column;">
-        <div class="bosh-holat" id="boshHolat" style="padding: 28px;">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-ikkinchi)" stroke-width="1" style="margin-bottom:16px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-          <b>Xodimni tanlang</b>
-          Chap paneldan xodim tanlansa, uning barcha hisobotlari<br>shu yerda ko'rinadi
-        </div>
-        <div id="lentaWrap" style="display:none; flex-direction:column; flex:1; min-height:0;">
-          <div class="bosh" style="margin:0; padding:24px 28px; background:var(--bg-kard-shaffof); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-bottom:1px solid var(--chiziq-kard); z-index:10; flex-shrink:0;">
-            <div>
-              <h2 id="lentaFio" style="margin:0 0 4px 0;"></h2>
-              <div id="lentaAltInfo" style="color:var(--text-ikkinchi); font-size:13px; font-weight:600;"></div>
-            </div>
-            <div class="filtr">
-              <button class="refreshBtn" onclick="hisobotlarniYangila()" title="Yangi hisobotlarni tekshirish">
-                <svg id="refIco" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Yangilash
-              </button>
-              <input type="text" id="lentaIchQidiruv" placeholder="Tavsif ichidan qidirish..." style="min-width:160px" oninput="lentaIchQidiruvBajar()">
-              <input type="date" id="fDan" onchange="lentaYukla()"> <span style="color:var(--text-ikkinchi)">—</span> <input type="date" id="fGacha" onchange="lentaYukla()">
-              <button onclick="lentaYukla()">Filtrlash</button>
-            </div>
-          </div>
-          
-          <!-- LENTA: O'rtadagi aylantiriladigan qism -->
-          <div id="lenta" style="flex:1; min-height:0; overflow-y:auto; padding:20px 28px; display:block !important;"></div>
-          
-          <!-- LENTA: Pastda qotib turadigan paginatsiya -->
-          <div class="paginBar" id="lentaPagin" style="display:none; margin:0; padding:16px 28px; background:var(--bg-kard-shaffof); border-top:1px solid var(--chiziq-kard); flex-shrink:0;"></div>
-        </div>
-      </section>
-
-      <section id="boshqaruv" class="asosiy-kard" style="display:none; padding:0; overflow:hidden; flex-direction:column;">
-        <div style="background:var(--bg-kard-shaffof); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-bottom:1px solid var(--chiziq-kard); z-index:10; padding:24px 28px 16px; flex-shrink:0;">
+      <!-- BOSHQARUV PANEL -->
+      <section id="boshqaruv" class="asosiy-kard" style="display:none;">
+        <div style="background:var(--bg-kard-shaffof); backdrop-filter:blur(24px); border-bottom:1px solid var(--chiziq-kard); z-index:10; padding:24px 28px 16px; flex-shrink:0;">
           <div class="bTabs" id="bTabsContainer" style="margin-bottom:14px;"></div>
           <div id="bSarlavhaTop" style="display:flex; flex-direction:column; gap:12px; align-items:flex-start;"></div>
         </div>
         
-        <!-- BOSHQARUV: O'rtadagi to'liq skrol bo'ladigan jadval qismi -->
-        <div class="bPanel" id="bPanel" style="flex:1; min-height:0; overflow-y:auto; overflow-x:auto; padding:20px 28px; display:block !important;">
+        <div id="bPanel">
           <div class="yuklanmoqda"><div class="spinner"></div></div>
         </div>
         
-        <!-- BOSHQARUV: Eng pastda qotib turadigan paginatsiya paneli -->
-        <div class="paginBar" id="bPaginContainer" style="background:var(--bg-kard-shaffof); border-top:1px solid var(--chiziq-kard); flex-shrink:0; display:none; padding:16px 28px; margin:0;"></div>
+        <div class="boshqaruv-foot" id="bPaginContainer"></div>
       </section>
     </main>
   </div>
@@ -939,7 +895,6 @@ mark{ background:rgba(var(--kok-rgb),.28); color:inherit; border-radius:3px; pad
 <div id="pdfPrintArea"></div>
 
 <script>
-// SVG ICONS
 const SVG = {
   users: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
   admin: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="11" r="3"/></svg>`,
@@ -1279,10 +1234,8 @@ function bolimKorsat(nom) {
   if(navBosh) navBosh.classList.toggle('aktiv', nom==='boshqaruv');
   
   document.getElementById('chap').style.display = nom==='nazorat' ? 'flex' : 'none';
-  // O'ZGARISH MANA SHU YERDA: 'block' o'rniga 'flex' qo'yildi
   document.getElementById('ong').style.display = nom==='nazorat' ? 'flex' : 'none';
   document.getElementById('dashboardPanel').style.display = nom==='dashboard' ? 'block' : 'none';
-  // YANA BIR O'ZGARISH: 'block' o'rniga 'flex' qo'yildi
   document.getElementById('boshqaruv').style.display = nom==='boshqaruv' ? 'flex' : 'none';
   document.getElementById('xaritaPanel').style.display = nom==='xarita' ? 'flex' : 'none';
   document.getElementById('qidiruvPanel').style.display = nom==='qidiruv' ? 'block' : 'none';
@@ -1407,11 +1360,9 @@ async function dashboardYukla() {
 
   dashTab('yuklamaganlar');
 
-  // Yangi Aylanma va Chiziqli chartlarni chaqirish
   dashChartChiz(bugunYuklagan, dashUzrlilar.length, dashYuklamagan.length);
   trendChartChiz(hisobotsHammasi);
 
-  // MFY reytingi uchun ma'lumotlarni tayyorlash
   const mfyStat = {};
   mfylar.forEach(m => {
     if (SESSIYA.rol === 'nazoratchi' && String(m.id) !== String(SESSIYA.mfyId)) return;
@@ -1422,14 +1373,13 @@ async function dashboardYukla() {
   xodims.forEach(x => { if (x.mfyId && mfyStat[x.mfyId]) mfyStat[x.mfyId].jami++; });
   hisobots.forEach(h => { if (h.sana === bugunStr && h.mfyId && mfyStat[h.mfyId]) mfyStat[h.mfyId].yuklagan.add(String(h.xodimId)); });
 
-  // Arrayga o'tkazib, foiz bo'yicha saralaymiz (Reyting)
   let mfyArr = Object.values(mfyStat).map(st => {
       const yuklaganSoni = st.yuklagan.size;
       const foiz = st.jami > 0 ? Math.round((yuklaganSoni / st.jami) * 100) : 0;
       return { nomi: st.nomi, jami: st.jami, yuklagan: yuklaganSoni, foiz: foiz };
   });
   
-  mfyArr.sort((a, b) => b.foiz - a.foiz); // Eng faollari tepada
+  mfyArr.sort((a, b) => b.foiz - a.foiz);
 
   let pHTML = mfyArr.map(st => `
       <div class="mfy-rating-item">
@@ -1446,6 +1396,288 @@ async function dashboardYukla() {
 
   document.getElementById('mfyRatingList').innerHTML = pHTML || '<div class="bosh-holat">Tashkilotlar topilmadi</div>';
 }
+
+let dashChart = null;
+function dashChartChiz(bugunYuklagan, uzrlilar, yuklamaganlar) {
+  const canvas = document.getElementById('dashDoughnut');
+  if (!canvas || typeof Chart === 'undefined') return;
+
+  const rootStyles = getComputedStyle(document.documentElement);
+  const yashilRang = rootStyles.getPropertyValue('--yashil').trim() || '#17A34E';
+  const qizilRang = rootStyles.getPropertyValue('--qizil').trim() || '#EF4444';
+  const binafshaRang = rootStyles.getPropertyValue('--binafsha').trim() || '#8B5CF6';
+  const matnRang = rootStyles.getPropertyValue('--text-ikkinchi').trim() || '#6B7286';
+
+  if (dashChart) { dashChart.destroy(); dashChart = null; }
+  
+  if (bugunYuklagan === 0 && uzrlilar === 0 && yuklamaganlar === 0) {
+      canvas.closest('.chartWrap').innerHTML = '<div class="chartBosh_empty">Ma\'lumot topilmadi</div>';
+      return;
+  }
+  if (!canvas.closest('.chartWrap').querySelector('#dashDoughnut')) {
+      canvas.closest('.chartWrap').innerHTML = '<canvas id="dashDoughnut"></canvas>';
+  }
+  
+  const ctx = document.getElementById('dashDoughnut');
+  dashChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+          labels: ['Topshirganlar', 'Sabablilar (Uzrli)', 'Topshirmaganlar'],
+          datasets: [{
+              data: [bugunYuklagan, uzrlilar, yuklamaganlar],
+              backgroundColor: [yashilRang, binafshaRang, qizilRang],
+              borderWidth: 0,
+              hoverOffset: 4
+          }]
+      },
+      options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '72%',
+          plugins: {
+              legend: { position: 'bottom', labels: { color: matnRang, font: {family: "'Plus Jakarta Sans'"} } }
+          }
+      }
+  });
+}
+
+let trendChart = null;
+function trendChartChiz(hisobotlarHammasi) {
+  const canvas = document.getElementById('trendChart');
+  if (!canvas || typeof Chart === 'undefined') return;
+
+  const kunlar = [];
+  for (let i = 6; i >= 0; i--) kunlar.push(toshkentSananiOl(i));
+
+  const jamiPerKun = kunlar.map(s => (hisobotlarHammasi || []).filter(h => h.sana === s).length);
+  const flagPerKun = kunlar.map(s => (hisobotlarHammasi || []).filter(h => h.sana === s && h.reyting && h.reyting !== 'YASHIL').length);
+
+  const wrap = canvas.closest('.chartKard').querySelector('.chartWrap');
+  if (jamiPerKun.every(x => x === 0)) {
+     if (trendChart) { trendChart.destroy(); trendChart = null; }
+     wrap.innerHTML = '<div class="chartBosh_empty">So\'nggi 7 kunda ma\'lumot topilmadi</div>';
+     return;
+  }
+  if (!wrap.querySelector('#trendChart')) {
+     wrap.innerHTML = '<canvas id="trendChart"></canvas>';
+  }
+  const ctx = document.getElementById('trendChart');
+  if(!ctx) return;
+
+  const rootStyles = getComputedStyle(document.documentElement);
+  const kokRang = rootStyles.getPropertyValue('--kok').trim() || '#2F6FEF';
+  const binafshaRang = rootStyles.getPropertyValue('--binafsha').trim() || '#8B5CF6';
+  const matnRang = rootStyles.getPropertyValue('--text-ikkinchi').trim() || '#6B7286';
+  const chiziqRang = rootStyles.getPropertyValue('--chiziq').trim() || 'rgba(0,0,0,0.08)';
+
+  const labels = kunlar.map(s => s.slice(5).split('-').reverse().join('.'));
+
+  if (trendChart) { trendChart.destroy(); trendChart = null; }
+  trendChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label:'Jami', data: jamiPerKun, borderColor: kokRang, backgroundColor: 'rgba(47,111,239,0.14)', fill:true, tension:.35, pointRadius:4, pointBackgroundColor:kokRang },
+        { label:'Flag', data: flagPerKun, borderColor: binafshaRang, backgroundColor:'rgba(139,92,246,0.10)', fill:true, tension:.35, pointRadius:4, pointBackgroundColor:binafshaRang }
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false} },
+      scales:{
+        x:{ ticks:{ color:matnRang, font:{size:11} }, grid:{ display:false } },
+        y:{ beginAtZero:true, ticks:{ color:matnRang, precision:0, font:{size:11} }, grid:{ color:chiziqRang } }
+      }
+    }
+  });
+}
+
+async function xodimlarYukla() {
+  const [rx, rh] = await Promise.all([api('xodimlar'), api('hisobotlar')]);
+  if (rx.ok) {
+    let kelganXodimlar = rx.xodimlar || [];
+    let kelganHisobotlar = (rh.ok && Array.isArray(rh.hisobotlar)) ? rh.hisobotlar : [];
+
+    if (SESSIYA.rol === 'nazoratchi') {
+      const myMfy = String(SESSIYA.mfyId);
+      kelganXodimlar = kelganXodimlar.filter(x => String(x.mfyId) === myMfy);
+      kelganHisobotlar = kelganHisobotlar.filter(h => String(h.mfyId) === myMfy);
+    }
+
+    xodimlar = kelganXodimlar;
+    let jamiOqilmagan = 0;
+
+    if (fetchedReportIds.size === 0 && kelganHisobotlar.length > 0) {
+      kelganHisobotlar.forEach(h => fetchedReportIds.add(h.id));
+    }
+
+if (kelganHisobotlar.length > 0) {
+      xodimlar.forEach(x => {
+        x.ishHolati = x.ish_holati || 'ishda';
+        const xHisobotlari = kelganHisobotlar.filter(h => String(h.xodimId) === String(x.id));
+        
+        // Yangi: Oxirgi hisobot vaqtini aniqlab olish
+        xHisobotlari.sort((a,b) => new Date(b.b_vaqt) - new Date(a.b_vaqt));
+        
+        x.soni = xHisobotlari.length;
+        x.oxirgiVaqt = xHisobotlari.length > 0 ? xHisobotlari[0].b_vaqt : null;
+        x.bugunBor = xHisobotlari.some(h => h.sana === toshkentBugun());
+        x.unread = xHisobotlari.filter(h => !seenReports.has(h.id)).length;
+        x.flagBor = xHisobotlari.some(h => h.sana === toshkentBugun() && h.reyting && h.reyting !== 'YASHIL');
+      });
+    } else {
+        xodimlar.forEach(x => { 
+          x.ishHolati = x.ish_holati || 'ishda'; 
+          x.oxirgiVaqt = null;
+        });
+    }
+    xodimlar.forEach(x => { jamiOqilmagan += x.unread || 0; });
+
+    const mBadge = document.getElementById('mainBadge');
+    if (jamiOqilmagan > 0) {
+      mBadge.textContent = jamiOqilmagan;
+      mBadge.style.display = 'inline-flex';
+    } else {
+      mBadge.style.display = 'none';
+    }
+
+    xodimlarChiz();
+  } else {
+    toast("Xodimlarni yuklashda xato: " + (rx.xato || ''), 'xato');
+    document.getElementById('xodimlarList').innerHTML = `<div class="yuklanmoqda">Xato: ${rx.xato||''}</div>`;
+  }
+}
+
+async function checkNewReports() {
+  // Faqatgina bugungi sanada turganda yangiliklarni tekshiramiz
+  const tanlanganSana = document.getElementById('qSana')?.value || toshkentBugun();
+  if (tanlanganSana !== toshkentBugun()) return;
+
+  const rh = await api('hisobotlar', { dan: toshkentBugun(), gacha: toshkentBugun() });
+  if(!rh.ok || !Array.isArray(rh.hisobotlar)) return;
+  
+  let yangiHisobotlar = [];
+  rh.hisobotlar.forEach(h => {
+    if (SESSIYA.rol === 'nazoratchi' && String(h.mfyId) !== String(SESSIYA.mfyId)) return;
+    if(!fetchedReportIds.has(h.id)) {
+      fetchedReportIds.add(h.id);
+      yangiHisobotlar.push(h);
+    }
+  });
+  
+  if(yangiHisobotlar.length > 0) {
+    playBeep();
+    
+    // Avval xodimlar ro'yxatini (chap panelni) yangilab olamiz
+    await xodimlarYukla();
+    
+    // Har bir yangi hisobot uchun alohida to'liq axborotli bildirishnoma yasaymiz
+    yangiHisobotlar.forEach(h => {
+      const xObj = xodimlar.find(x => String(x.id) === String(h.xodimId));
+      const katAdi = xObj?.kategoriyaNomi || h.kategoriyaNomi || '';
+      const tashAdi = xObj?.mfyNomi || h.mfyNomi || '';
+      
+      const c = document.getElementById('toastContainer');
+      const t = document.createElement('div');
+      t.className = `toast`;
+      t.style.cursor = 'pointer';
+      t.style.borderLeft = '3px solid var(--kok)';
+      
+      // Ism, Tashkilot va Kategoriyani qo'shib chiroyli shablon yasaymiz
+      t.innerHTML = `
+        <span style="font-size:22px;">🔔</span> 
+        <div style="line-height:1.4;">
+          <b style="color:var(--kok); font-size:14px;">${h.xodimFio}</b><br>
+          <span style="font-size:11px; color:var(--text-ikkinchi); font-weight:700; text-transform:uppercase;">
+            ${tashAdi}${katAdi ? ' · ' + katAdi : ''}
+          </span>
+          <div style="font-size:13px; margin-top:3px; color:var(--text-asosiy); font-weight:600;">Yangi hisobot yukladi</div>
+        </div>
+      `;
+      
+      // Bildirishnoma ustiga bossa, to'g'ridan-to'g'ri o'sha xodimning lentasini ochadi
+      t.onclick = () => { 
+        bolimKorsat('nazorat'); 
+        xodimTanla(h.xodimId); 
+        t.remove(); 
+      };
+      
+      c.appendChild(t);
+      
+      // 6 soniyadan keyin o'zi silliq yo'qoladi
+      setTimeout(() => { 
+        t.style.opacity='0'; 
+        t.style.transform='translateX(100%)'; 
+        setTimeout(() => t.remove(), 300); 
+      }, 6000);
+    });
+    
+    // Brauzer orqali kompyuterga bildirishnoma
+    if (yangiHisobotlar.length === 1) {
+        brauzerBildirishnoma('Yangi hisobot', `${yangiHisobotlar[0].xodimFio} hisobot yubordi`);
+    } else {
+        brauzerBildirishnoma('Yangi hisobotlar', `${yangiHisobotlar.length} ta yangi hisobot tushdi`);
+    }
+    
+    if(tanlangan) {
+      await lentaYukla();
+    }
+  }
+}
+
+async function hisobotlarniYangila() {
+  const ico = document.getElementById('refIco');
+  if(ico) ico.style.animation = 'sp 0.6s linear infinite';
+  await xodimlarYukla();
+  if (tanlangan) {
+    await lentaYukla();
+  }
+  setTimeout(() => {
+    if(ico) ico.style.animation = 'none';
+    toast("Hisobotlar yangilandi!", "muvaffaqiyat");
+  }, 400);
+}
+
+let nazoratFiltr = 'barchasi';
+function nazoratFiltrOrnat(tur) {
+  nazoratFiltr = tur;
+  document.querySelectorAll('.nazFiltrBtn').forEach(b => b.classList.toggle('aktiv', b.dataset.tur === tur));
+  xodimlarSahifa = 1;
+  xodimlarChiz();
+}
+
+/* ================= XODIMLAR RO'YXATI + KATEGORIYA BILAN ================= */
+let xodimlarSahifa = 1;
+const XODIM_SAHIFA_HAJMI = 40;
+let xodimlarFiltrlanganKesh = [];
+
+function xodimlarChiz() {
+  const q = (document.getElementById('qidiruv').value || '').toLowerCase();
+  const fMfy = document.getElementById('fMfy').value;
+  const fKat = document.getElementById('fKategoriya').value;
+  let list = xodimlar.filter(x =>
+    (x.fio.toLowerCase().includes(q) || (x.mfyNomi||'').toLowerCase().includes(q) || (x.kategoriyaNomi||'').toLowerCase().includes(q)) &&
+    (!fMfy || String(x.mfyId) === String(fMfy)) && (!fKat || String(x.kategoriyaId) === String(fKat)));
+
+  if (nazoratFiltr === 'yuklagan') list = list.filter(x => x.bugunBor);
+  else if (nazoratFiltr === 'yuklamagan') list = list.filter(x => !x.bugunBor);
+
+  // Yangi qism: Eng oxirgi yuklaganlarni (vaqti bo'yicha) ro'yxatning eng tepasiga chiqarish
+  list = list.slice().sort((a, b) => {
+    if(a.oxirgiVaqt && b.oxirgiVaqt) return new Date(b.oxirgiVaqt) - new Date(a.oxirgiVaqt);
+    if(a.oxirgiVaqt) return -1;
+    if(b.oxirgiVaqt) return 1;
+    return (b.bugunBor === true) - (a.bugunBor === true);
+  });
+  
+  xodimlarFiltrlanganKesh = list;
+
+  if (xodimlarSahifa > Math.ceil(list.length / XODIM_SAHIFA_HAJMI)) xodimlarSahifa = 1;
+  const boshi = (xodimlarSahifa - 1) * XODIM_SAHIFA_HAJMI;
+  const sahifaligi = list.slice(boshi, boshi + XODIM_SAHIFA_HAJMI);
+
+  const eslatmaKerak = SESSIYA.rol !== 'nazoratchi' || (SESSIYA.ruxsatlar||[]).includes('eslatma_yuborish');
   
   document.getElementById('xodimlarList').innerHTML = sahifaligi.map(x => `
     <div class="xodimRow ${tanlangan?.id===x.id?'aktiv':''}" onclick="xodimTanla('${x.id}')">
@@ -1566,7 +1798,7 @@ function lentaChiz() {
       const [y,m] = oy.split('-');
       const oySoni = ro_yxat.filter(x => x.sana.startsWith(oy)).length;
       html += `<div class="oySarlavha">${OYLAR[+m-1]} ${y} · ${oySoni} ta ish</div>`;
-      oldingiOy = oy;
+      oldiOy = oy;
     }
     const vaqt = formatVaqt(h.b_vaqt);
     const isNew = !seenReports.has(h.id);
@@ -1927,8 +2159,7 @@ async function bYukla() {
             <button class="mini ${x.holat==='faol'?'qizil':'yashil'}" onclick="xodimHolat('${x.id}','${x.holat==='faol'?'bloklangan':'faol'}')">${x.holat==='faol'?'Bloklash':'Faollash'}</button>
           </td>
         </tr>`).join('')}
-      </table></div>
-      <div class="paginBar" id="bXodimPagin"></div>`;
+      </table></div>`;
     paginatorYarat(document.getElementById('bPaginContainer'), jamiSoni, B_SAHIFA_HAJMI, bXodimlarSahifa, (s)=>{bXodimlarSahifa=s; bYukla();});
   }
 
@@ -2121,8 +2352,7 @@ function auditPanelChiz(panel) {
         <td style="white-space:nowrap;font-family:monospace;font-size:11px">${a.vaqt}</td>
         <td><b>${a.kim}</b></td><td>${a.amal}</td><td>${a.tafsilot||''}</td>
       </tr>`).join('') || '<tr><td colspan="4" class="yuklanmoqda">Mos yozuv topilmadi</td></tr>'}
-    </table></div>
-<div class="paginBar" id="bAuditPagin"></div>`;
+    </table></div>`;
   paginatorYarat(document.getElementById('bPaginContainer'), filtrlangan.length, B_SAHIFA_HAJMI, bAuditSahifa, (s)=>{bAuditSahifa=s; auditPanelChiz(document.getElementById('bPanel'));});
 
   // YANILIK: Audit filtrlarini qotirilgan tepa qismga ko'chirish
@@ -2535,18 +2765,4 @@ async function qidiruvBajar() {
     html += `<h3 style="font-size:14px;margin:20px 0 10px;">Hisobotlar (${hisobotNatijalari.length})</h3>`;
     html += hisobotNatijalari.map(h => `
       <div class="qidiruvNatija" onclick="bolimKorsat('nazorat'); setTimeout(async ()=>{await xodimTanla('${h.xodimId}'); setTimeout(()=>modalOch(${JSON.stringify(h.id)}),300);},50)">
-        <div class="qTop"><span class="qFio">${matnBelgila(h.xodimFio||'', q)}</span><span class="qMeta">${h.sana} · ${h.mfyNomi||''}</span></div>
-        <div class="qMatn">${matnBelgila((h.b_tavsif||h.d_tavsif||h.y_tavsif||h.ishNomi||h.ishTuri||'').slice(0,180), q)}</div>
-      </div>`).join('');
-  }
-  natijaEl.innerHTML = html;
-}
-
-(async () => {
-  if (await superadminUrlTekshir()) return boshla();
-  const s = sessionStorage.getItem('SESSIYA');
-  if (s) { SESSIYA = JSON.parse(s); return boshla(); }
-})();
-</script>
-</body>
-</html>
+        <div class="qTop"><span class="qFio">${matnBelgila(h.xodimFio||'', q)}</span><span class="qMetaI seem to be encountering an error. Can I try something else for you?
