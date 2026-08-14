@@ -620,18 +620,10 @@ mark{ background:rgba(var(--kok-rgb),.28); color:inherit; border-radius:3px; pad
       Telegram Support
     </a>
 
-    <div class="sidebar-foot" style="border-top: 1px solid var(--chiziq); padding-top: 18px; margin-top: 12px;">
-    </nav>
-
-    <div class="sidebar-spacer"></div>
-
-    <div class="sidebar-foot">
+<div class="sidebar-foot" style="border-top: 1px solid var(--chiziq); padding-top: 18px; margin-top: 12px;">
       <div class="sf-top-row">
-        <button id="themeToggle" class="theme-btn" onclick="toggleTheme()" title="Tungi/Kunduzgi rejim">
-          <svg id="themeIcon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-        </button>
-        <button class="sf-excel-btn" onclick="hammasiExcel()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Excel
+        <button id="themeToggle" class="theme-btn" onclick="toggleTheme()" title="Tungi/Kunduzgi rejim" style="width: 100%; flex: none; gap: 10px; border-radius: 12px; font-weight: 700;">
+          <svg id="themeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"></svg> Tungi rejim
         </button>
       </div>
       <div class="user-card">
@@ -660,7 +652,11 @@ mark{ background:rgba(var(--kok-rgb),.28); color:inherit; border-radius:3px; pad
         <input id="globalQidiruv" placeholder="Xodim, tashkilot yoki hisobot matnini qidirish..." oninput="globalQidiruvDebounce()" onkeydown="if(event.key==='Enter'){bolimKorsat('qidiruv'); qidiruvBajar();}">
       </div>
       <div style="flex:1"></div>
-      <div class="top-amallar" id="topAmallarDesktop">
+<div class="top-amallar" id="topAmallarDesktop" style="display: flex; gap: 16px; align-items: center;">
+        <button onclick="excelModalOch()" style="background: var(--yashil); color: white; border: none; padding: 10px 18px; border-radius: 13px; font-weight: 700; font-size: 13px; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(23,163,78,0.3); transition: all 0.2s;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Excelni yuklash
+        </button>
         <button class="cta bell" id="bildBtn" onclick="bildirishnomaSorash()" title="Brauzer bildirishnomalarini yoqish">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           <span class="dotBadge"></span>
@@ -1847,14 +1843,48 @@ function xodimExcel() {
   excelSaqla(joriyHisobotlar.map(hisobotSatr), 'Hisobot_'+tanlangan.fio.replace(/\s+/g,'_')+'_'+new Date().toISOString().slice(0,10));
 }
 
-async function hammasiExcel() {
-  const r = await api('hisobotlar');
-  if (!r.ok || !r.hisobotlar.length) return toast('Hisobot topilmadi', 'xato');
-  let exportData = r.hisobotlar;
-  if(SESSIYA.rol === 'nazoratchi') {
-    exportData = exportData.filter(h => String(h.mfyId) === String(SESSIYA.mfyId));
-  }
-  excelSaqla(exportData.map(hisobotSatr), 'Barcha_hisobotlar_'+new Date().toISOString().slice(0,10));
+function excelModalOch() {
+  // Tayyor formamizdan foydalanib oyna chiqaramiz
+  formaChiz('Excel hisobotni yuklab olish', [
+    { id: 'ex_tur', label: 'Davrni tanlang', turi: 'select', variantlar: [{val:'kun', nom:'Bir kunlik (Tanlangan sana)'}, {val:'oy', nom:'Oylik (Sana tegishli bo\'lgan oy)'}] },
+    { id: 'ex_sana', label: 'Sanani belgilang', turi: 'date', qiymat: toshkentBugun() }
+  ], async (q) => {
+    
+    let dan, gacha, faylNomi;
+    
+    // Agar foydalanuvchi "Kun" ni tanlagan bo'lsa
+    if (q.ex_tur === 'kun') {
+       dan = q.ex_sana; 
+       gacha = q.ex_sana; 
+       faylNomi = `Hisobotlar_${dan}`;
+    } 
+    // Agar "Oy" ni tanlagan bo'lsa, tanlangan sananing boshidan-oxirigacha olamiz
+    else {
+       const oy = q.ex_sana.slice(0, 7); // YYYY-MM
+       dan = `${oy}-01`;
+       let [y, m] = oy.split('-');
+       let oxirgiKun = new Date(y, m, 0).getDate(); // Oydagi oxirgi kunni aniqlash
+       gacha = `${oy}-${oxirgiKun}`;
+       faylNomi = `Hisobotlar_Oylik_${oy}`;
+    }
+    
+    formaYop();
+    toast("Fayl tayyorlanmoqda, kuting...", "info");
+    
+    // Serverdan faqatgina shu sanalar oralig'ini so'raymiz (bu dasturni qotirmaydi va tez ishlaydi)
+    const r = await api('hisobotlar', { dan, gacha });
+    if (!r.ok || !r.hisobotlar || !r.hisobotlar.length) return toast('Bu davr uchun hisobot topilmadi', 'xato');
+    
+    let exportData = r.hisobotlar;
+    if (SESSIYA.rol === 'nazoratchi') {
+        exportData = exportData.filter(h => String(h.mfyId) === String(SESSIYA.mfyId));
+    }
+    
+    if (!exportData.length) return toast('Sizning tashkilotda hisobot topilmadi', 'xato');
+    
+    excelSaqla(exportData.map(hisobotSatr), faylNomi);
+    toast("Excel muvaffaqiyatli yuklandi!");
+  });
 }
 
 /* ================= PDF EKSPORT (jsPDF) ================= */
