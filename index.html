@@ -2223,7 +2223,11 @@ async function bYukla() {
           <td><span class="rolBadge ${a.rol}">${a.rol.toUpperCase()}</span></td>
           <td>${a.mfyId?(mfylar.find(m=>String(m.id)===String(a.mfyId))?.nomi||a.mfyId):'hammasi'}</td>
           <td style="font-family:monospace">${a.login}</td>
-          <td style="max-width:260px">${ruxsatlarBadgeHTML(a)}</td>
+          <td>
+  <div style="max-width:260px; max-height:68px; overflow-y:auto; display:flex; flex-wrap:wrap; align-content:flex-start;">
+    ${ruxsatlarBadgeHTML(a)}
+  </div>
+</td>
           <td><span class="holatTag ${a.holat==='faol'?'faol':'blok'}">${a.holat}</span></td>
           <td style="white-space:nowrap">
             <button class="mini kok" onclick='adminForma(${JSON.stringify(a)})'>Tahrirlash</button>
