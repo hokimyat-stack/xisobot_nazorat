@@ -2137,7 +2137,7 @@ async function aiOvozIjro(text, normalized=true, afterEnd=null) {
   aiVoiceStatus(`${AI_SOZLAMA.ism || 'Hisobchi'} · Gemini ovozi tayyorlanmoqda...`, 'speaking');
 
   try {
-    // FAST 2.1: brauzer ovoziga yashirin o'tish yo'q. Gemini TTS ustuvor va majburiy.
+    // FAST 2.2: brauzer ovoziga yashirin o'tish yo'q. Gemini TTS ustuvor va majburiy.
     // Server tahlil davomida ovozni oldindan tayyorlaydi, shuning uchun odatda bu kutish qisqa bo'ladi.
     const controller = new AbortController();
     const ovozTimeout = setTimeout(() => controller.abort('gemini-tts-timeout'), 10000);
@@ -2198,12 +2198,15 @@ async function aiOvozIjro(text, normalized=true, afterEnd=null) {
     aiVoiceStatus(`${AI_SOZLAMA.ism || 'Hisobchi'} gapirmoqda · Gemini ${voiceName} · ${serverMs || Math.round(performance.now()-boshlandi)} ms`, 'speaking');
     await audio.play();
   } catch (e) {
-    const abort = e?.name === 'AbortError';
+    // AbortController.abort('gemini-tts-timeout') Chrome'da ba'zan DOMException emas,
+    // aynan berilgan string sababni reject qiladi. Shuning uchun ikkala holatni ham taniymiz.
+    const abort = e?.name === 'AbortError' || e === 'gemini-tts-timeout' || e?.message === 'gemini-tts-timeout';
+    const detail = typeof e === 'string' ? e : (e?.message || String(e || ''));
     const msg = abort
-      ? 'Gemini ovozi 10 soniyada tayyor bo‘lmadi. Brauzer ovoziga o‘tilmadi.'
-      : `Gemini ovoz xatosi: ${e?.message || 'noma’lum xato'}`;
-    console.error('[Hisobchi ovozi]', msg, e);
-    aiVoiceStatus(abort ? 'Gemini ovozi kechikdi' : 'Gemini ovozida xato');
+      ? 'Gemini TTS 10 soniyada tayyor bo‘lmadi. Brauzer ovoziga o‘tilmadi.'
+      : `Gemini ovoz xatosi: ${detail || 'noma’lum xato'}`;
+    console.error('[Hisobchi ovozi]', { xato: msg, sabab: e });
+    aiVoiceStatus(abort ? 'Gemini TTS kechikdi' : 'Gemini ovozida xato');
     toast(msg, 'xato');
     if (afterEnd) afterEnd();
     aiWakeTikla(500);
