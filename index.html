@@ -855,6 +855,50 @@ main{ padding:16px; gap:14px; max-width:1760px; }
 
 @media(max-width:760px){.dashCommandInner{padding:9px !important}.dashCompactHead{padding:8px 9px}.dashCompactTitle>div>span,.dashDateBadge{display:none}.metricGridV5{grid-template-columns:repeat(2,minmax(0,1fr))}.metricCardV5{height:68px;padding:8px}.metricV5Body b{font-size:18px}.dashFiltrCompact{overflow-x:auto;flex-wrap:nowrap}.dashFiltrCompact select{min-width:128px !important}.aiDrawer{top:54px;right:6px;bottom:6px;width:calc(100vw - 12px)}.trendSvgWrap,.rankBars{height:185px;min-height:185px}}
 
+
+/* =========================================================
+   FAST 2.0 — viewport dashboard, yopiladigan bildirishnoma, wake-word
+========================================================= */
+.toast{position:relative;padding-right:42px!important;max-width:min(430px,calc(100vw - 28px));transition:opacity .22s ease,transform .22s ease}
+.toastClose{position:absolute;right:9px;top:9px;width:25px;height:25px;border-radius:8px;border:1px solid var(--chiziq);background:var(--bg-input);color:var(--text-ikkinchi);padding:0;display:flex;align-items:center;justify-content:center;font-size:17px;line-height:1;z-index:2}
+.toastClose:hover{color:var(--qizil);border-color:rgba(var(--qizil-rgb),.35);background:var(--qizil-och)}
+.aiWakeBtn.faol{color:var(--sirena)!important;border-color:rgba(var(--sirena-rgb),.42)!important;background:var(--sirena-och)!important;box-shadow:0 0 0 3px rgba(var(--sirena-rgb),.08)}
+.aiWakeBtn.tinglayapti::after{content:'';position:absolute;inset:4px;border-radius:8px;border:1px solid currentColor;opacity:.55;animation:livePulse 1.8s ease-out infinite}
+.aiFastBadge{display:inline-flex;align-items:center;gap:5px;padding:3px 6px;border-radius:7px;background:var(--yashil-och);color:var(--yashil);font-size:8px;font-weight:800}
+
+@media (min-width:901px){
+  #dashboardPanel.dashCommand{overflow:hidden!important;min-height:0!important;height:100%!important}
+  #dashboardPanel .dashCommandInner{
+    height:100%!important;min-height:0!important;overflow:hidden!important;
+    display:grid!important;grid-template-rows:auto auto auto auto minmax(150px,1.18fr) minmax(118px,.82fr)!important;
+    gap:7px!important;padding:10px 12px!important;
+  }
+  #dashboardPanel .dashCompactHead,#dashboardPanel .dashFiltrCompact,#dashboardPanel .metricGridV5,#dashboardPanel .opsStripCompact,#dashboardPanel .dashChartGridV5,#dashboardPanel .dashLowerGrid{margin:0!important;min-height:0}
+  #dashboardPanel .dashCompactHead{min-height:44px!important;padding:7px 10px!important}
+  #dashboardPanel .metricGridV5{gap:7px!important}
+  #dashboardPanel .metricCardV5{height:66px!important;padding:8px 9px!important}
+  #dashboardPanel .metricV5Body b{font-size:19px!important;margin-top:4px!important}
+  #dashboardPanel .opsStripCompact{min-height:30px!important;padding:5px 8px!important}
+  #dashboardPanel .dashChartGridV5{height:100%!important;grid-template-columns:minmax(0,1.35fr) minmax(250px,.65fr)!important;grid-template-rows:minmax(0,1fr)!important;gap:8px!important}
+  #dashboardPanel .chartKardV5{height:100%!important;min-height:0!important;padding:9px 10px!important;display:flex!important;flex-direction:column!important;overflow:hidden!important}
+  #dashboardPanel .chartKardV5 .chartBosh{margin-bottom:5px!important;flex:0 0 auto}
+  #dashboardPanel .trendSvgWrap,#dashboardPanel .rankBars{height:auto!important;min-height:0!important;flex:1 1 auto!important;overflow:auto}
+  #dashboardPanel .dashLowerGrid{height:100%!important;grid-template-columns:1.15fr .85fr!important;gap:8px!important}
+  #dashboardPanel .dashSectionCard{height:100%!important;min-height:0!important;display:flex!important;flex-direction:column!important;overflow:hidden!important}
+  #dashboardPanel .dashSectionHead{padding:8px 10px 0!important;flex:0 0 auto}
+  #dashboardPanel .dashSectionHead .izoh{margin:2px 0 5px!important}
+  #dashboardPanel .dashSectionHead .bTabs{margin-bottom:5px!important}
+  #dashboardPanel .dashTableWrap{max-height:none!important;min-height:0!important;flex:1 1 auto!important;overflow:auto!important}
+  #dashboardPanel .dashTableWrap .jadval th{position:sticky;top:0;z-index:2;background:var(--bg-kard-shaffof)}
+}
+@media (min-width:901px) and (max-height:820px){
+  #dashboardPanel .dashCommandInner{grid-template-rows:auto auto auto auto minmax(128px,1.12fr) minmax(105px,.88fr)!important;gap:5px!important;padding:7px 9px!important}
+  #dashboardPanel .dashCompactHead{min-height:38px!important}
+  #dashboardPanel .metricCardV5{height:58px!important}.metricIconV5{width:24px!important;height:24px!important}.metricV5Body b{font-size:17px!important}
+  #dashboardPanel .dashSectionHead{padding-top:6px!important}.dashSectionHead h3{font-size:10.5px!important}
+  #dashboardPanel .dashTableWrap .jadval td{padding:5px 7px!important}.dashTableWrap .jadval th{padding:5px 7px!important}
+}
+
 </style>
 </head>
 <body>
@@ -1181,6 +1225,9 @@ main{ padding:16px; gap:14px; max-width:1760px; }
           <div class="aiQuick" id="aiQuickSavollar"></div>
           <div class="aiVoiceStatus" id="aiVoiceStatus"><i></i><span>Ovozli savol uchun mikrofonni bosing</span></div>
           <div class="aiAskBar">
+            <button class="aiVoiceBtn aiWakeBtn" id="aiWakeBtn" onclick="aiWakeToggle()" title="Yordamchini nomi bilan avtomatik chaqirish">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12a8 8 0 0 1 16 0"/><path d="M7 12a5 5 0 0 1 10 0"/><circle cx="12" cy="12" r="1.7"/><path d="M12 14v7"/></svg>
+            </button>
             <button class="aiVoiceBtn" id="aiMicBtn" onclick="aiMikrofonToggle()" title="Ovoz bilan savol berish">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
             </button>
@@ -1316,10 +1363,13 @@ let xodimlar = [], mfylar = [], kategoriyalar = [], tanlangan = null, joriyHisob
 let dashYuklagan = [], dashYuklamagan = [], dashUzrlilar = [];
 
 let AI_SOZLAMA = {
-  ism:'Hisobchi', uygotishSozi:'Hisobchi', ovoz:'Kore', avtomatikOvoz:true,
+  ism:'Hisobchi', uygotishSozi:'Hisobchi', uygotishFaol:true, ovoz:'Kore', nutqTezligi:1.08, avtomatikOvoz:true,
   savollar:["Bugungi holat qanday?","Bugun nechta xodim hisobot topshirdi?","Bugun nechta xodim hisobot topshirmadi?","Bajarilish darajasi necha foiz?","Qaysi tashkilotga birinchi navbatda e'tibor berish kerak?","Bugun rahbar sifatida qaysi 3 ta amaliy ishni qilishim kerak?"]
 };
 let aiMediaRecorder = null, aiMediaStream = null, aiAudioChunks = [], aiOvozYoqilgan = true, aiHozirgiAudio = null, aiOxirgiSpeechText = '', aiQaytaTinglash = false;
+const AI_SPEECH_RECOGNITION = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+let aiWakeRecognition = null, aiManualRecognition = null, aiWakeIshlayapti = false, aiWakePauza = false, aiWakeBuyruqRejimi = false;
+let aiWakeBuyruqQismlari = [], aiWakeBuyruqTimer = null, aiWakeRestartTimer = null, aiWakeRuxsatBlok = false;
 
 let seenReports = new Set();
 let fetchedReportIds = new Set();
@@ -1381,13 +1431,22 @@ function playBeep() {
   } catch(e) {}
 }
 
-function toast(matn, turi='muvaffaqiyat') {
+function toastYop(t, event=null) {
+  if (event) { event.preventDefault(); event.stopPropagation(); }
+  if (!t) return;
+  t.style.opacity='0'; t.style.transform='translateX(110%)';
+  setTimeout(() => t.remove(), 220);
+}
+function toast(matn, turi='muvaffaqiyat', davomiylik=4200) {
   const c = document.getElementById('toastContainer');
   const t = document.createElement('div');
   t.className = `toast ${turi}`;
-  t.innerHTML = `<span>${turi==='muvaffaqiyat'?'✓':turi==='info'?'🔔':'⚠'}</span> <div>${matn}</div>`;
+  const icon = turi==='muvaffaqiyat'?'✓':turi==='info'?'🔔':'⚠';
+  t.innerHTML = `<span>${icon}</span><div style="min-width:0;line-height:1.4">${htmlQochir(matn)}</div><button class="toastClose" type="button" aria-label="Yopish" title="Yopish">×</button>`;
+  t.querySelector('.toastClose')?.addEventListener('click', e => toastYop(t,e));
   c.appendChild(t);
-  setTimeout(() => { t.style.opacity='0'; t.style.transform='translateX(100%)'; setTimeout(() => t.remove(), 300); }, 3500);
+  if (davomiylik > 0) setTimeout(() => toastYop(t), davomiylik);
+  return t;
 }
 
 async function bildirishnomaSorash() {
@@ -1520,7 +1579,7 @@ async function loginParol() {
   } catch(e) { xato.textContent = 'Xato: ' + e.message; xato.style.display='block'; }
 }
 
-function chiqish() { sessionStorage.removeItem('SESSIYA'); location.href = location.pathname; }
+function chiqish() { try { aiWakeButunlayToxtat(); } catch (_) {} sessionStorage.removeItem('SESSIYA'); location.href = location.pathname; }
 
 async function boshla() {
   if (SESSIYA.rol === 'nazoratchi' && !SESSIYA.mfyId) {
@@ -1575,6 +1634,8 @@ if (k.ok && Array.isArray(k.kategoriyalar)) {
   }
   
   await aiSozlamaYukla();
+  // FAST 2.0: ruxsat mavjud bo'lsa yordamchi nomini fon rejimida tinglashni boshlaydi.
+  setTimeout(() => aiWakeTinglashniBoshlash(false), 700);
 
   // Yangi: Oxirgi oynani xotiradan o'qish
   let oxirgi = localStorage.getItem('oxirgiBolim') || 'dashboard';
@@ -1864,10 +1925,9 @@ function aiUIYangila() {
   const inp = document.getElementById('aiSavol'); if (inp) inp.placeholder = `${name}ga savol bering...`;
   aiOvozYoqilgan = AI_SOZLAMA.avtomatikOvoz !== false;
   const sp = document.getElementById('aiSpeakerBtn'); if (sp) sp.classList.toggle('faol', aiOvozYoqilgan);
+  aiWakeBtnYangila();
   const quick = document.getElementById('aiQuickSavollar');
-  if (quick) {
-    quick.innerHTML = (AI_SOZLAMA.savollar || []).slice(0,6).map(q => `<button onclick='aiTezSavol(${JSON.stringify(q)})'>${htmlQochir(q)}</button>`).join('');
-  }
+  if (quick) quick.innerHTML = (AI_SOZLAMA.savollar || []).slice(0,6).map(q => `<button onclick='aiTezSavol(${JSON.stringify(q)})'>${htmlQochir(q)}</button>`).join('');
 }
 
 async function aiSozlamaYukla() {
@@ -1876,14 +1936,17 @@ async function aiSozlamaYukla() {
     if (r.ok && r.sozlama) AI_SOZLAMA = { ...AI_SOZLAMA, ...r.sozlama };
   } catch (_) {}
   aiUIYangila();
+  if (SESSIYA && AI_SOZLAMA.uygotishFaol !== false) aiWakeQaytaBoshlash(500);
 }
 
 async function aiSozlamaSaqla() {
   const savollar = (document.getElementById('aiCfgQuestions')?.value || '').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
   const payload = {
     ism: document.getElementById('aiCfgIsm')?.value.trim() || 'Hisobchi',
-    uygotishSozi: document.getElementById('aiCfgWake')?.value.trim() || 'Hisobchi',
+    uygotishSozi: document.getElementById('aiCfgWake')?.value.trim() || document.getElementById('aiCfgIsm')?.value.trim() || 'Hisobchi',
+    uygotishFaol: document.getElementById('aiCfgWakeActive')?.value !== 'false',
     ovoz: document.getElementById('aiCfgVoice')?.value || 'Kore',
+    nutqTezligi: Number(document.getElementById('aiCfgSpeechRate')?.value || 1.08),
     avtomatikOvoz: document.getElementById('aiCfgAutoVoice')?.value !== 'false',
     savollar
   };
@@ -1891,7 +1954,9 @@ async function aiSozlamaSaqla() {
   if (!r.ok) return toast('Xato: ' + (r.xato || ''), 'xato');
   AI_SOZLAMA = { ...AI_SOZLAMA, ...(r.sozlama || payload) };
   aiUIYangila();
-  toast('Hisobchi AI sozlamalari saqlandi');
+  aiWakeButunlayToxtat();
+  if (AI_SOZLAMA.uygotishFaol !== false) { aiWakePauza = false; setTimeout(() => aiWakeTinglashniBoshlash(true), 300); }
+  toast(`${AI_SOZLAMA.ism} sozlamalari saqlandi`, 'muvaffaqiyat');
 }
 
 function aiVoiceStatus(matn, turi='') {
@@ -1900,13 +1965,158 @@ function aiVoiceStatus(matn, turi='') {
   el.className = 'aiVoiceStatus ' + turi;
   const span = el.querySelector('span'); if (span) span.textContent = matn;
   const top = document.getElementById('aiTopStatus');
-  if (top) top.innerHTML = `<i></i> ${turi==='listening'?'tinglamoqda':turi==='speaking'?'gapirmoqda':turi==='processing'?'ishlamoqda':'tayyor'}`;
+  if (top) top.innerHTML = `<i></i> ${turi==='listening'?'tinglamoqda':turi==='speaking'?'gapirmoqda':turi==='processing'?'ishlamoqda':aiWakeIshlayapti?'nomni kutmoqda':'tayyor'}`;
+}
+
+// ================= FAST 2.0: NOM BILAN AVTOMATIK CHAQIRISH =================
+function aiRegexQochir(text) { return String(text || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+function aiWakeNomlar() {
+  return [...new Set([AI_SOZLAMA.uygotishSozi, AI_SOZLAMA.ism].map(x=>String(x||'').trim()).filter(Boolean))];
+}
+function aiWakeAjratMatn(matn) {
+  const original = String(matn || '').trim();
+  for (const nom of aiWakeNomlar()) {
+    const re = new RegExp(`(^|\\s)${aiRegexQochir(nom)}(?=[,!.?\\s]|$)`, 'i');
+    const m = re.exec(original);
+    if (m) {
+      const start = m.index + m[0].length;
+      const qolgan = original.slice(start).replace(/^[,!.?\s]+/, '').trim();
+      return { topildi:true, nom, qolgan };
+    }
+  }
+  return { topildi:false, nom:'', qolgan:original };
+}
+function aiWakeBtnYangila() {
+  const btn = document.getElementById('aiWakeBtn');
+  if (!btn) return;
+  const yoqilgan = AI_SOZLAMA.uygotishFaol !== false;
+  btn.classList.toggle('faol', yoqilgan);
+  btn.classList.toggle('tinglayapti', yoqilgan && aiWakeIshlayapti);
+  btn.title = yoqilgan ? `${AI_SOZLAMA.ism || 'Hisobchi'} nomi bilan chaqirish faol` : 'Nom bilan chaqirish o‘chirilgan';
+}
+function aiWakeButunlayToxtat() {
+  clearTimeout(aiWakeRestartTimer); clearTimeout(aiWakeBuyruqTimer);
+  aiWakePauza = true; aiWakeBuyruqRejimi = false; aiWakeBuyruqQismlari = [];
+  if (aiWakeRecognition) { try { aiWakeRecognition.abort(); } catch (_) {} }
+  aiWakeRecognition = null; aiWakeIshlayapti = false; document.getElementById('aiMicBtn')?.classList.remove('yozmoqda'); aiWakeBtnYangila();
+}
+function aiWakeVaqtinchaPauza() {
+  clearTimeout(aiWakeRestartTimer);
+  aiWakePauza = true;
+  if (aiWakeRecognition) { try { aiWakeRecognition.stop(); } catch (_) {} }
+  aiWakeIshlayapti = false; aiWakeBtnYangila();
+}
+function aiWakeTikla(delay=650) {
+  if (!SESSIYA || AI_SOZLAMA.uygotishFaol === false || aiWakeRuxsatBlok) return;
+  aiWakePauza = false;
+  aiWakeQaytaBoshlash(delay);
+}
+function aiWakeQaytaBoshlash(delay=650) {
+  clearTimeout(aiWakeRestartTimer);
+  if (!SESSIYA || AI_SOZLAMA.uygotishFaol === false || aiWakePauza || aiWakeRuxsatBlok || aiWakeIshlayapti) return;
+  aiWakeRestartTimer = setTimeout(() => aiWakeTinglashniBoshlash(false), delay);
+}
+function aiWakeBuyruqniJadvalgaQoy() {
+  clearTimeout(aiWakeBuyruqTimer);
+  aiWakeBuyruqTimer = setTimeout(() => aiWakeBuyruqniBajar(), 420);
+}
+async function aiWakeBuyruqniBajar() {
+  clearTimeout(aiWakeBuyruqTimer);
+  const buyruq = aiWakeBuyruqQismlari.join(' ').replace(/\s+/g,' ').trim();
+  aiWakeBuyruqQismlari = []; aiWakeBuyruqRejimi = false;
+  document.getElementById('aiMicBtn')?.classList.remove('yozmoqda');
+  if (!buyruq) {
+    aiVoiceStatus(`${AI_SOZLAMA.ism || 'Hisobchi'} nomini ayting va buyruq bering`, '');
+    return;
+  }
+  aiWakeVaqtinchaPauza();
+  toggleAIPanel(true);
+  const input = document.getElementById('aiSavol'); if (input) input.value = buyruq;
+  aiVoiceStatus(`Tushundim: ${buyruq}`, 'processing');
+  await aiTahlil(buyruq, true);
+}
+function aiWakeTinglashniBoshlash(foydalanuvchiBosdi=false) {
+  if (!AI_SPEECH_RECOGNITION || !SESSIYA || AI_SOZLAMA.uygotishFaol === false || aiWakeIshlayapti || aiWakePauza || aiWakeRuxsatBlok) {
+    aiWakeBtnYangila();
+    if (foydalanuvchiBosdi && !AI_SPEECH_RECOGNITION) toast('Bu brauzer nom bilan ovozli chaqirishni qo‘llamaydi', 'xato');
+    return;
+  }
+  try {
+    const rec = new AI_SPEECH_RECOGNITION();
+    aiWakeRecognition = rec;
+    rec.lang = 'uz-UZ'; rec.continuous = true; rec.interimResults = true; rec.maxAlternatives = 1;
+    rec.onstart = () => {
+      aiWakeIshlayapti = true; aiWakePauza = false; aiWakeBtnYangila();
+      if (!document.getElementById('aiVoiceStatus')?.classList.contains('speaking')) aiVoiceStatus(`“${AI_SOZLAMA.ism || 'Hisobchi'}” deb chaqirishingiz mumkin`, '');
+    };
+    rec.onresult = e => {
+      for (let i=e.resultIndex;i<e.results.length;i++) {
+        const result = e.results[i];
+        const transcript = String(result?.[0]?.transcript || '').trim();
+        if (!transcript) continue;
+
+        if (!aiWakeBuyruqRejimi) {
+          const hit = aiWakeAjratMatn(transcript);
+          if (!hit.topildi) continue;
+          toggleAIPanel(true);
+          document.getElementById('aiMicBtn')?.classList.add('yozmoqda');
+          aiWakeBuyruqRejimi = true;
+          aiWakeBuyruqQismlari = [];
+          aiVoiceStatus(`${AI_SOZLAMA.ism || 'Hisobchi'} chaqirildi — buyruqni tinglayapman`, 'listening');
+          clearTimeout(aiWakeBuyruqTimer);
+          aiWakeBuyruqTimer = setTimeout(() => {
+            if (aiWakeBuyruqRejimi && !aiWakeBuyruqQismlari.length) {
+              aiWakeBuyruqRejimi = false;
+              document.getElementById('aiMicBtn')?.classList.remove('yozmoqda');
+              aiVoiceStatus(`“${AI_SOZLAMA.ism || 'Hisobchi'}” deb qayta chaqirishingiz mumkin`, '');
+            }
+          }, 7000);
+          if (result.isFinal && hit.qolgan) { aiWakeBuyruqQismlari.push(hit.qolgan); aiWakeBuyruqniJadvalgaQoy(); }
+        } else if (result.isFinal) {
+          const clean = aiWakeAjratMatn(transcript);
+          const qism = clean.topildi ? clean.qolgan : transcript;
+          if (qism) aiWakeBuyruqQismlari.push(qism);
+          if (aiWakeBuyruqQismlari.length) aiWakeBuyruqniJadvalgaQoy();
+        }
+      }
+    };
+    rec.onerror = e => {
+      const code = e?.error || '';
+      aiWakeIshlayapti = false; aiWakeBtnYangila();
+      if (code === 'not-allowed' || code === 'service-not-allowed') {
+        aiWakeRuxsatBlok = true;
+        aiVoiceStatus('Nom bilan chaqirish uchun mikrofon ruxsatini bering');
+        if (foydalanuvchiBosdi) toast('Mikrofon ruxsati berilmadi', 'xato');
+      }
+    };
+    rec.onend = () => {
+      aiWakeIshlayapti = false; aiWakeRecognition = null; aiWakeBtnYangila();
+      if (!aiWakePauza && !aiWakeRuxsatBlok && AI_SOZLAMA.uygotishFaol !== false) aiWakeQaytaBoshlash(500);
+    };
+    rec.start();
+  } catch (e) {
+    aiWakeIshlayapti = false; aiWakeRecognition = null; aiWakeBtnYangila();
+    if (foydalanuvchiBosdi) toast('Nom bilan chaqirishni ishga tushirib bo‘lmadi', 'xato');
+  }
+}
+function aiWakeToggle() {
+  AI_SOZLAMA.uygotishFaol = AI_SOZLAMA.uygotishFaol === false ? true : false;
+  aiWakeRuxsatBlok = false;
+  if (AI_SOZLAMA.uygotishFaol) {
+    aiWakePauza = false;
+    aiWakeTinglashniBoshlash(true);
+    toast(`“${AI_SOZLAMA.ism || 'Hisobchi'}” deb chaqirish yoqildi`, 'info');
+  } else {
+    aiWakeButunlayToxtat();
+    toast('Nom bilan avtomatik chaqirish o‘chirildi', 'info');
+  }
+  aiWakeBtnYangila();
 }
 
 function aiOvozToggle() {
   aiOvozYoqilgan = !aiOvozYoqilgan;
   const btn = document.getElementById('aiSpeakerBtn'); if (btn) btn.classList.toggle('faol', aiOvozYoqilgan);
-  if (!aiOvozYoqilgan) aiOvozToxtat();
+  if (!aiOvozYoqilgan) { aiOvozToxtat(); aiWakeTikla(300); }
   toast(aiOvozYoqilgan ? 'Ovozli javob yoqildi' : "Ovozli javob o'chirildi", 'info');
 }
 
@@ -1920,25 +2130,40 @@ function aiOvozToxtat() {
 
 async function aiOvozIjro(text, normalized=true, afterEnd=null) {
   const matn = String(text || '').trim();
-  if (!matn) { if (afterEnd) afterEnd(); return; }
+  if (!matn) { if (afterEnd) afterEnd(); aiWakeTikla(); return; }
+  aiWakeVaqtinchaPauza();
   aiOvozToxtat();
-  aiVoiceStatus(`${AI_SOZLAMA.ism || 'Hisobchi'} javob bermoqda...`, 'speaking');
+  const boshlandi = performance.now();
+  aiVoiceStatus(`${AI_SOZLAMA.ism || 'Hisobchi'} ovozni tayyorlamoqda...`, 'speaking');
   try {
-    const r = await fetch(`${API}/aiSpeech`, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ kalit:SESSIYA?.kalit || '', text:matn, normalized, voice:AI_SOZLAMA.ovoz || 'Kore' })
-    });
+    const controller = new AbortController();
+    const ovozTimeout = setTimeout(() => controller.abort(), 4500);
+    let r;
+    try {
+      r = await fetch(`${API}/aiSpeech`, {
+        method:'POST', headers:{'Content-Type':'application/json'}, signal:controller.signal,
+        body:JSON.stringify({ kalit:SESSIYA?.kalit || '', text:matn, normalized, voice:AI_SOZLAMA.ovoz || 'Kore' })
+      });
+    } finally { clearTimeout(ovozTimeout); }
     if (!r.ok) {
       let xatoMatni = 'Gemini ovoz server xatosi';
       try { const x = await r.json(); if (x?.xato) xatoMatni = x.xato; } catch (_) {}
       throw new Error(xatoMatni);
     }
+    const serverMs = Number(r.headers.get('X-AI-Time-Ms') || 0);
+    const cache = r.headers.get('X-AI-Cache') || '';
     const blob = await r.blob();
     const url = URL.createObjectURL(blob);
     const audio = new Audio(url);
+    audio.playbackRate = Math.max(.85, Math.min(1.30, Number(AI_SOZLAMA.nutqTezligi || 1.08)));
     aiHozirgiAudio = audio;
-    audio.onended = () => { URL.revokeObjectURL(url); aiHozirgiAudio=null; aiVoiceStatus('Tayyor'); if(afterEnd) afterEnd(); };
+    audio.onended = () => {
+      URL.revokeObjectURL(url); aiHozirgiAudio=null;
+      aiVoiceStatus(`Tayyor · ovoz ${Math.round(performance.now()-boshlandi)} ms${cache==='HIT'?' · kesh':''}`);
+      if(afterEnd) afterEnd(); aiWakeTikla(450);
+    };
     audio.onerror = () => { URL.revokeObjectURL(url); aiHozirgiAudio=null; aiBrauzerOvoz(matn, afterEnd); };
+    aiVoiceStatus(`${AI_SOZLAMA.ism || 'Hisobchi'} gapirmoqda · ${serverMs || Math.round(performance.now()-boshlandi)} ms`, 'speaking');
     await audio.play();
   } catch (e) {
     aiBrauzerOvoz(matn, afterEnd);
@@ -1946,18 +2171,18 @@ async function aiOvozIjro(text, normalized=true, afterEnd=null) {
 }
 
 function aiBrauzerOvoz(text, afterEnd=null) {
-  if (!('speechSynthesis' in window)) { aiVoiceStatus('Ovoz yaratib bo\'lmadi'); if(afterEnd) afterEnd(); return; }
+  if (!('speechSynthesis' in window)) { aiVoiceStatus('Ovoz yaratib bo\'lmadi'); if(afterEnd) afterEnd(); aiWakeTikla(); return; }
   try {
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'uz-UZ'; u.rate = 0.9; u.pitch = 1; u.volume = 1;
+    u.lang = 'uz-UZ'; u.rate = Math.max(.85, Math.min(1.30, Number(AI_SOZLAMA.nutqTezligi || 1.08))); u.pitch = 1; u.volume = 1;
     const voices = speechSynthesis.getVoices();
     const uz = voices.find(v => /^uz[-_]/i.test(v.lang || ''));
     if (uz) u.voice = uz;
-    u.onend = () => { aiVoiceStatus('Tayyor'); if(afterEnd) afterEnd(); };
-    u.onerror = () => { aiVoiceStatus('Ovozli javobda xato'); if(afterEnd) afterEnd(); };
+    u.onend = () => { aiVoiceStatus('Tayyor'); if(afterEnd) afterEnd(); aiWakeTikla(450); };
+    u.onerror = () => { aiVoiceStatus('Ovozli javobda xato'); if(afterEnd) afterEnd(); aiWakeTikla(450); };
     speechSynthesis.speak(u);
-  } catch (_) { aiVoiceStatus('Ovozli javobda xato'); if(afterEnd) afterEnd(); }
+  } catch (_) { aiVoiceStatus('Ovozli javobda xato'); if(afterEnd) afterEnd(); aiWakeTikla(450); }
 }
 
 function aiMikrofonToxtat(silent=false) {
@@ -1969,8 +2194,63 @@ function aiMikrofonToxtat(silent=false) {
   }
 }
 
+function aiTezMikrofonRecognition() {
+  if (!AI_SPEECH_RECOGNITION) return false;
+  if (aiManualRecognition) { try { aiManualRecognition.stop(); } catch (_) {}; return true; }
+  try {
+    aiWakeVaqtinchaPauza();
+    aiOvozToxtat();
+    const rec = new AI_SPEECH_RECOGNITION();
+    aiManualRecognition = rec;
+    let bajarildi = false, oxirgi = '';
+    rec.lang='uz-UZ'; rec.continuous=false; rec.interimResults=true; rec.maxAlternatives=1;
+    const btn = document.getElementById('aiMicBtn'); if (btn) btn.classList.add('yozmoqda');
+    rec.onstart=()=>aiVoiceStatus('Tezkor tinglayapman... Gapni tabiiy ayting.', 'listening');
+    rec.onresult=e=>{
+      for(let i=e.resultIndex;i<e.results.length;i++){
+        const txt=String(e.results[i]?.[0]?.transcript||'').trim();
+        if(txt) oxirgi=txt;
+        if(e.results[i].isFinal && txt && !bajarildi){
+          bajarildi=true;
+          const hit=aiWakeAjratMatn(txt);
+          const buyruq=(hit.topildi?hit.qolgan:txt).trim();
+          if (buyruq) {
+            const input=document.getElementById('aiSavol'); if(input) input.value=buyruq;
+            aiVoiceStatus(`Tushundim: ${buyruq}`, 'processing');
+            Promise.resolve(aiTahlil(buyruq,true)).catch(()=>aiWakeTikla());
+          } else {
+            aiVoiceStatus(`${AI_SOZLAMA.ism || 'Hisobchi'} chaqirildi — buyruqni ayting`, 'listening');
+            setTimeout(()=>aiMikrofonToggle(),180);
+          }
+          try{rec.stop();}catch(_){}
+        }
+      }
+    };
+    rec.onerror=e=>{
+      if(e?.error==='not-allowed'||e?.error==='service-not-allowed') toast('Mikrofon ruxsati berilmadi','xato');
+    };
+    rec.onend=()=>{
+      aiManualRecognition=null;
+      if(btn) btn.classList.remove('yozmoqda');
+      if(!bajarildi){
+        if(oxirgi){
+          const hit=aiWakeAjratMatn(oxirgi); const buyruq=(hit.topildi?hit.qolgan:oxirgi).trim();
+          if(buyruq){ bajarildi=true; aiTahlil(buyruq,true); return; }
+        }
+        aiVoiceStatus('Ovoz aniqlanmadi'); aiWakeTikla();
+      }
+    };
+    rec.start();
+    return true;
+  } catch(e){ aiManualRecognition=null; aiWakeTikla(); return false; }
+}
+
 async function aiMikrofonToggle() {
   toggleAIPanel(true);
+  if (aiManualRecognition) { try { aiManualRecognition.stop(); } catch (_) {} return; }
+  // Chrome/Edge kabi brauzerlarda ovozni brauzerning o'zida matnga aylantirib,
+  // Gemini transkripsiya bosqichini o'tkazib yuboramiz — bu FAST 2.0 ning eng katta tezlik yutug'i.
+  if (AI_SPEECH_RECOGNITION && aiTezMikrofonRecognition()) return;
   if (aiMediaRecorder && aiMediaRecorder.state === 'recording') {
     aiMediaRecorder.stop();
     return;
@@ -1979,6 +2259,7 @@ async function aiMikrofonToggle() {
     return toast("Brauzer mikrofon orqali ovoz yozishni qo'llamaydi", 'xato');
   }
   try {
+    aiWakeVaqtinchaPauza();
     aiOvozToxtat();
     aiMediaStream = await navigator.mediaDevices.getUserMedia({ audio:{ echoCancellation:true, noiseSuppression:true, autoGainControl:true } });
     const mimeCandidates = ['audio/webm;codecs=opus','audio/webm','audio/mp4','audio/ogg;codecs=opus'];
@@ -1993,13 +2274,15 @@ async function aiMikrofonToggle() {
       const btn = document.getElementById('aiMicBtn'); if (btn) btn.classList.remove('yozmoqda');
       aiMediaRecorder = null;
       if (blob.size > 1000) await aiOvozniMatnga(blob);
-      else aiVoiceStatus('Ovoz juda qisqa bo\'ldi');
+      else { aiVoiceStatus('Ovoz juda qisqa bo\'ldi'); aiWakeTikla(); }
     };
     aiMediaRecorder.start();
     const btn = document.getElementById('aiMicBtn'); if (btn) btn.classList.add('yozmoqda');
     aiVoiceStatus('Tinglayapman... Gapirib bo‘lgach mikrofonni yana bosing.', 'listening');
   } catch (e) {
     aiVoiceStatus('Mikrofonga ruxsat berilmadi');
+    aiWakeRuxsatBlok = false;
+    aiWakeTikla();
     toast("Mikrofondan foydalanish uchun brauzer ruxsatini bering", 'xato');
   }
 }
@@ -2020,7 +2303,6 @@ async function audioBlobniWavga(blob) {
       const data = decoded.getChannelData(c);
       for (let i = 0; i < frames; i++) mono[i] += data[i] / channels;
     }
-
     const out = new ArrayBuffer(44 + frames * 2);
     const view = new DataView(out);
     const yoz = (off, txt) => { for (let i=0;i<txt.length;i++) view.setUint8(off+i, txt.charCodeAt(i)); };
@@ -2035,9 +2317,7 @@ async function audioBlobniWavga(blob) {
       view.setInt16(off, x < 0 ? x * 0x8000 : x * 0x7fff, true);
     }
     return new Blob([out], { type:'audio/wav' });
-  } finally {
-    try { await ctx.close(); } catch (_) {}
-  }
+  } finally { try { await ctx.close(); } catch (_) {} }
 }
 
 async function aiOvozniMatnga(blob) {
@@ -2056,30 +2336,26 @@ async function aiOvozniMatnga(blob) {
     let matn = String(data.matn || '').trim();
     if (!matn) throw new Error('Ovozdan matn olinmadi');
 
-    const input = document.getElementById('aiSavol');
-    const wake = String(AI_SOZLAMA.uygotishSozi || AI_SOZLAMA.ism || 'Hisobchi').trim();
-    const re = wake ? new RegExp(`(^|\\s)${wake.replace(/[.*+?^${}()|[\\]\\]/g,'\\$&')}([,!.?\\s]|$)`, 'i') : null;
-    const nameAytilgan = re ? re.test(matn) : false;
-    if (nameAytilgan) matn = matn.replace(re, ' ').replace(/^[,!.?\s]+|[,!.?\s]+$/g,'').trim();
-
-    if (!matn && nameAytilgan) {
-      aiVoiceStatus(`${AI_SOZLAMA.ism} chaqirildi — savolingizni ayting`, 'speaking');
-      return aiOvozIjro('Eshitaman. Savolingizni ayting.', false, () => setTimeout(()=>aiMikrofonToggle(), 350));
+    const hit = aiWakeAjratMatn(matn);
+    if (hit.topildi) matn = hit.qolgan;
+    if (!matn && hit.topildi) {
+      aiVoiceStatus(`${AI_SOZLAMA.ism || 'Hisobchi'} chaqirildi — buyruqni ayting`, 'listening');
+      setTimeout(() => aiMikrofonToggle(), 220);
+      return;
     }
-
-    if (input) input.value = matn;
+    const input = document.getElementById('aiSavol'); if (input) input.value = matn;
     aiVoiceStatus(`Tushundim: ${matn}`, 'processing');
     await aiTahlil(matn, true);
   } catch (e) {
     aiVoiceStatus('Ovozli savolda xato');
+    aiWakeTikla();
     toast('Ovozli savol xatosi: ' + e.message, 'xato');
   }
 }
 
 function aiTezSavol(savol) {
   toggleAIPanel(true);
-  const el = document.getElementById('aiSavol');
-  if (el) el.value = savol;
+  const el = document.getElementById('aiSavol'); if (el) el.value = savol;
   aiTahlil(savol, false);
 }
 
@@ -2087,37 +2363,38 @@ async function aiTahlil(savolOverride='', ovozli=false) {
   toggleAIPanel(true);
   if (!dashboardSnapshot) {
     await dashboardYukla();
-    if (!dashboardSnapshot) return;
+    if (!dashboardSnapshot) { aiWakeTikla(); return; }
   }
 
   const input = document.getElementById('aiSavol');
   const savol = (savolOverride || input?.value || '').trim();
-  if (!savol) return toast('Savolni kiriting yoki mikrofon orqali ayting', 'xato');
+  if (!savol) { aiWakeTikla(); return toast('Savolni kiriting yoki mikrofon orqali ayting', 'xato'); }
   const natija = document.getElementById('aiNatija');
-  aiVoiceStatus(`${AI_SOZLAMA.ism || 'Hisobchi'} tahlil qilmoqda...`, 'processing');
-  if (natija) natija.innerHTML = `<div class="aiEmpty"><div class="spinner"></div><b style="margin-top:12px">${htmlQochir(AI_SOZLAMA.ism || 'Hisobchi')} tahlil qilmoqda</b><span>Ko‘rsatkichlar va nazorat ma’lumotlari tahlil qilinmoqda...</span></div>`;
+  const boshlandi = performance.now();
+  aiVoiceStatus(`${AI_SOZLAMA.ism || 'Hisobchi'} tezkor tahlil qilmoqda...`, 'processing');
+  if (natija) natija.innerHTML = `<div class="aiEmpty"><div class="spinner"></div><b style="margin-top:12px">${htmlQochir(AI_SOZLAMA.ism || 'Hisobchi')} Fast 2.0</b><span>Javob tayyorlanmoqda...</span></div>`;
 
   const r = await apiPost('aiTahlil', {
     savol,
     mfyId: document.getElementById('dFiltrMfy')?.value || '',
     kategoriyaId: document.getElementById('dFiltrKategoriya')?.value || '',
-    kunlar: 14
+    kunlar: 14,
+    tezkor: ovozli === true
   });
+  const clientMs = Math.round(performance.now() - boshlandi);
 
   if (!r.ok || !r.tahlil) {
-    aiVoiceStatus('Tahlilda xato');
+    aiVoiceStatus('Tahlilda xato'); aiWakeTikla();
     if (natija) natija.innerHTML = `<div class="aiEmpty"><b>${htmlQochir(AI_SOZLAMA.ism || 'Hisobchi')} ulanmadi</b><span>${htmlQochir(r.xato || 'Noma’lum xato')}</span></div>`;
     return;
   }
 
   const a = r.tahlil;
-  const insightHtml = (a.insights || []).map(x => `
-    <div class="aiInsight ${htmlQochir(x.daraja || 'past')}">
-      <b>${htmlQochir(x.sarlavha || 'Tahlil')}</b>
-      <p>${htmlQochir(x.matn || '')}</p>
-    </div>`).join('');
+  const insightHtml = (a.insights || []).map(x => `<div class="aiInsight ${htmlQochir(x.daraja || 'past')}"><b>${htmlQochir(x.sarlavha || 'Tahlil')}</b><p>${htmlQochir(x.matn || '')}</p></div>`).join('');
   const tavsiyaHtml = (a.tavsiyalar || []).map(x => `<li>${htmlQochir(x)}</li>`).join('');
   aiOxirgiSpeechText = String(a.speechText || a.savolJavobi || a.xulosa || '').trim();
+  const serverMs = Number(r.tezlik?.jamiMs || 0);
+  const fastLabel = r.fastPath ? '<span class="aiFastBadge">FAST 2.0</span>' : 'Gemini';
 
   if (natija) natija.innerHTML = `
     <div class="aiHeadline"><b>${htmlQochir(a.sarlavha || `${AI_SOZLAMA.ism} tahlili`)}</b><span class="aiHealth ${htmlQochir(a.holat || 'diqqat')}">${htmlQochir(a.holat || 'diqqat')}</span></div>
@@ -2126,20 +2403,28 @@ async function aiTahlil(savolOverride='', ovozli=false) {
     ${tavsiyaHtml ? `<ul class="aiRecommend">${tavsiyaHtml}</ul>` : ''}
     ${a.savolJavobi ? `<div class="aiAnswer"><b>Javob:</b><br>${htmlQochir(a.savolJavobi)}</div>` : ''}
     ${aiOxirgiSpeechText ? `<button class="aiReplayBtn" onclick="aiOvozIjro(aiOxirgiSpeechText,true)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Javobni ovozda qayta eshitish</button>` : ''}
-    <div style="margin-top:10px;color:var(--text-ikkinchi);font-size:9.5px">Model: ${htmlQochir(r.model || 'AI')} · ${htmlQochir(r.cached ? 'keshdan' : 'yangi tahlil')}</div>
+    <div style="margin-top:10px;color:var(--text-ikkinchi);font-size:9.5px;display:flex;gap:7px;align-items:center;flex-wrap:wrap">${fastLabel}<span>${htmlQochir(r.model || 'AI')}</span><span>· ${serverMs || clientMs} ms server</span><span>· ${clientMs} ms jami</span>${r.cached?'<span>· kesh</span>':''}</div>
   `;
-  aiVoiceStatus('Javob tayyor');
+  aiVoiceStatus(`Javob tayyor · ${clientMs} ms`);
   if (ovozli && aiOvozYoqilgan && aiOxirgiSpeechText) await aiOvozIjro(aiOxirgiSpeechText, true);
+  else aiWakeTikla(300);
 }
 
 async function aiOvozSinov() {
   const ism = document.getElementById('aiCfgIsm')?.value.trim() || AI_SOZLAMA.ism || 'Hisobchi';
   const ovoz = document.getElementById('aiCfgVoice')?.value || AI_SOZLAMA.ovoz || 'Kore';
-  const oldVoice = AI_SOZLAMA.ovoz;
-  AI_SOZLAMA.ovoz = ovoz;
-  await aiOvozIjro(`Assalomu alaykum. Men ${ism}. Kunlik hisobotlar bo'yicha savollaringizga javob berishga tayyorman.`, false);
-  AI_SOZLAMA.ovoz = oldVoice;
+  const tezlik = Number(document.getElementById('aiCfgSpeechRate')?.value || AI_SOZLAMA.nutqTezligi || 1.08);
+  const oldVoice = AI_SOZLAMA.ovoz, oldRate = AI_SOZLAMA.nutqTezligi;
+  AI_SOZLAMA.ovoz = ovoz; AI_SOZLAMA.nutqTezligi = tezlik;
+  await aiOvozIjro(`Assalomu alaykum. Men ${ism}. Tezkor hisobot tahliliga tayyorman.`, false);
+  AI_SOZLAMA.ovoz = oldVoice; AI_SOZLAMA.nutqTezligi = oldRate;
 }
+
+// Brauzer yashirinib qayta ochilganda wake listener tiklanadi.
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) aiWakeVaqtinchaPauza();
+  else aiWakeTikla(500);
+});
 
 async function xodimlarYukla() {
   const rx = await api('xodimlar');
@@ -2298,7 +2583,9 @@ async function checkNewReports() {
           </span>
           <div style="font-size:13px; margin-top:3px; color:var(--text-asosiy); font-weight:600;">Yangi hisobot yukladi</div>
         </div>
+        <button class="toastClose" type="button" aria-label="Yopish" title="Yopish">×</button>
       `;
+      t.querySelector('.toastClose')?.addEventListener('click', e => toastYop(t,e));
       
       // Bildirishnoma ustiga bossa, to'g'ridan-to'g'ri o'sha xodimning lentasini ochadi
       t.onclick = () => { 
@@ -2310,11 +2597,7 @@ async function checkNewReports() {
       c.appendChild(t);
       
       // 6 soniyadan keyin o'zi silliq yo'qoladi
-      setTimeout(() => { 
-        t.style.opacity='0'; 
-        t.style.transform='translateX(100%)'; 
-        setTimeout(() => t.remove(), 300); 
-      }, 6000);
+      setTimeout(() => toastYop(t), 6500);
     });
     
     // Brauzer orqali kompyuterga bildirishnoma
@@ -3149,12 +3432,14 @@ async function bYukla() {
       ['Zephyr','Zephyr — yorqin']
     ];
     panel.innerHTML = `<h3>Hisobchi AI sozlamalari</h3>
-      <div class="izoh">Yordamchi nomi, uyg'otish so'zi, ovozi va tezkor savollarini boshqaring.</div>
+      <div class="izoh">Yordamchi nomi, nom bilan avtomatik chaqirish, ovoz, gapirish tezligi va tezkor savollarni boshqaring.</div>
       <div class="aiConfigCard">
         <div class="aiConfigGrid">
           <div><label>Yordamchi nomi</label><input id="aiCfgIsm" value="${htmlQochir(cfg.ism || 'Hisobchi')}"><div class="aiConfigHint">Masalan: Hisobchi</div></div>
-          <div><label>Uyg'otish so'zi</label><input id="aiCfgWake" value="${htmlQochir(cfg.uygotishSozi || cfg.ism || 'Hisobchi')}"><div class="aiConfigHint">Ovozli savolda shu nom aytilsa yordamchi uni taniydi.</div></div>
+          <div><label>Uyg'otish so'zi</label><input id="aiCfgWake" value="${htmlQochir(cfg.uygotishSozi || cfg.ism || 'Hisobchi')}"><div class="aiConfigHint">AI nomi ham doim uyg‘otish nomi hisoblanadi. Masalan, nom “Tahlilchi” bo‘lsa, “Tahlilchi, bugungi holat qanday?” deyish kifoya.</div></div>
+          <div><label>Nom bilan avtomatik chaqirish</label><select id="aiCfgWakeActive"><option value="true" ${cfg.uygotishFaol!==false?'selected':''}>Yoqilgan</option><option value="false" ${cfg.uygotishFaol===false?'selected':''}>O'chirilgan</option></select><div class="aiConfigHint">Yoqilganda tizim fon rejimida AI nomini kutadi va nom aytilishi bilan buyruqni tinglaydi.</div></div>
           <div><label>AI ovozi</label><select id="aiCfgVoice">${voiceOptions.map(([id,nom])=>`<option value="${id}" ${id===cfg.ovoz?'selected':''}>${nom}</option>`).join('')}</select><div class="aiConfigHint">Professional o‘zbekcha javob uchun Kore yoki Sadaltager tavsiya etiladi.</div></div>
+          <div><label>Gapirish tezligi</label><select id="aiCfgSpeechRate"><option value="0.95" ${Number(cfg.nutqTezligi||1.08)===0.95?'selected':''}>0.95× — sekinroq</option><option value="1" ${Number(cfg.nutqTezligi||1.08)===1?'selected':''}>1.00× — odatiy</option><option value="1.08" ${Number(cfg.nutqTezligi||1.08)===1.08?'selected':''}>1.08× — tavsiya</option><option value="1.15" ${Number(cfg.nutqTezligi||1.08)===1.15?'selected':''}>1.15× — tez</option><option value="1.22" ${Number(cfg.nutqTezligi||1.08)===1.22?'selected':''}>1.22× — juda tez</option></select><div class="aiConfigHint">Ovozning talaffuzini buzmasdan ijro tezligini oshiradi.</div></div>
           <div><label>Ovozli javob</label><select id="aiCfgAutoVoice"><option value="true" ${cfg.avtomatikOvoz!==false?'selected':''}>Yoqilgan</option><option value="false" ${cfg.avtomatikOvoz===false?'selected':''}>O'chirilgan</option></select><div class="aiConfigHint">Ovozli savollarga avtomatik ovoz bilan javob beradi.</div></div>
           <div class="full"><label>Tezkor savollar — har bir satrda bittadan</label><textarea id="aiCfgQuestions">${htmlQochir((cfg.savollar || []).join('\n'))}</textarea><div class="aiConfigHint">Bu savollar Hisobchi panelida tugmalar sifatida chiqadi. 30 tagacha saqlash mumkin.</div></div>
         </div>
@@ -3162,7 +3447,7 @@ async function bYukla() {
           <button class="qoshBtn" style="margin:0" onclick="aiSozlamaSaqla()">Saqlash</button>
           <button class="mini kok" onclick="aiOvozSinov()">Ovozni sinash</button>
         </div>
-        <div class="aiConfigHint" style="margin-top:12px">Provayder: Google Gemini. Serverda GEMINI_API_KEY sozlanadi. O‘zbekcha ovoz Gemini Live orqali yaratiladi; server ovozi ishlamasa brauzerning uz-UZ ovozi zaxira sifatida qo‘llanadi.</div>
+        <div class="aiConfigHint" style="margin-top:12px">Fast 2.0: tezkor savollar serverda darhol hisoblanadi, Gemini Live ovozi oldindan tayyorlanadi va AI nomi fon rejimida tinglanadi. Brauzer nom bilan chaqirishni qo‘llamasa, oddiy mikrofon tugmasi zaxira sifatida ishlaydi.</div>
       </div>`;
   }
 
