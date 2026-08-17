@@ -1316,7 +1316,7 @@ let xodimlar = [], mfylar = [], kategoriyalar = [], tanlangan = null, joriyHisob
 let dashYuklagan = [], dashYuklamagan = [], dashUzrlilar = [];
 
 let AI_SOZLAMA = {
-  ism:'Hisobchi', uygotishSozi:'Hisobchi', ovoz:'marin', avtomatikOvoz:true,
+  ism:'Hisobchi', uygotishSozi:'Hisobchi', ovoz:'Kore', avtomatikOvoz:true,
   savollar:["Bugungi holat qanday?","Bugun nechta xodim hisobot topshirdi?","Bugun nechta xodim hisobot topshirmadi?","Bajarilish darajasi necha foiz?","Qaysi tashkilotga birinchi navbatda e'tibor berish kerak?","Bugun rahbar sifatida qaysi 3 ta amaliy ishni qilishim kerak?"]
 };
 let aiMediaRecorder = null, aiMediaStream = null, aiAudioChunks = [], aiOvozYoqilgan = true, aiHozirgiAudio = null, aiOxirgiSpeechText = '', aiQaytaTinglash = false;
@@ -1883,7 +1883,7 @@ async function aiSozlamaSaqla() {
   const payload = {
     ism: document.getElementById('aiCfgIsm')?.value.trim() || 'Hisobchi',
     uygotishSozi: document.getElementById('aiCfgWake')?.value.trim() || 'Hisobchi',
-    ovoz: document.getElementById('aiCfgVoice')?.value || 'marin',
+    ovoz: document.getElementById('aiCfgVoice')?.value || 'Kore',
     avtomatikOvoz: document.getElementById('aiCfgAutoVoice')?.value !== 'false',
     savollar
   };
@@ -1926,9 +1926,13 @@ async function aiOvozIjro(text, normalized=true, afterEnd=null) {
   try {
     const r = await fetch(`${API}/aiSpeech`, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ kalit:SESSIYA?.kalit || '', text:matn, normalized, voice:AI_SOZLAMA.ovoz || 'marin' })
+      body:JSON.stringify({ kalit:SESSIYA?.kalit || '', text:matn, normalized, voice:AI_SOZLAMA.ovoz || 'Kore' })
     });
-    if (!r.ok) throw new Error('TTS server xatosi');
+    if (!r.ok) {
+      let xatoMatni = 'Gemini ovoz server xatosi';
+      try { const x = await r.json(); if (x?.xato) xatoMatni = x.xato; } catch (_) {}
+      throw new Error(xatoMatni);
+    }
     const blob = await r.blob();
     const url = URL.createObjectURL(blob);
     const audio = new Audio(url);
@@ -2000,13 +2004,52 @@ async function aiMikrofonToggle() {
   }
 }
 
+async function audioBlobniWavga(blob) {
+  if (!blob || !blob.size) return blob;
+  if ((blob.type || '').toLowerCase().includes('wav')) return blob;
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return blob;
+
+  const ctx = new AC();
+  try {
+    const decoded = await ctx.decodeAudioData(await blob.arrayBuffer());
+    const channels = decoded.numberOfChannels;
+    const frames = decoded.length;
+    const mono = new Float32Array(frames);
+    for (let c = 0; c < channels; c++) {
+      const data = decoded.getChannelData(c);
+      for (let i = 0; i < frames; i++) mono[i] += data[i] / channels;
+    }
+
+    const out = new ArrayBuffer(44 + frames * 2);
+    const view = new DataView(out);
+    const yoz = (off, txt) => { for (let i=0;i<txt.length;i++) view.setUint8(off+i, txt.charCodeAt(i)); };
+    const sr = decoded.sampleRate || 48000;
+    yoz(0, 'RIFF'); view.setUint32(4, 36 + frames * 2, true); yoz(8, 'WAVE'); yoz(12, 'fmt ');
+    view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, 1, true);
+    view.setUint32(24, sr, true); view.setUint32(28, sr * 2, true); view.setUint16(32, 2, true); view.setUint16(34, 16, true);
+    yoz(36, 'data'); view.setUint32(40, frames * 2, true);
+    let off = 44;
+    for (let i=0;i<frames;i++,off+=2) {
+      const x = Math.max(-1, Math.min(1, mono[i]));
+      view.setInt16(off, x < 0 ? x * 0x8000 : x * 0x7fff, true);
+    }
+    return new Blob([out], { type:'audio/wav' });
+  } finally {
+    try { await ctx.close(); } catch (_) {}
+  }
+}
+
 async function aiOvozniMatnga(blob) {
   aiVoiceStatus('Ovoz matnga aylantirilmoqda...', 'processing');
   try {
+    let yuboriladiganBlob = blob;
+    try { yuboriladiganBlob = await audioBlobniWavga(blob); } catch (_) {}
     const fd = new FormData();
     fd.append('kalit', SESSIYA?.kalit || '');
-    const ext = (blob.type || '').includes('mp4') ? 'm4a' : (blob.type || '').includes('ogg') ? 'ogg' : 'webm';
-    fd.append('audio', blob, `savol.${ext}`);
+    const tur = (yuboriladiganBlob.type || '').toLowerCase();
+    const ext = tur.includes('wav') ? 'wav' : tur.includes('mp4') ? 'm4a' : tur.includes('ogg') ? 'ogg' : 'webm';
+    fd.append('audio', yuboriladiganBlob, `savol.${ext}`);
     const r = await fetch(`${API}/aiTranscribe`, { method:'POST', body:fd });
     const data = await r.json();
     if (!r.ok || !data.ok) throw new Error(data.xato || 'Ovoz aniqlanmadi');
@@ -2091,7 +2134,7 @@ async function aiTahlil(savolOverride='', ovozli=false) {
 
 async function aiOvozSinov() {
   const ism = document.getElementById('aiCfgIsm')?.value.trim() || AI_SOZLAMA.ism || 'Hisobchi';
-  const ovoz = document.getElementById('aiCfgVoice')?.value || AI_SOZLAMA.ovoz || 'marin';
+  const ovoz = document.getElementById('aiCfgVoice')?.value || AI_SOZLAMA.ovoz || 'Kore';
   const oldVoice = AI_SOZLAMA.ovoz;
   AI_SOZLAMA.ovoz = ovoz;
   await aiOvozIjro(`Assalomu alaykum. Men ${ism}. Kunlik hisobotlar bo'yicha savollaringizga javob berishga tayyorman.`, false);
@@ -3091,14 +3134,27 @@ async function bYukla() {
     const r = await api('aiSozlama');
     if (r.ok && r.sozlama) AI_SOZLAMA = { ...AI_SOZLAMA, ...r.sozlama };
     const cfg = AI_SOZLAMA;
-    const voiceOptions = ['marin','cedar','coral','alloy','ash','ballad','echo','fable','nova','onyx','sage','shimmer','verse'];
+    const voiceOptions = [
+      ['Kore','Kore — qat’iy va professional'],
+      ['Sadaltager','Sadaltager — bilimdon va ishonchli'],
+      ['Charon','Charon — axborot beruvchi'],
+      ['Iapetus','Iapetus — aniq va ravon'],
+      ['Schedar','Schedar — sokin va bir maromda'],
+      ['Gacrux','Gacrux — yetuk ovoz'],
+      ['Sulafat','Sulafat — iliq ovoz'],
+      ['Achird','Achird — do‘stona'],
+      ['Algieba','Algieba — silliq'],
+      ['Erinome','Erinome — tiniq'],
+      ['Vindemiatrix','Vindemiatrix — muloyim'],
+      ['Zephyr','Zephyr — yorqin']
+    ];
     panel.innerHTML = `<h3>Hisobchi AI sozlamalari</h3>
       <div class="izoh">Yordamchi nomi, uyg'otish so'zi, ovozi va tezkor savollarini boshqaring.</div>
       <div class="aiConfigCard">
         <div class="aiConfigGrid">
           <div><label>Yordamchi nomi</label><input id="aiCfgIsm" value="${htmlQochir(cfg.ism || 'Hisobchi')}"><div class="aiConfigHint">Masalan: Hisobchi</div></div>
           <div><label>Uyg'otish so'zi</label><input id="aiCfgWake" value="${htmlQochir(cfg.uygotishSozi || cfg.ism || 'Hisobchi')}"><div class="aiConfigHint">Ovozli savolda shu nom aytilsa yordamchi uni taniydi.</div></div>
-          <div><label>AI ovozi</label><select id="aiCfgVoice">${voiceOptions.map(v=>`<option value="${v}" ${v===cfg.ovoz?'selected':''}>${v}</option>`).join('')}</select><div class="aiConfigHint">Sifat uchun marin yoki cedar tavsiya etiladi.</div></div>
+          <div><label>AI ovozi</label><select id="aiCfgVoice">${voiceOptions.map(([id,nom])=>`<option value="${id}" ${id===cfg.ovoz?'selected':''}>${nom}</option>`).join('')}</select><div class="aiConfigHint">Professional o‘zbekcha javob uchun Kore yoki Sadaltager tavsiya etiladi.</div></div>
           <div><label>Ovozli javob</label><select id="aiCfgAutoVoice"><option value="true" ${cfg.avtomatikOvoz!==false?'selected':''}>Yoqilgan</option><option value="false" ${cfg.avtomatikOvoz===false?'selected':''}>O'chirilgan</option></select><div class="aiConfigHint">Ovozli savollarga avtomatik ovoz bilan javob beradi.</div></div>
           <div class="full"><label>Tezkor savollar — har bir satrda bittadan</label><textarea id="aiCfgQuestions">${htmlQochir((cfg.savollar || []).join('\n'))}</textarea><div class="aiConfigHint">Bu savollar Hisobchi panelida tugmalar sifatida chiqadi. 30 tagacha saqlash mumkin.</div></div>
         </div>
@@ -3106,7 +3162,7 @@ async function bYukla() {
           <button class="qoshBtn" style="margin:0" onclick="aiSozlamaSaqla()">Saqlash</button>
           <button class="mini kok" onclick="aiOvozSinov()">Ovozni sinash</button>
         </div>
-        <div class="aiConfigHint" style="margin-top:12px">Ovoz sun'iy intellekt tomonidan yaratiladi. OPENAI_API_KEY serverda sozlangan bo'lishi kerak.</div>
+        <div class="aiConfigHint" style="margin-top:12px">Provayder: Google Gemini. Serverda GEMINI_API_KEY sozlanadi. O‘zbekcha ovoz Gemini Live orqali yaratiladi; server ovozi ishlamasa brauzerning uz-UZ ovozi zaxira sifatida qo‘llanadi.</div>
       </div>`;
   }
 
