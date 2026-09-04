@@ -920,6 +920,7 @@ main{ padding:16px; gap:14px; max-width:1760px; }
 @media(max-width:1180px){.bFilterBar{grid-template-columns:1fr 1fr}.bFilterBar button{width:100%}#dashboardPanel .dashChartGridV5{grid-template-columns:1fr!important}.dashStatusSide{min-height:260px!important}}
 @media(max-width:700px){.bFilterBar,.bFilterBar.compact2,.bFilterBar.compact1{grid-template-columns:1fr}.metricGridV5{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 
+.taskToolbar{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:14px 0}.taskToolbar input,.taskToolbar select{min-width:150px;flex:1}.taskStats{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px;margin:14px 0 18px}.taskStat{padding:14px;border:1px solid var(--chiziq-kard);background:var(--bg-input);border-radius:15px}.taskStat b{display:block;font-size:23px}.taskStat span{font-size:10px;color:var(--text-ikkinchi);font-weight:800;text-transform:uppercase}.taskProgress{height:8px;border-radius:99px;background:var(--chiziq);overflow:hidden;min-width:110px}.taskProgress i{display:block;height:100%;background:linear-gradient(90deg,var(--kok),var(--yashil));border-radius:inherit}.taskTitle{font-weight:850;color:var(--text-asosiy);max-width:360px}.taskDesc{font-size:11px;color:var(--text-ikkinchi);margin-top:4px;line-height:1.45;max-width:420px}.taskUrgent{border-left:4px solid var(--qizil)!important}.taskImportant{border-left:4px solid var(--sariq)!important}.taskForm{width:min(940px,94vw);max-height:91vh;overflow:auto}.taskFormGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.taskFormGrid .full{grid-column:1/-1}.taskForm label{display:block;font-size:11px;font-weight:800;color:var(--text-ikkinchi);margin:0 0 6px;text-transform:uppercase;letter-spacing:.04em}.taskForm input,.taskForm select,.taskForm textarea{width:100%;padding:12px;border:1px solid var(--chiziq);border-radius:11px;background:var(--bg-input);color:var(--text-asosiy);font:inherit}.taskForm textarea{min-height:92px;resize:vertical}.taskTargetGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.taskTargetGrid select{min-height:130px}.taskHint{font-size:11px;color:var(--text-ikkinchi);line-height:1.5;margin-top:5px}.taskPreview{padding:12px 14px;border-radius:12px;background:var(--kok-och);color:var(--kok);font-weight:750;font-size:12px}.taskDetailHead{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}.taskStep{display:flex;gap:10px;align-items:flex-start;padding:10px;border:1px solid var(--chiziq);border-radius:12px;margin:7px 0}.taskStep.done{background:var(--yashil-och);border-color:rgba(var(--yashil-rgb),.25)}.taskComment{padding:10px 12px;border-radius:12px;background:var(--bg-input);border:1px solid var(--chiziq);margin:7px 0}.taskComment small{display:block;color:var(--text-ikkinchi);margin-bottom:4px}@media(max-width:720px){.taskFormGrid,.taskTargetGrid{grid-template-columns:1fr}.taskFormGrid .full{grid-column:auto}.taskStats{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
@@ -1296,6 +1297,7 @@ main{ padding:16px; gap:14px; max-width:1760px; }
 
 <div id="pdfPrintArea"></div>
 
+<script src="./vazifalar-v4.js"></script>
 <script>
 // SVG ICONS
 const SVG = {
@@ -1321,6 +1323,8 @@ const PERMISSIONS = [
   { id:'eslatma_yuborish', nom:"Eslatma yuborish", tavsif:"Xodimlarga eslatma xabar yuborish", ikon: SVG.bell },
   { id:'mfy_boshqar', nom:"Tashkilotlarni boshqarish", tavsif:"Tashkilot qo'shish, tahrirlash, o'chirish", ikon: SVG.building },
   { id:'kategoriya_boshqar', nom:"Kategoriyalarni boshqarish", tavsif:"Kategoriya qo'shish va tahrirlash", ikon: SVG.tags },
+  { id:'vazifa_boshqar', nom:"Vazifalarni boshqarish", tavsif:"Yakka va guruhli vazifa yaratish, tahrirlash va bekor qilish", ikon: SVG.tasks },
+  { id:'vazifa_tasdiqlash', nom:"Vazifani tasdiqlash", tavsif:"Xodim topshirgan vazifani tasdiqlash yoki qaytarish", ikon: SVG.tasks },
   { id:'excel_export', nom:"Excel eksport", tavsif:"Hisobotlarni Excelga yuklab olish", ikon: SVG.excel },
   { id:'sozlamalar', nom:"Tizim sozlamalari", tavsif:"Bildirishnoma va tizim sozlamalarini o'zgartirish", ikon: SVG.settings }
 ];
@@ -1349,7 +1353,7 @@ window.addEventListener('DOMContentLoaded', () => {
 let API = 'https://xisobot-api.onrender.com/api';
 
 let SESSIYA = null;
-let xodimlar = [], mfylar = [], kategoriyalar = [], tanlangan = null, joriyHisobotlar = [], lentaKorsatiladigan = [], bJoriy = '';
+var xodimlar = [], mfylar = [], kategoriyalar = [], tanlangan = null, joriyHisobotlar = [], lentaKorsatiladigan = [], bJoriy = '';
 let dashYuklagan = [], dashYuklamagan = [], dashUzrlilar = [];
 
 let AI_SOZLAMA = {
@@ -1545,7 +1549,7 @@ async function superadminUrlTekshir() {
     const r = await fetch(`${API}/ping?` + new URLSearchParams({ kalit }));
     const res = await r.json();
     if (res.ok && res.rol === 'superadmin') {
-      SESSIYA = { kalit, rol:'superadmin', fio:'Superadmin', mfyId:'', ruxsatlar:['xodim_qosh','xodim_tahrir','xodim_blok','eslatma_yuborish','mfy_boshqar','kategoriya_boshqar','excel_export','sozlamalar'] };
+      SESSIYA = { kalit, rol:'superadmin', fio:'Superadmin', mfyId:'', ruxsatlar:['xodim_qosh','xodim_tahrir','xodim_blok','eslatma_yuborish','mfy_boshqar','kategoriya_boshqar','excel_export','sozlamalar','vazifa_boshqar','vazifa_tasdiqlash'] };
       sessionStorage.setItem('SESSIYA', JSON.stringify(SESSIYA));
       history.replaceState(null, '', location.pathname);
       return true;
@@ -1681,6 +1685,8 @@ function boshqaruvTablariniChiz() {
 
   if (ruxsatlar.includes('xodim_qosh') || ruxsatlar.includes('xodim_tahrir') || SESSIYA.rol === 'superadmin') {
       tabsHTML += `<button onclick="bTab('xodimlar',this)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg> Xodimlar</button>`;
+  }
+  if (ruxsatlar.includes('vazifa_boshqar') || ruxsatlar.includes('xodim_qosh') || ruxsatlar.includes('xodim_tahrir') || SESSIYA.rol === 'superadmin') {
       tabsHTML += `<button onclick="bTab('vazifalar',this)">${SVG.tasks} Vazifalar</button>`;
   }
   if (SESSIYA.rol === 'superadmin') tabsHTML += `<button onclick="bTab('adminlar',this)">${SVG.admin} Adminlar</button>`;
@@ -3264,6 +3270,9 @@ let bXodimFiltr = { q:'', mfy:'', kategoriya:'', holat:'' };
 let bAdminFiltr = { q:'', rol:'', mfy:'', holat:'' };
 let bMfyFiltr = { q:'' };
 let bKatFiltr = { q:'' };
+var vazifaFiltr = { q:'', holat:'', mfy:'', kategoriya:'' };
+var vazifaIlovalar = [];
+var vazifaShablonlar = [];
 
 function boshqaruvFiltrQolla(tur){
   if(tur==='xodimlar'){
@@ -3331,26 +3340,49 @@ async function bYukla() {
     paginatorYarat(document.getElementById('bPaginContainer'), jamiSoni, B_SAHIFA_HAJMI, bXodimlarSahifa, (s)=>{bXodimlarSahifa=s; bYukla();});
   }
 
-  // VAZIFALAR MODULI (ADMIN PANEL)
+  // VAZIFALAR MARKAZI V4
   if (bJoriy === 'vazifalar') {
-    const r = await api('vazifalar');
-    if (!r.ok) return panel.innerHTML = 'Xato: ' + r.xato;
-    let sVazifalar = r.vazifalar || [];
-    
-    panel.innerHTML = `<h3>Xodimlarga biriktirilgan vazifalar (${sVazifalar.length})</h3>
-      <button class="qoshBtn" onclick="vazifaForma()">${SVG.tasks} Yangi vazifa</button>
+    const r = await api('vazifalar', {
+      q: vazifaFiltr.q, holat: vazifaFiltr.holat,
+      mfyId: vazifaFiltr.mfy, kategoriyaId: vazifaFiltr.kategoriya
+    });
+    if (!r.ok) return panel.innerHTML = '<div class="bosh-holat"><b>Vazifalarni yuklab bo‘lmadi</b>' + htmlQochir(r.xato || '') + '</div>';
+    const vazifalar = r.vazifalar || [];
+    const guruhlar = r.guruhlar || [];
+    const stat = {
+      jami: vazifalar.length,
+      faol: vazifalar.filter(v => !['bajarildi','tasdiqlandi','bekor_qilindi'].includes(v.samaraliHolat)).length,
+      tekshiruv: vazifalar.filter(v => v.samaraliHolat === 'tekshiruvda').length,
+      bajarildi: vazifalar.filter(v => ['bajarildi','tasdiqlandi'].includes(v.samaraliHolat)).length,
+      kechikkan: vazifalar.filter(v => v.samaraliHolat === 'muddat_otdi').length
+    };
+    panel.innerHTML = `
+      <div class="taskDetailHead">
+        <div><h3>Maxsus vazifalar markazi</h3><div class="izoh">Kimga qanday vazifa berilgani, bajarilish bosqichi va muddati bir joyda nazorat qilinadi.</div></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="qoshBtn" style="margin:0" onclick="vazifaForma()">${SVG.tasks} Yangi vazifa</button>
+          <button class="mini kok" onclick="vazifalarExcel()">${SVG.excel} Excel</button>
+          <button class="mini binafsha" onclick="vazifaShablonlarOch()">Shablonlar</button>
+        </div>
+      </div>
+      <div class="taskStats">
+        <div class="taskStat"><b>${stat.jami}</b><span>Biriktirilgan</span></div>
+        <div class="taskStat"><b>${stat.faol}</b><span>Faol</span></div>
+        <div class="taskStat"><b>${stat.tekshiruv}</b><span>Tekshiruvda</span></div>
+        <div class="taskStat"><b>${stat.bajarildi}</b><span>Bajarilgan</span></div>
+        <div class="taskStat"><b style="color:var(--qizil)">${stat.kechikkan}</b><span>Muddati o‘tgan</span></div>
+      </div>
+      <div class="taskToolbar">
+        <input id="vFQ" value="${htmlQochir(vazifaFiltr.q)}" placeholder="Vazifa yoki xodimni qidirish..." onkeydown="if(event.key==='Enter')vazifaFiltrQolla()">
+        <select id="vFHolat" onchange="vazifaFiltrQolla()"><option value="">Barcha holatlar</option>${vazifaHolatVariantlari(vazifaFiltr.holat)}</select>
+        <select id="vFMfy" onchange="vazifaFiltrQolla()"><option value="">Barcha tashkilotlar</option>${mfylar.map(m=>'<option value="'+htmlQochir(m.id)+'" '+(String(vazifaFiltr.mfy)===String(m.id)?'selected':'')+'>'+htmlQochir(m.nomi)+'</option>').join('')}</select>
+        <select id="vFKat" onchange="vazifaFiltrQolla()"><option value="">Barcha kategoriyalar</option>${kategoriyalar.map(k=>'<option value="'+htmlQochir(k.id)+'" '+(String(vazifaFiltr.kategoriya)===String(k.id)?'selected':'')+'>'+htmlQochir(k.nomi)+'</option>').join('')}</select>
+        <button class="primary" onclick="vazifaFiltrQolla()">Qidirish</button>
+        <button onclick="vazifaFiltrTozala()">Tozalash</button>
+      </div>
       <div style="overflow-x:auto"><table class="jadval">
-        <tr><th>Sana</th><th>Xodim F.I.Sh.</th><th>Vazifa Matni</th><th>Muddat</th><th>Holat</th><th>Amallar</th></tr>
-        ${sVazifalar.map(v => `<tr>
-          <td style="white-space:nowrap;font-size:11px">${v.sana}</td>
-          <td><b>${v.xodim_fio}</b></td>
-          <td style="max-width:300px">${v.matn}</td>
-          <td><span class="mini sirena">${v.muddat || 'Muddatsiz'}</span></td>
-          <td><span class="mini ${v.holat === 'bajarildi' ? 'yashil' : 'sariq'}">${v.holat.toUpperCase()}</span></td>
-          <td style="white-space:nowrap">
-            <button class="mini qizil" onclick="vazifaOchir('${v.id}')">O'chirish</button>
-          </td>
-        </tr>`).join('') || '<tr><td colspan="6" class="yuklanmoqda">Hozircha vazifalar biriktirilmagan</td></tr>'}
+        <tr><th>Vazifa</th><th>Turi</th><th>Muddat</th><th>Xodimlar</th><th>Jarayon</th><th>Natija</th><th>Amallar</th></tr>
+        ${guruhlar.map(vazifaGuruhQator).join('') || '<tr><td colspan="7" class="yuklanmoqda">Vazifalar topilmadi</td></tr>'}
       </table></div>`;
   }
 
@@ -3643,7 +3675,7 @@ function kategoriyaForma(k) {
 }
 
 // VAZIFALAR UCHUN FUNKSIYALAR (ADMIN PANEL)
-function vazifaForma() {
+function vazifaFormaLegacy() {
   const xodimOptions = xodimlar.map(x => ({ val: x.id, nom: x.fio + ' (' + (x.mfyNomi || 'Tashkilotsiz') + ')' }));
   formaChiz('Yangi vazifa biriktirish', [
     { id: 'xodimId', label: 'Xodim', turi: 'select', variantlar: [{val:'', nom:'— Xodimni tanlang —'}, ...xodimOptions], majburiy: true },
@@ -3659,7 +3691,7 @@ function vazifaForma() {
   });
 }
 
-async function vazifaOchir(id) {
+async function vazifaOchirLegacy(id) {
   glassPrompt("Vazifa o'chirilsinmi?", "", async (ok) => {
     if(!ok) return;
     const r = await apiPost('vazifaOchir', { vazifaId: id });
@@ -3723,6 +3755,7 @@ async function tahrirRadQil(id) {
 
 function formaChiz(sarlavha, maydonlar, onSaqla) {
   const f = document.getElementById('forma');
+  f.className = '';
   f.innerHTML = `<h3>${sarlavha}</h3>` + maydonlar.map(m => {
     if (m.turi === 'select') return `<label>${m.label}${m.majburiy?' *':''}</label><select id="f_${m.id}">${(m.variantlar||[]).map(v=>`<option value="${v.val}" ${String(v.val)===String(m.qiymat)?'selected':''}>${v.nom}</option>`).join('')}</select>`;
     if (m.turi === 'textarea') return `<label>${m.label}${m.majburiy?' *':''}</label><textarea id="f_${m.id}" placeholder="${m.placeholder||''}">${m.qiymat??''}</textarea>`;
@@ -3745,6 +3778,7 @@ function formaYop(){ document.getElementById('formaFon').style.display='none'; }
 function adminForma(a) {
   const ruxsatlarMavjud = ruxsatlarniOlish(a?.ruxsatlar);
   const f = document.getElementById('forma');
+  f.className = '';
 
   f.innerHTML = `
     <h3>${a ? 'Adminni tahrirlash' : 'Yangi admin / nazoratchi'}</h3>
