@@ -921,6 +921,548 @@ main{ padding:16px; gap:14px; max-width:1760px; }
 @media(max-width:700px){.bFilterBar,.bFilterBar.compact2,.bFilterBar.compact1{grid-template-columns:1fr}.metricGridV5{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 
 .taskToolbar{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:14px 0}.taskToolbar input,.taskToolbar select{min-width:150px;flex:1}.taskStats{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px;margin:14px 0 18px}.taskStat{padding:14px;border:1px solid var(--chiziq-kard);background:var(--bg-input);border-radius:15px}.taskStat b{display:block;font-size:23px}.taskStat span{font-size:10px;color:var(--text-ikkinchi);font-weight:800;text-transform:uppercase}.taskProgress{height:8px;border-radius:99px;background:var(--chiziq);overflow:hidden;min-width:110px}.taskProgress i{display:block;height:100%;background:linear-gradient(90deg,var(--kok),var(--yashil));border-radius:inherit}.taskTitle{font-weight:850;color:var(--text-asosiy);max-width:360px}.taskDesc{font-size:11px;color:var(--text-ikkinchi);margin-top:4px;line-height:1.45;max-width:420px}.taskUrgent{border-left:4px solid var(--qizil)!important}.taskImportant{border-left:4px solid var(--sariq)!important}.taskForm{width:min(940px,94vw);max-height:91vh;overflow:auto}.taskFormGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.taskFormGrid .full{grid-column:1/-1}.taskForm label{display:block;font-size:11px;font-weight:800;color:var(--text-ikkinchi);margin:0 0 6px;text-transform:uppercase;letter-spacing:.04em}.taskForm input,.taskForm select,.taskForm textarea{width:100%;padding:12px;border:1px solid var(--chiziq);border-radius:11px;background:var(--bg-input);color:var(--text-asosiy);font:inherit}.taskForm textarea{min-height:92px;resize:vertical}.taskTargetGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.taskTargetGrid select{min-height:130px}.taskHint{font-size:11px;color:var(--text-ikkinchi);line-height:1.5;margin-top:5px}.taskPreview{padding:12px 14px;border-radius:12px;background:var(--kok-och);color:var(--kok);font-weight:750;font-size:12px}.taskDetailHead{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}.taskStep{display:flex;gap:10px;align-items:flex-start;padding:10px;border:1px solid var(--chiziq);border-radius:12px;margin:7px 0}.taskStep.done{background:var(--yashil-och);border-color:rgba(var(--yashil-rgb),.25)}.taskComment{padding:10px 12px;border-radius:12px;background:var(--bg-input);border:1px solid var(--chiziq);margin:7px 0}.taskComment small{display:block;color:var(--text-ikkinchi);margin-bottom:4px}@media(max-width:720px){.taskFormGrid,.taskTargetGrid{grid-template-columns:1fr}.taskFormGrid .full{grid-column:auto}.taskStats{grid-template-columns:repeat(2,1fr)}}
+
+/* =========================================================
+   XISOBOT V4 — VAZIFALAR UI PRODUCTION FIX
+   Faqat Vazifalar markazi va uning formasi uchun.
+   Mavjud API, login, hisobot, boshqaruv va AI logikasiga tegmaydi.
+========================================================= */
+
+/* ---------- VAZIFALAR MARKAZI ---------- */
+#bPanel .taskDetailHead{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:18px;
+  flex-wrap:wrap;
+  margin-bottom:4px;
+}
+#bPanel .taskDetailHead > div:first-child{
+  min-width:260px;
+  flex:1 1 420px;
+}
+#bPanel .taskDetailHead h3{
+  margin:0 0 7px;
+  font-size:20px;
+  line-height:1.2;
+}
+#bPanel .taskDetailHead .izoh{
+  margin:0;
+  max-width:720px;
+  line-height:1.55;
+}
+#bPanel .taskDetailHead > div:last-child{
+  display:flex!important;
+  align-items:center;
+  justify-content:flex-end;
+  gap:9px!important;
+  flex:0 0 auto;
+}
+#bPanel .taskDetailHead > div:last-child .qoshBtn,
+#bPanel .taskDetailHead > div:last-child .mini{
+  min-height:38px;
+  margin:0;
+  white-space:nowrap;
+}
+
+/* Statistik kartalar */
+#bPanel .taskStats{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:12px;
+  margin:18px 0 16px;
+}
+#bPanel .taskStat{
+  position:relative;
+  overflow:hidden;
+  min-height:82px;
+  padding:16px 17px;
+  border:1px solid var(--chiziq-kard);
+  border-radius:17px;
+  background:
+    linear-gradient(145deg,var(--glass-sheen-dim),transparent 58%),
+    var(--bg-input);
+  box-shadow:inset 0 1px 0 var(--glass-sheen-dim);
+}
+#bPanel .taskStat::after{
+  content:'';
+  position:absolute;
+  left:16px;
+  right:16px;
+  bottom:0;
+  height:2px;
+  border-radius:99px;
+  background:linear-gradient(90deg,var(--kok),transparent);
+  opacity:.42;
+}
+#bPanel .taskStat:last-child::after{
+  background:linear-gradient(90deg,var(--qizil),transparent);
+}
+#bPanel .taskStat b{
+  display:block;
+  margin:0 0 8px;
+  font-family:var(--font-mono);
+  font-size:25px;
+  line-height:1;
+  letter-spacing:-.04em;
+}
+#bPanel .taskStat span{
+  display:block;
+  font-size:9.5px;
+  line-height:1.2;
+  color:var(--text-ikkinchi);
+  font-weight:800;
+  letter-spacing:.065em;
+  text-transform:uppercase;
+}
+
+/* Filtr paneli — browserning oq default inputlarini yo'qotadi */
+#bPanel .taskToolbar{
+  display:grid;
+  grid-template-columns:minmax(250px,1.45fr) repeat(3,minmax(155px,.82fr)) auto auto;
+  gap:9px;
+  align-items:center;
+  margin:0 0 15px;
+  padding:11px;
+  border:1px solid var(--chiziq-kard);
+  border-radius:16px;
+  background:
+    linear-gradient(145deg,var(--glass-sheen-dim),transparent 72%),
+    var(--bg-input);
+}
+#bPanel .taskToolbar input,
+#bPanel .taskToolbar select{
+  display:block;
+  width:100%;
+  min-width:0;
+  height:39px;
+  padding:0 12px;
+  border:1px solid var(--chiziq);
+  border-radius:10px;
+  background:var(--bg-kard);
+  color:var(--text-asosiy);
+  font-family:var(--font-ui);
+  font-size:11.5px;
+  font-weight:600;
+  outline:none;
+  box-shadow:none;
+}
+#bPanel .taskToolbar input::placeholder{
+  color:var(--text-ikkinchi);
+  opacity:.72;
+}
+#bPanel .taskToolbar input:focus,
+#bPanel .taskToolbar select:focus{
+  border-color:var(--kok);
+  background:var(--bg-kard-hover);
+  box-shadow:0 0 0 3px var(--kok-och);
+}
+#bPanel .taskToolbar button{
+  height:39px;
+  min-width:78px;
+  padding:0 14px;
+  border:1px solid var(--chiziq);
+  border-radius:10px;
+  background:var(--bg-kard);
+  color:var(--text-asosiy);
+  font-family:var(--font-ui);
+  font-size:10.5px;
+  font-weight:800;
+  white-space:nowrap;
+}
+#bPanel .taskToolbar button:hover{
+  border-color:rgba(var(--kok-rgb),.45);
+  background:var(--kok-och);
+  color:var(--kok);
+}
+#bPanel .taskToolbar button.primary{
+  border-color:transparent;
+  color:#fff;
+  background:linear-gradient(135deg,var(--kok),#5B9BFF);
+  box-shadow:0 10px 22px -12px rgba(var(--kok-rgb),.72);
+}
+#bPanel .taskToolbar button.primary:hover{
+  color:#fff;
+  filter:brightness(1.07);
+}
+
+/* Vazifalar jadvali */
+#bPanel .taskToolbar + div{
+  width:100%;
+  overflow:auto!important;
+  border:1px solid var(--chiziq-kard);
+  border-radius:15px;
+  background:rgba(255,255,255,.012);
+}
+#bPanel .taskToolbar + div .jadval{
+  min-width:1080px;
+}
+#bPanel .taskToolbar + div .jadval th{
+  position:sticky;
+  top:0;
+  z-index:2;
+  padding:12px 14px;
+  background:var(--bg-kard-shaffof);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+#bPanel .taskToolbar + div .jadval td{
+  padding:13px 14px;
+  vertical-align:middle;
+}
+#bPanel .taskToolbar + div .yuklanmoqda{
+  padding:34px 16px;
+}
+#bPanel .taskTitle{
+  max-width:390px;
+  font-size:13px;
+  line-height:1.4;
+}
+#bPanel .taskDesc{
+  max-width:430px;
+  margin-top:5px;
+  font-size:11px;
+  line-height:1.5;
+}
+#bPanel .taskProgress{
+  height:7px;
+  min-width:120px;
+}
+
+/* ---------- YANGI VAZIFA / TAHRIR FORMASI ---------- */
+#formaFon{
+  padding:28px;
+  overflow:hidden;
+}
+#forma.taskForm{
+  width:min(1120px,calc(100vw - 56px));
+  max-width:1120px;
+  max-height:calc(100vh - 56px);
+  padding:28px 34px 30px;
+  border-radius:24px;
+  overflow-y:auto;
+  overflow-x:hidden;
+  background:
+    radial-gradient(700px 260px at 100% 0%,rgba(var(--binafsha-rgb),.08),transparent 65%),
+    var(--bg-kard-shaffof);
+  border:1px solid var(--glass-edge);
+  box-shadow:
+    0 1px 0 var(--glass-sheen) inset,
+    0 40px 100px -34px rgba(0,0,0,.82);
+  scrollbar-gutter:stable;
+  color-scheme:dark;
+}
+[data-theme="light"] #forma.taskForm{
+  color-scheme:light;
+}
+#forma.taskForm .taskDetailHead{
+  position:relative;
+  align-items:flex-start;
+  margin:0 0 18px;
+  padding:0 0 18px;
+  border-bottom:1px solid var(--chiziq);
+}
+#forma.taskForm .taskDetailHead h3{
+  margin:0 0 7px;
+  font-size:24px;
+  line-height:1.18;
+}
+#forma.taskForm .taskDetailHead .izoh,
+#forma.taskForm .taskDetailHead .taskHint{
+  max-width:760px;
+  margin:0;
+  font-size:12px;
+  line-height:1.55;
+}
+#forma.taskForm .taskDetailHead > button{
+  min-width:78px;
+  min-height:36px;
+  margin:0;
+}
+
+/* AI yordamchi bloki */
+#forma.taskForm > .taskDetailHead + div{
+  margin:0 0 20px!important;
+  padding:16px!important;
+  border-radius:16px!important;
+  background:
+    linear-gradient(145deg,rgba(var(--binafsha-rgb),.12),rgba(var(--binafsha-rgb),.055))!important;
+  border:1px solid rgba(var(--binafsha-rgb),.25)!important;
+}
+#forma.taskForm > .taskDetailHead + div > label{
+  margin:0 0 9px!important;
+}
+#forma.taskForm > .taskDetailHead + div > div:first-of-type{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:10px!important;
+}
+#forma.taskForm > .taskDetailHead + div input{
+  min-width:0;
+}
+#forma.taskForm > .taskDetailHead + div button{
+  min-width:112px;
+  min-height:42px;
+  margin:0;
+}
+
+/* Form grid */
+#forma.taskForm .taskFormGrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:17px 18px;
+}
+#forma.taskForm .taskFormGrid .full{
+  grid-column:1/-1;
+}
+#forma.taskForm label{
+  display:block;
+  margin:0 0 7px;
+  color:var(--text-ikkinchi);
+  font-size:10.5px;
+  font-weight:800;
+  line-height:1.3;
+  letter-spacing:.055em;
+  text-transform:uppercase;
+}
+#forma.taskForm input:not([type="checkbox"]),
+#forma.taskForm select,
+#forma.taskForm textarea{
+  width:100%;
+  min-width:0;
+  border:1px solid var(--chiziq);
+  border-radius:12px;
+  background:var(--bg-input);
+  color:var(--text-asosiy);
+  font-family:var(--font-ui);
+  font-size:13px;
+  font-weight:600;
+  outline:none;
+  box-shadow:none;
+}
+#forma.taskForm input:not([type="checkbox"]),
+#forma.taskForm select{
+  min-height:44px;
+  padding:0 13px;
+}
+#forma.taskForm textarea{
+  min-height:112px;
+  padding:12px 13px;
+  line-height:1.55;
+  resize:vertical;
+}
+#forma.taskForm input::placeholder,
+#forma.taskForm textarea::placeholder{
+  color:var(--text-ikkinchi);
+  opacity:.67;
+}
+#forma.taskForm input:focus,
+#forma.taskForm select:focus,
+#forma.taskForm textarea:focus{
+  border-color:var(--kok);
+  background:var(--bg-kard-hover);
+  box-shadow:0 0 0 3px var(--kok-och);
+}
+
+/* Checkboxlar */
+#forma.taskForm input[type="checkbox"]{
+  width:18px!important;
+  height:18px!important;
+  min-height:0!important;
+  margin:0 8px 0 0!important;
+  padding:0!important;
+  flex:0 0 18px;
+  accent-color:var(--kok);
+  vertical-align:middle;
+}
+#forma.taskForm label:has(input[type="checkbox"]){
+  display:flex;
+  align-items:center;
+  min-height:28px;
+  margin:0;
+  cursor:pointer;
+}
+
+/* Xodim/tashkilot/kategoriya tanlash qismi */
+#forma.taskForm .taskTargetGrid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+  padding:14px;
+  border:1px solid var(--chiziq-kard);
+  border-radius:15px;
+  background:var(--bg-input);
+}
+#forma.taskForm .taskTargetGrid > div{
+  grid-column:1/-1;
+  min-width:0;
+}
+#forma.taskForm .taskTargetGrid select{
+  width:100%;
+  min-height:190px;
+  padding:6px;
+  overflow:auto;
+  border-radius:11px;
+}
+#forma.taskForm .taskTargetGrid select option{
+  padding:8px 10px;
+  margin:2px 0;
+  border-radius:7px;
+  white-space:normal;
+}
+#forma.taskForm .taskTargetGrid select option:checked{
+  background:linear-gradient(135deg,var(--kok),#5B9BFF);
+  color:#fff;
+}
+
+/* File input */
+#forma.taskForm input[type="file"]{
+  min-height:50px;
+  padding:5px 7px!important;
+  cursor:pointer;
+}
+#forma.taskForm input[type="file"]::file-selector-button{
+  height:38px;
+  margin:0 10px 0 0;
+  padding:0 14px;
+  border:1px solid rgba(var(--kok-rgb),.28);
+  border-radius:9px;
+  background:var(--kok-och);
+  color:var(--kok);
+  font-family:var(--font-ui);
+  font-weight:800;
+  cursor:pointer;
+}
+
+/* Izoh / qamrov preview */
+#forma.taskForm .taskHint{
+  font-size:10.5px;
+  line-height:1.5;
+}
+#forma.taskForm .taskPreview{
+  margin-top:20px!important;
+  padding:13px 15px;
+  border:1px solid rgba(var(--kok-rgb),.18);
+  border-radius:13px;
+  background:var(--kok-och);
+  color:var(--kok);
+  font-size:11.5px;
+  line-height:1.5;
+}
+
+/* Pastki amallar doim ko'rinib turadi */
+#forma.taskForm > .taskPreview + div{
+  position:sticky;
+  bottom:-30px;
+  z-index:5;
+  display:flex!important;
+  justify-content:flex-end!important;
+  align-items:center;
+  gap:10px!important;
+  margin:16px -34px -30px!important;
+  padding:15px 34px 20px;
+  border-top:1px solid var(--chiziq);
+  background:var(--bg-kard-shaffof);
+  backdrop-filter:blur(24px) saturate(1.5);
+  -webkit-backdrop-filter:blur(24px) saturate(1.5);
+}
+#forma.taskForm > .taskPreview + div > button{
+  min-height:42px;
+  padding:0 17px;
+  border-radius:11px;
+  font-size:11.5px;
+  font-weight:800;
+}
+#forma.taskForm > .taskPreview + div > button:not(.qoshBtn){
+  border:1px solid var(--chiziq);
+  background:var(--bg-input);
+  color:var(--text-asosiy);
+}
+#forma.taskForm > .taskPreview + div > button:not(.qoshBtn):hover{
+  border-color:var(--kok);
+  color:var(--kok);
+  background:var(--kok-och);
+}
+#forma.taskForm > .taskPreview + div > .qoshBtn{
+  margin:0!important;
+  border:0;
+  color:#fff;
+  background:linear-gradient(135deg,var(--kok),#5B9BFF);
+}
+
+/* Tahrirlash formasidagi oddiy pastki actionlar */
+#forma.taskForm .fAmallar{
+  gap:10px;
+  margin-top:20px;
+}
+#forma.taskForm .fAmallar button{
+  min-height:43px;
+}
+
+/* Responsiv */
+@media(max-width:1280px){
+  #bPanel .taskToolbar{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+  #bPanel .taskToolbar button{
+    width:100%;
+  }
+}
+@media(max-width:980px){
+  #bPanel .taskStats{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  #bPanel .taskToolbar{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  #formaFon{
+    padding:14px;
+  }
+  #forma.taskForm{
+    width:calc(100vw - 28px);
+    max-height:calc(100vh - 28px);
+    padding:24px;
+  }
+  #forma.taskForm .taskFormGrid{
+    grid-template-columns:1fr;
+  }
+  #forma.taskForm .taskFormGrid .full{
+    grid-column:auto;
+  }
+  #forma.taskForm > .taskPreview + div{
+    bottom:-24px;
+    margin:16px -24px -24px!important;
+    padding:14px 24px 18px;
+  }
+}
+@media(max-width:620px){
+  #bPanel .taskStats,
+  #bPanel .taskToolbar{
+    grid-template-columns:1fr;
+  }
+  #bPanel .taskDetailHead > div:last-child{
+    width:100%;
+    justify-content:flex-start;
+  }
+  #forma.taskForm{
+    padding:20px 16px;
+  }
+  #forma.taskForm .taskDetailHead h3{
+    font-size:20px;
+  }
+  #forma.taskForm > .taskDetailHead + div > div:first-of-type{
+    grid-template-columns:1fr;
+  }
+  #forma.taskForm > .taskPreview + div{
+    bottom:-20px;
+    margin:16px -16px -20px!important;
+    padding:12px 16px 16px;
+  }
+  #forma.taskForm > .taskPreview + div > button{
+    flex:1;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1297,7 +1839,7 @@ main{ padding:16px; gap:14px; max-width:1760px; }
 
 <div id="pdfPrintArea"></div>
 
-<script src="./vazifalar-v4.js?v=4.0.2"></script>
+<script src="./vazifalar-v4.js?v=4.0.1-ui"></script>
 <script>
 // SVG ICONS
 const SVG = {
