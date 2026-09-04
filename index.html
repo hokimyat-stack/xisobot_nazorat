@@ -1463,6 +1463,92 @@ main{ padding:16px; gap:14px; max-width:1760px; }
   }
 }
 
+
+/* =========================================================
+   V4 FINAL TOUCH — XODIM QIDIRUVI + STICKY YOPISH
+========================================================= */
+
+/* Forma sarlavhasi va Yopish tugmasi scroll paytida ham ko'rinib turadi */
+#forma.taskForm .taskDetailHead{
+  position:sticky!important;
+  top:-1px!important;
+  z-index:40!important;
+  margin:-4px -6px 18px!important;
+  padding:12px 8px 14px!important;
+  background:
+    linear-gradient(180deg,var(--bg-kard-shaffof) 76%,rgba(14,15,23,.72) 100%)!important;
+  border-bottom:1px solid var(--chiziq)!important;
+  backdrop-filter:blur(26px) saturate(1.55)!important;
+  -webkit-backdrop-filter:blur(26px) saturate(1.55)!important;
+}
+[data-theme="light"] #forma.taskForm .taskDetailHead{
+  background:
+    linear-gradient(180deg,var(--bg-kard-shaffof) 76%,rgba(255,255,255,.74) 100%)!important;
+}
+#forma.taskForm .taskDetailHead > button{
+  position:relative;
+  z-index:41;
+  flex:0 0 auto;
+  box-shadow:0 8px 22px -14px rgba(0,0,0,.75);
+}
+
+/* Xodimlar ro'yxati uchun ichki qidiruv */
+#forma.taskForm .taskXodimSearch{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:10px;
+  align-items:center;
+  margin:0 0 9px;
+}
+#forma.taskForm .taskXodimSearch input{
+  width:100%;
+  min-height:40px;
+  padding:0 12px 0 38px!important;
+  border:1px solid var(--chiziq);
+  border-radius:10px;
+  background:
+    linear-gradient(90deg,var(--kok-och),transparent 34%),
+    var(--bg-kard);
+  color:var(--text-asosiy);
+  font-size:12px;
+  font-weight:600;
+}
+#forma.taskForm .taskXodimSearchBox{
+  position:relative;
+  min-width:0;
+}
+#forma.taskForm .taskXodimSearchBox::before{
+  content:'⌕';
+  position:absolute;
+  left:13px;
+  top:50%;
+  transform:translateY(-53%);
+  z-index:2;
+  color:var(--kok);
+  font-size:20px;
+  line-height:1;
+  pointer-events:none;
+}
+#forma.taskForm .taskXodimSearchCount{
+  min-width:92px;
+  text-align:right;
+  color:var(--text-ikkinchi);
+  font-size:10.5px;
+  font-weight:800;
+  white-space:nowrap;
+}
+#forma.taskForm #vXodimlar{
+  min-height:210px!important;
+}
+@media(max-width:620px){
+  #forma.taskForm .taskXodimSearch{
+    grid-template-columns:1fr;
+  }
+  #forma.taskForm .taskXodimSearchCount{
+    text-align:left;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1839,7 +1925,7 @@ main{ padding:16px; gap:14px; max-width:1760px; }
 
 <div id="pdfPrintArea"></div>
 
-<script src="./vazifalar-v4.js?v=4.0.1-ui"></script>
+<script src="./vazifalar-v4.js?v=4.0.3-final"></script>
 <script>
 // SVG ICONS
 const SVG = {
