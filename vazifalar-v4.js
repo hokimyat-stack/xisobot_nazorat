@@ -82,6 +82,69 @@
     const xs=document.getElementById('vXodimlar'); if(xs)xs.multiple=turi!=='yakka';
     const info=document.getElementById('vPreview'); if(info)info.textContent='Qamrovni tekshirish tugmasini bosing.';
   };
+  window.vazifaXodimQidir = function(q) {
+    const sel = document.getElementById('vXodimlar');
+    if (!sel) return;
+
+    const needle = String(q || '').trim().toLocaleLowerCase('uz-UZ');
+    const avvalTanlangan = new Set(
+      [...(sel.selectedOptions || [])].map(o => String(o.value))
+    );
+
+    const barcha = window.xodimlar || [];
+    const mos = barcha.filter(x => {
+      const id = String(x.id || '');
+      if (avvalTanlangan.has(id)) return true;
+
+      if (!needle) return true;
+
+      const haystack = [
+        x.fio,
+        x.pinfl,
+        x.mfyNomi,
+        x.kategoriyaNomi
+      ].filter(Boolean).join(' ').toLocaleLowerCase('uz-UZ');
+
+      return haystack.includes(needle);
+    });
+
+    sel.innerHTML = mos.map(x =>
+      '<option value="' + attr(x.id) + '">' +
+      safe(x.fio) + ' · ' +
+      safe(x.mfyNomi || '') + ' · ' +
+      safe(x.kategoriyaNomi || '') +
+      '</option>'
+    ).join('');
+
+    let qaytaTanlandi = false;
+    [...sel.options].forEach(o => {
+      if (avvalTanlangan.has(String(o.value))) {
+        o.selected = true;
+        qaytaTanlandi = true;
+      }
+    });
+
+    if (!qaytaTanlandi && avvalTanlangan.size === 0) {
+      sel.selectedIndex = -1;
+    }
+
+    const count = document.getElementById('vXodimQidirSoni');
+    if (count) {
+      const haqiqiyMos = needle
+        ? barcha.filter(x => {
+            const haystack = [
+              x.fio,
+              x.pinfl,
+              x.mfyNomi,
+              x.kategoriyaNomi
+            ].filter(Boolean).join(' ').toLocaleLowerCase('uz-UZ');
+            return haystack.includes(needle);
+          }).length
+        : barcha.length;
+      count.textContent = haqiqiyMos + ' ta xodim';
+    }
+  };
+
   window.vazifaTuriKorinish = function() {
     const box=document.getElementById('vBosqichlarWrap');
     if(box)box.style.display=document.getElementById('vBajarishTuri')?.value==='kop_bosqichli'?'block':'none';
@@ -116,7 +179,18 @@
         <div id="vBosqichlarWrap" class="full" style="display:none"><label>Maxsus bosqichlar — har satrda bittadan</label><textarea id="vBosqichlar" placeholder="1. Joyni o‘rganish&#10;2. Ishni bajarish&#10;3. Yakuniy natija"></textarea><div class="taskHint">Har bir bosqich uchun xodim alohida foto/GPS hisobot yuboradi.</div></div>
         <div class="full"><label>Kimlarga biriktiriladi</label><select id="vTanlashTuri" onchange="vazifaTargetKorinish()"><option value="yakka">Bitta xodim</option><option value="qolda">Bir nechta xodim</option><option value="tashkilot">Tashkilot bo‘yicha</option><option value="kategoriya">Kategoriya bo‘yicha</option><option value="kesishma">Tashkilot + kategoriya kesishmasi</option><option value="barchasi">Barcha faol xodimlar</option></select></div>
         <div class="full taskTargetGrid">
-          <div id="vXodimWrap"><label>Xodimlar</label><select id="vXodimlar" size="7">${(window.xodimlar||[]).map(x=>'<option value="'+attr(x.id)+'">'+safe(x.fio)+' · '+safe(x.mfyNomi||'')+' · '+safe(x.kategoriyaNomi||'')+'</option>').join('')}</select></div>
+          <div id="vXodimWrap">
+            <label>Xodimlar</label>
+            <div class="taskXodimSearch">
+              <div class="taskXodimSearchBox">
+                <input id="vXodimQidir" type="search" autocomplete="off"
+                  placeholder="F.I.Sh., PINFL, tashkilot yoki kategoriya bo‘yicha qidiring..."
+                  oninput="vazifaXodimQidir(this.value)">
+              </div>
+              <div class="taskXodimSearchCount" id="vXodimQidirSoni">${(window.xodimlar||[]).length} ta xodim</div>
+            </div>
+            <select id="vXodimlar" size="7">${(window.xodimlar||[]).map(x=>'<option value="'+attr(x.id)+'">'+safe(x.fio)+' · '+safe(x.mfyNomi||'')+' · '+safe(x.kategoriyaNomi||'')+'</option>').join('')}</select>
+          </div>
           <div id="vMfyWrap" style="display:none"><label>Tashkilotlar</label><select id="vMfylar" multiple size="7">${(window.mfylar||[]).map(m=>'<option value="'+attr(m.id)+'">'+safe(m.nomi)+'</option>').join('')}</select></div>
           <div id="vKatWrap" style="display:none"><label>Kategoriyalar</label><select id="vKategoriyalar" multiple size="7">${(window.kategoriyalar||[]).map(k=>'<option value="'+attr(k.id)+'">'+safe(k.nomi)+'</option>').join('')}</select></div>
         </div>
