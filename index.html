@@ -1940,6 +1940,57 @@ main{ padding:16px; gap:14px; max-width:1760px; }
   }
 }
 
+
+/* =========================================================
+   TASK HEADER VISIBILITY FIX
+========================================================= */
+#bPanel .taskMainHeroFixed{
+  min-height:82px;
+}
+#bPanel .taskHeroCopy{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  flex:1 1 560px;
+  min-width:280px;
+}
+#bPanel .taskHeroEyebrow{
+  display:block;
+  margin-bottom:5px;
+  color:var(--kok);
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.09em;
+}
+#bPanel .taskHeroCopy h3{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  margin:0 0 5px!important;
+  color:var(--text-asosiy)!important;
+}
+#bPanel .taskHeroCopy .izoh{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  color:var(--text-ikkinchi)!important;
+}
+#bPanel .taskCreateBtnVisible{
+  display:inline-flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  min-width:126px;
+  min-height:38px;
+  justify-content:center;
+  background:linear-gradient(135deg,var(--kok),#5B9BFF)!important;
+  color:#fff!important;
+  border:0!important;
+  box-shadow:0 10px 24px -14px rgba(var(--kok-rgb),.85);
+}
+#bPanel .taskCreateBtnVisible:hover{
+  filter:brightness(1.08);
+}
+
 </style>
 </head>
 <body>
@@ -4431,13 +4482,14 @@ async function bYukla() {
       kechikkan: vazifalar.filter(v => v.samaraliHolat === 'muddat_otdi').length
     };
     panel.innerHTML = `
-      <div class="taskMainHero">
-        <div>
+      <div class="taskMainHero taskMainHeroFixed">
+        <div class="taskHeroCopy">
+          <div class="taskHeroEyebrow">VAZIFALAR MARKAZI</div>
           <h3>Maxsus vazifalar markazi</h3>
           <div class="izoh">Vazifa berish, xodimlar kesimida bajarilishini ko‘rish va mobil ilovadan kelgan hisobotlarni shu yerda nazorat qilish.</div>
         </div>
         <div class="taskMainActions">
-          <button class="qoshBtn taskCreateBtn" onclick="vazifaForma()">${SVG.plus} Yangi vazifa</button>
+          <button class="mini kok taskCreateBtn taskCreateBtnVisible" onclick="vazifaForma()">＋ Yangi vazifa</button>
           <button class="mini kok" onclick="bYukla()">Yangilash</button>
           <button class="mini kok" onclick="vazifalarExcel()">${SVG.excel} Excel</button>
           <button class="mini binafsha" onclick="vazifaShablonlarOch()">Shablonlar</button>
