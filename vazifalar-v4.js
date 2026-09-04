@@ -34,23 +34,103 @@
     if (h === 'jarayonda') return 'kok';
     return 'sariq';
   }
+
+  function uniqueText(list) {
+    return [...new Set((list || []).map(x => String(x || '').trim()).filter(Boolean))];
+  }
+
+  function initialsName(fio) {
+    const p=String(fio||'').trim().split(/\s+/).filter(Boolean);
+    return (p[0]?.[0]||'')+(p[1]?.[0]||'') || 'X';
+  }
+
+  function guruhKontekst(g) {
+    const rows=Array.isArray(g?.xodimlar)?g.xodimlar:[];
+    if(rows.length===1) {
+      const v=rows[0]||{};
+      return {
+        turi:'Yakka xodim',
+        nomi:v.xodim_fio||'Xodim',
+        meta:[v.mfy_nomi,v.kategoriya_nomi].filter(Boolean).join(' · ')
+      };
+    }
+    const mfys=uniqueText(rows.map(v=>v.mfy_nomi));
+    const kats=uniqueText(rows.map(v=>v.kategoriya_nomi));
+    if(mfys.length===1 && kats.length===1) return {turi:'Tashkilot / kategoriya',nomi:mfys[0]+' · '+kats[0],meta:rows.length+' nafar xodim'};
+    if(mfys.length===1) return {turi:'Tashkilot',nomi:mfys[0],meta:rows.length+' nafar xodim'};
+    if(kats.length===1) return {turi:'Kategoriya',nomi:kats[0],meta:rows.length+' nafar xodim'};
+    return {turi:'Guruh vazifasi',nomi:rows.length+' nafar xodim',meta:(mfys.length?mfys.length+' tashkilot':'')+(mfys.length&&kats.length?' · ':'')+(kats.length?kats.length+' kategoriya':'')};
+  }
+
+  function taskImgSrc(url,size) {
+    try { return typeof window.rasmURL==='function' ? window.rasmURL(url,size||600) : String(url||''); }
+    catch(e) { return String(url||''); }
+  }
+
+  function taskImgFull(url) {
+    try { return typeof window.rasmFullURL==='function' ? window.rasmFullURL(url) : String(url||''); }
+    catch(e) { return String(url||''); }
+  }
+
+  function taskTime(v) {
+    try { return typeof window.formatVaqt==='function' ? window.formatVaqt(v) : sana(v); }
+    catch(e) { return sana(v); }
+  }
+
+  function taskStageHtml(nom, vaqt, tavsif, rasmlar, lat, lng) {
+    if(!vaqt) return '<div class="taskReportStage empty"><div class="taskReportStageTitle"><span>'+safe(nom)+'</span><span class="mini kul">Yuklanmagan</span></div></div>';
+    const list=Array.isArray(rasmlar)?rasmlar:[];
+    const gallery=list.length?'<div class="taskReportGallery">'+list.map(r=>{
+      const src=taskImgSrc(r,420),full=taskImgFull(r);
+      return '<img src="'+attr(src)+'" data-full="'+attr(full)+'" onclick="zoom(this.dataset.full)" loading="lazy" alt="Hisobot rasmi">';
+    }).join('')+'</div>':'';
+    const gps=(lat!==null&&lat!==undefined&&lat!==''&&lng!==null&&lng!==undefined&&lng!=='')
+      ? '<a class="taskReportGps" href="https://www.google.com/maps?q='+encodeURIComponent(lat+','+lng)+'" target="_blank" rel="noopener">GPS xaritada ochish</a>'
+      : '';
+    return '<div class="taskReportStage"><div class="taskReportStageTitle"><span>'+safe(nom)+'</span><span class="mini yashil">Yuklangan</span></div>'+
+      '<div class="taskReportStageTime">'+safe(taskTime(vaqt))+'</div>'+
+      '<div class="taskReportStageDesc">'+safe(tavsif||'Tavsif kiritilmagan')+'</div>'+gallery+gps+'</div>';
+  }
+
+  function taskHisobotHtml(h) {
+    const isBirBosqichli=!h.d_vaqt && h.y_vaqt;
+    let stages='';
+    if(isBirBosqichli) {
+      stages=taskStageHtml('Yakunlangan ish',h.y_vaqt||h.b_vaqt,h.y_tavsif||h.b_tavsif,(h.y_rasmlar&&h.y_rasmlar.length?h.y_rasmlar:h.b_rasmlar),h.y_lat??h.b_lat,h.y_lng??h.b_lng);
+    } else {
+      stages=
+        taskStageHtml('1. Boshlandi',h.b_vaqt,h.b_tavsif,h.b_rasmlar,h.b_lat,h.b_lng)+
+        taskStageHtml('2. Davom etmoqda',h.d_vaqt,h.d_tavsif,h.d_rasmlar,h.d_lat,h.d_lng)+
+        taskStageHtml('3. Yakunlandi',h.y_vaqt,h.y_tavsif,h.y_rasmlar,h.y_lat,h.y_lng);
+    }
+    return '<div class="taskReportCard">'+
+      '<div class="taskReportCardHead"><div><b>'+safe(h.ishNomi||h.ishTuri||'Vazifa hisoboti')+'</b><small>'+safe(h.sana||'')+' · '+safe(h.bosqich||'')+'</small></div>'+
+      '<button class="mini kok" onclick="vazifaHisobotOch(\''+attr(h.id)+'\',\''+attr(h.xodimId)+'\')">To‘liq ochish</button></div>'+
+      '<div class="taskReportStages">'+stages+'</div></div>';
+  }
+
   window.vazifaHolatVariantlari = tanlangan => Object.entries(HOLAT_NOMI).map(([id,nom]) =>
     '<option value="'+id+'" '+(id===tanlangan?'selected':'')+'>'+nom+'</option>'
   ).join('');
   window.vazifaGuruhQator = function(g) {
     const foiz = g.jami ? Math.round(Number(g.bajarildi||0)/g.jami*100) : 0;
     const rowClass = g.ustuvorlik==='shoshilinch'?'taskUrgent':(g.ustuvorlik==='muhim'?'taskImportant':'');
-    return '<tr class="'+rowClass+'"><td><div class="taskTitle">'+safe(g.sarlavha)+'</div><div class="taskDesc">'+safe((g.tavsif||'').slice(0,180))+'</div>'+
-      '<div style="margin-top:6px"><span class="mini '+(g.ustuvorlik==='shoshilinch'?'qizil':g.ustuvorlik==='muhim'?'sariq':'kul')+'">'+safe(g.ustuvorlik||'oddiy')+'</span></div></td>'+
+    const k=guruhKontekst(g);
+    const single=(g.xodimlar||[]).length===1;
+    const identity=single
+      ? '<div class="taskIdentity"><div class="taskIdentityTop"><span class="taskTargetChip">Yakka xodim</span><span class="taskAssigneeName">'+safe(k.nomi)+'</span></div><div class="taskTitle">'+safe(g.sarlavha)+'</div><div class="taskTargetMeta">'+safe(k.meta||'')+'</div><div class="taskDesc">'+safe((g.tavsif||'').slice(0,180))+'</div></div>'
+      : '<div class="taskIdentity"><div class="taskIdentityTop"><span class="taskTargetChip">'+safe(k.turi)+'</span><span class="taskAssigneeName">'+safe(k.nomi)+'</span></div><div class="taskTitle">'+safe(g.sarlavha)+'</div><div class="taskTargetMeta">'+safe(k.meta||'')+'</div><div class="taskDesc">'+safe((g.tavsif||'').slice(0,180))+'</div></div>';
+    return '<tr class="'+rowClass+' taskClickableRow" onclick="vazifaGuruhOch(\''+attr(g.guruhId)+'\')"><td>'+identity+
+      '<div style="margin-top:7px"><span class="mini '+(g.ustuvorlik==='shoshilinch'?'qizil':g.ustuvorlik==='muhim'?'sariq':'kul')+'">'+safe(g.ustuvorlik||'oddiy')+'</span></div></td>'+
       '<td><span class="mini kok">'+safe(TURI_NOMI[g.bajarishTuri]||g.bajarishTuri)+'</span></td><td style="white-space:nowrap">'+sana(g.muddatAt)+'</td>'+
-      '<td><b>'+Number(g.jami||0)+'</b> ta<br><small>'+safe(g.yaratuvchiFio||'')+'</small></td>'+
+      '<td><b>'+Number(g.jami||0)+'</b> ta<br><small>'+safe(k.turi)+'</small></td>'+
       '<td><div class="taskProgress"><i style="width:'+foiz+'%"></i></div><small>'+foiz+'% · '+Number(g.jarayonda||0)+' jarayonda</small></td>'+
       '<td><span class="mini yashil">'+Number(g.bajarildi||0)+' bajarildi</span> '+(g.tekshiruvda?'<span class="mini binafsha">'+g.tekshiruvda+' tekshiruvda</span> ':'')+
       (g.muddatOtdi?'<span class="mini qizil">'+g.muddatOtdi+' kechikkan</span>':'')+'</td>'+
-      '<td style="white-space:nowrap"><button class="mini kok" onclick="vazifaGuruhOch(\''+attr(g.guruhId)+'\')">Batafsil</button> '+
-      '<button class="mini binafsha" onclick="vazifaGuruhTahrir(\''+attr(g.guruhId)+'\')">Tahrirlash</button> '+
-      '<button class="mini kul" onclick="vazifaGuruhMuddat(\''+attr(g.guruhId)+'\')">Muddat</button> '+
-      '<button class="mini qizil" onclick="vazifaBekorGuruh(\''+attr(g.guruhId)+'\')">Bekor qilish</button></td></tr>';
+      '<td style="white-space:nowrap"><button class="mini kok" onclick="event.stopPropagation();vazifaGuruhOch(\''+attr(g.guruhId)+'\')">Ko‘rish</button> '+
+      '<button class="mini binafsha" onclick="event.stopPropagation();vazifaGuruhTahrir(\''+attr(g.guruhId)+'\')">Tahrirlash</button> '+
+      '<button class="mini kul" onclick="event.stopPropagation();vazifaGuruhMuddat(\''+attr(g.guruhId)+'\')">Muddat</button> '+
+      '<button class="mini qizil" onclick="event.stopPropagation();vazifaBekorGuruh(\''+attr(g.guruhId)+'\')">Bekor qilish</button></td></tr>';
   };
   window.vazifaFiltrQolla = function() {
     window.vazifaFiltr = {
@@ -279,18 +359,59 @@
     }finally{if(btn){btn.disabled=false;btn.textContent='Vazifani biriktirish';}}
   };
   window.vazifaGuruhOch = async function(guruhId) {
-    const r=await window.api('vazifalar',{guruhId});if(!r.ok)return window.toast(r.xato||'Vazifa ochilmadi','xato');
-    const g=r.guruhlar?.[0];if(!g)return window.toast('Vazifa topilmadi','xato');const rows=g.xodimlar||[];
-    document.getElementById('modal').innerHTML=`
-      <div class="taskDetailHead"><div><h3>${safe(g.sarlavha)}</h3><div class="mSub">${safe(TURI_NOMI[g.bajarishTuri]||g.bajarishTuri)} · ${sana(g.muddatAt)} · ${safe(g.yaratuvchiFio||'')}</div></div><button class="mini kul" onclick="modalYop()">Yopish</button></div>
-      <p style="white-space:pre-wrap;line-height:1.55">${safe(g.tavsif)}</p><div class="taskStats"><div class="taskStat"><b>${g.jami}</b><span>Jami</span></div><div class="taskStat"><b>${g.jarayonda}</b><span>Jarayonda</span></div><div class="taskStat"><b>${g.tekshiruvda}</b><span>Tekshiruvda</span></div><div class="taskStat"><b>${g.bajarildi}</b><span>Bajarildi</span></div><div class="taskStat"><b>${g.muddatOtdi}</b><span>Kechikkan</span></div></div>
-      <div style="overflow:auto;max-height:55vh"><table class="jadval"><tr><th>Xodim</th><th>Tashkilot/kategoriya</th><th>Holat</th><th>Bosqich</th><th>Muddat so‘rovi</th><th>Amallar</th></tr>
-      ${rows.map(v=>{
-        const h=v.samaraliHolat||v.holat,mud=v.muddat_sorovi_holat==='kutilmoqda'?'<span class="mini sariq">So‘rov bor</span>':safe(v.muddat_sorovi_holat||'—');
-        const ap=h==='tekshiruvda'?'<button class="mini yashil" onclick="vazifaTasdiqla(\''+attr(v.id)+'\')">Tasdiqlash</button> <button class="mini qizil" onclick="vazifaQaytar(\''+attr(v.id)+'\')">Qaytarish</button>':'';
-        const ex=v.muddat_sorovi_holat==='kutilmoqda'?' <button class="mini sariq" onclick="vazifaMuddatSorovJavob(\''+attr(v.id)+'\',true)">Uzaytirish</button> <button class="mini kul" onclick="vazifaMuddatSorovJavob(\''+attr(v.id)+'\',false)">Rad</button>':'';
-        return '<tr><td><b>'+safe(v.xodim_fio)+'</b></td><td>'+safe(v.mfy_nomi||'—')+'<br><small>'+safe(v.kategoriya_nomi||'—')+'</small></td><td><span class="mini '+holatKlass(h)+'">'+safe(HOLAT_NOMI[h]||h)+'</span></td><td>'+Number(v.bajarilganBosqich||0)+' / '+Number(v.jamiBosqich||0)+'</td><td>'+mud+'</td><td style="white-space:nowrap"><button class="mini kok" onclick="vazifaXodimOch(\''+attr(v.id)+'\')">Ko‘rish</button> '+ap+ex+'</td></tr>';
-      }).join('')}</table></div>`;
+    const r=await window.api('vazifalar',{guruhId});
+    if(!r.ok)return window.toast(r.xato||'Vazifa ochilmadi','xato');
+    const g=r.guruhlar?.[0];
+    if(!g)return window.toast('Vazifa topilmadi','xato');
+    const rows=g.xodimlar||[];
+
+    // Yakka xodim vazifasi: bevosita xodim + vazifa + ilova hisobotlari oynasi.
+    if(rows.length===1) return window.vazifaXodimOch(rows[0].id);
+
+    const hr=await window.api('hisobotlar',{});
+    const reports=hr.ok?(hr.hisobotlar||[]):[];
+    const reportCount=new Map();
+    reports.forEach(h=>{
+      const id=String(h.vazifaId||'');
+      if(id)reportCount.set(id,(reportCount.get(id)||0)+1);
+    });
+
+    const k=guruhKontekst(g);
+    const modal=document.getElementById('modal');
+    modal.innerHTML=`
+      <div class="mBosh">
+        <div><h3 style="margin-bottom:0">${safe(g.sarlavha)}</h3><div class="mSub">${safe(k.turi)} · ${safe(k.nomi)} · ${sana(g.muddatAt)}</div></div>
+        <button class="yop" onclick="modalYop()">×</button>
+      </div>
+      <div class="mBody">
+        <div class="taskGroupInfo">
+          <h4>Vazifa tavsifi</h4>
+          <div style="white-space:pre-wrap;line-height:1.6">${safe(g.tavsif||'')}</div>
+          <div class="taskEmployeeBadges">
+            <span class="mini sirena">${safe(k.turi)}</span>
+            <span class="mini kul">${safe(k.nomi)}</span>
+            <span class="mini kok">${Number(g.jami||0)} xodim</span>
+            <span class="mini yashil">${Number(g.bajarildi||0)} bajarildi</span>
+            ${g.tekshiruvda?'<span class="mini binafsha">'+Number(g.tekshiruvda)+' tekshiruvda</span>':''}
+            ${g.muddatOtdi?'<span class="mini qizil">'+Number(g.muddatOtdi)+' kechikkan</span>':''}
+          </div>
+        </div>
+        <div class="taskReportSectionTitle"><h4>Biriktirilgan xodimlar</h4><span class="taskHint">Xodim ustiga bosing — uning vazifaga oid hisobotlari va rasmlari ochiladi.</span></div>
+        <div class="taskMemberGrid">
+          ${rows.map(v=>{
+            const h=v.samaraliHolat||v.holat;
+            const rc=reportCount.get(String(v.id))||0;
+            return '<div class="taskMemberCard" onclick="vazifaXodimOch(\''+attr(v.id)+'\')">'+
+              '<div class="taskMemberAvatar">'+safe(initialsName(v.xodim_fio))+'</div>'+
+              '<div class="taskMemberBody"><b>'+safe(v.xodim_fio)+'</b>'+
+              '<div class="taskMemberMeta">'+safe(v.mfy_nomi||'—')+' · '+safe(v.kategoriya_nomi||'—')+'</div>'+
+              '<div class="taskMemberFoot"><span class="mini '+holatKlass(h)+'">'+safe(HOLAT_NOMI[h]||h)+'</span>'+
+              '<span class="mini kul">'+Number(v.bajarilganBosqich||0)+' / '+Number(v.jamiBosqich||0)+' bosqich</span>'+
+              (v.muddat_sorovi_holat==='kutilmoqda'?'<span class="mini sariq">Muddat so‘rovi</span>':'')+
+              '<span class="taskReportCount">'+rc+' ta hisobot</span></div></div></div>';
+          }).join('')}
+        </div>
+      </div>`;
     document.getElementById('modalFon').style.display='flex';
   };
   window.vazifaGuruhTahrir=async function(guruhId){
@@ -307,18 +428,79 @@
     document.getElementById('formaFon').style.display='flex';document.getElementById('vEditSave').onclick=async()=>{const s=(document.getElementById('vEditTitle').value||'').trim(),d=(document.getElementById('vEditDesc').value||'').trim(),due=document.getElementById('vEditDue').value;if(!s||!d)return window.toast('Sarlavha va topshiriq majburiy','xato');const rr=await window.apiPost('vazifaTahrir',{guruhId,sarlavha:s,tavsif:d,ustuvorlik:document.getElementById('vEditPriority').value,muddatAt:due?new Date(due).toISOString():null,tasdiqTalab:document.getElementById('vEditApproval').value!=='false'});if(!rr.ok)return window.toast(rr.xato||'Vazifa yangilanmadi','xato');window.formaYop();window.toast(rr.yangilandi+' ta birikma yangilandi');window.bYukla();};
   };
   window.vazifaXodimOch = async function(vazifaId) {
-    const [vr,ir]=await Promise.all([window.api('vazifalar',{}),window.api('vazifaIzohlar',{vazifaId})]);
-    const v=(vr.vazifalar||[]).find(x=>String(x.id)===String(vazifaId));if(!v)return window.toast('Vazifa topilmadi','xato');
-    const h=v.samaraliHolat||v.holat,bosqichlar=Array.isArray(v.bosqichlar)?v.bosqichlar:[],ilovalar=Array.isArray(v.ilovalar)?v.ilovalar:[];
-    document.getElementById('modal').innerHTML=`
-      <div class="taskDetailHead"><div><h3>${safe(v.sarlavha||v.matn)}</h3><div class="mSub">${safe(v.xodim_fio)} · ${safe(v.mfy_nomi||'')} · ${safe(v.kategoriya_nomi||'')}</div></div><button class="mini kul" onclick="modalYop()">Yopish</button></div>
-      <p style="white-space:pre-wrap;line-height:1.55">${safe(v.tavsif||v.matn)}</p><div><span class="mini ${holatKlass(h)}">${safe(HOLAT_NOMI[h]||h)}</span> <span class="mini sirena">${sana(v.muddat_at||v.muddat)}</span></div>
-      ${v.qaytarish_izohi?'<div class="taskPreview" style="background:var(--qizil-och);color:var(--qizil);margin-top:10px"><b>Qaytarish izohi:</b> '+safe(v.qaytarish_izohi)+'</div>':''}
-      ${bosqichlar.length?'<h4>Bosqichlar</h4>'+bosqichlar.map(b=>'<div class="taskStep '+(b.holat==='bajarildi'?'done':'')+'"><b>'+safe(b.tartib)+'.</b><div><b>'+safe(b.nomi)+'</b><div class="taskHint">'+safe(b.tavsif||'')+'</div><span class="mini '+holatKlass(b.holat)+'">'+safe(HOLAT_NOMI[b.holat]||b.holat)+'</span> '+(b.hisobotId?'<button class="mini kok" onclick="vazifaHisobotOch(\''+attr(b.hisobotId)+'\',\''+attr(v.xodim_id)+'\')">Hisobot</button>':'')+'</div></div>').join(''):''}
-      ${ilovalar.length?'<h4>Biriktirilgan fayllar</h4>'+ilovalar.map(f=>'<a class="mini kok" href="'+attr(f.url)+'" target="_blank" rel="noopener">'+safe(f.nomi||'Fayl')+'</a> ').join(''):''}
-      <h4>Izohlar</h4><div>${(ir.izohlar||[]).map(i=>'<div class="taskComment"><small>'+safe(i.muallif_fio)+' · '+safe(i.muallif_rol)+' · '+sana(i.created_at)+'</small>'+safe(i.matn)+'</div>').join('')||'<div class="taskHint">Hozircha izoh yo‘q.</div>'}</div>
-      <div style="display:flex;gap:8px;margin-top:10px"><input id="vAdminIzoh" placeholder="Izoh yozing..." style="flex:1"><button class="mini kok" onclick="vazifaIzohYubor('${attr(v.id)}')">Yuborish</button></div>
-      <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">${v.hisobot_id?'<button class="mini kok" onclick="vazifaHisobotOch(\''+attr(v.hisobot_id)+'\',\''+attr(v.xodim_id)+'\')">Bog‘langan hisobot</button>':''}${h==='tekshiruvda'?'<button class="mini yashil" onclick="vazifaTasdiqla(\''+attr(v.id)+'\')">Tasdiqlash</button><button class="mini qizil" onclick="vazifaQaytar(\''+attr(v.id)+'\')">Qaytarish</button>':''}<button class="mini kul" onclick="vazifaShaxsiyMuddat('${attr(v.id)}')">Shaxsiy muddat</button></div>`;
+    const vr=await window.api('vazifalar',{});
+    const v=(vr.vazifalar||[]).find(x=>String(x.id)===String(vazifaId));
+    if(!v)return window.toast('Vazifa topilmadi','xato');
+
+    const [ir,hr]=await Promise.all([
+      window.api('vazifaIzohlar',{vazifaId}),
+      window.api('hisobotlar',{xodim:v.xodim_id})
+    ]);
+
+    const reports=(hr.ok?(hr.hisobotlar||[]):[]).filter(h=>String(h.vazifaId||'')===String(v.id));
+    reports.sort((a,b)=>new Date(b.b_vaqt||b.y_vaqt||0)-new Date(a.b_vaqt||a.y_vaqt||0));
+
+    const h=v.samaraliHolat||v.holat;
+    const bosqichlar=Array.isArray(v.bosqichlar)?v.bosqichlar:[];
+    const ilovalar=Array.isArray(v.ilovalar)?v.ilovalar:[];
+    const modal=document.getElementById('modal');
+
+    modal.innerHTML=`
+      <div class="mBosh">
+        <div>
+          <h3 style="margin-bottom:0">${safe(v.xodim_fio||'Xodim')}</h3>
+          <div class="mSub">${safe(v.mfy_nomi||'')} · ${safe(v.kategoriya_nomi||'')}</div>
+        </div>
+        <button class="yop" onclick="modalYop()">×</button>
+      </div>
+      <div class="mBody">
+        <div class="taskEmployeeHero">
+          <div class="taskEmployeeName">${safe(v.xodim_fio||'')}</div>
+          <div class="taskEmployeeTitle">${safe(v.sarlavha||v.matn||'Vazifa')}</div>
+          <div class="taskEmployeeDesc">${safe(v.tavsif||v.matn||'')}</div>
+          <div class="taskEmployeeBadges">
+            <span class="mini ${holatKlass(h)}">${safe(HOLAT_NOMI[h]||h)}</span>
+            <span class="mini sirena">Muddat: ${sana(v.muddat_at||v.muddat)}</span>
+            <span class="mini kok">${safe(TURI_NOMI[v.bajarish_turi]||v.bajarish_turi||'')}</span>
+            <span class="mini kul">${reports.length} ta bog‘langan hisobot</span>
+          </div>
+        </div>
+
+        ${v.qaytarish_izohi?'<div class="taskPreview" style="margin:14px 26px 0;background:var(--qizil-och);color:var(--qizil)"><b>Qaytarish izohi:</b> '+safe(v.qaytarish_izohi)+'</div>':''}
+
+        ${v.muddat_sorovi_holat==='kutilmoqda'
+          ? '<div class="taskPreview" style="margin:14px 26px 0;background:var(--sariq-och);color:var(--sariq)"><b>Muddat uzaytirish so‘rovi:</b> '+safe(v.muddat_sorovi||'Sabab ko‘rsatilmagan')+'</div>'
+          : ''}
+
+        <div class="taskReportSectionTitle">
+          <h4>Mobil ilovadan kelgan ish hisobotlari</h4>
+          <span class="taskHint">${reports.length ? reports.length+' ta hisobot topildi' : 'Hali vazifa bo‘yicha hisobot yuborilmagan'}</span>
+        </div>
+        <div class="taskReportList">
+          ${reports.length?reports.map(taskHisobotHtml).join(''):'<div class="taskNoReports">Xodim mobil ilovada ushbu vazifa bo‘yicha ish yuborganda tavsiflar va rasmlar shu yerda avtomatik ko‘rinadi.</div>'}
+        </div>
+
+        <div class="taskEmployeeExtras">
+          ${bosqichlar.length?'<h4>Vazifa bosqichlari</h4>'+bosqichlar.map(b=>'<div class="taskStep '+(['bajarildi','tasdiqlandi'].includes(b.holat)?'done':'')+'"><b>'+safe(b.tartib)+'.</b><div><b>'+safe(b.nomi)+'</b><div class="taskHint">'+safe(b.tavsif||'')+'</div><span class="mini '+holatKlass(b.holat)+'">'+safe(HOLAT_NOMI[b.holat]||b.holat)+'</span> '+(b.hisobotId?'<button class="mini kok" onclick="vazifaHisobotOch(\''+attr(b.hisobotId)+'\',\''+attr(v.xodim_id)+'\')">Hisobotni ochish</button>':'')+'</div></div>').join(''):''}
+
+          ${ilovalar.length?'<h4>Vazifaga biriktirilgan fayllar</h4>'+ilovalar.map(f=>'<a class="mini kok" href="'+attr(f.url)+'" target="_blank" rel="noopener">'+safe(f.nomi||'Fayl')+'</a> ').join(''):''}
+
+          <h4>Vazifa izohlari</h4>
+          <div>${(ir.izohlar||[]).map(i=>'<div class="taskComment"><small>'+safe(i.muallif_fio)+' · '+safe(i.muallif_rol)+' · '+sana(i.created_at)+'</small>'+safe(i.matn)+'</div>').join('')||'<div class="taskHint">Hozircha izoh yo‘q.</div>'}</div>
+          <div style="display:flex;gap:8px;margin-top:10px"><input id="vAdminIzoh" placeholder="Izoh yozing..." style="flex:1"><button class="mini kok" onclick="vazifaIzohYubor('${attr(v.id)}')">Yuborish</button></div>
+        </div>
+
+        <div class="taskEmployeeActions">
+          ${v.muddat_sorovi_holat==='kutilmoqda'
+            ? '<button class="mini sariq" onclick="vazifaMuddatSorovJavob(\''+attr(v.id)+'\',true)">Muddatni uzaytirish</button><button class="mini kul" onclick="vazifaMuddatSorovJavob(\''+attr(v.id)+'\',false)">So‘rovni rad etish</button>'
+            : ''}
+          ${h==='tekshiruvda'
+            ? '<button class="mini yashil" onclick="vazifaTasdiqla(\''+attr(v.id)+'\')">Vazifani tasdiqlash</button><button class="mini qizil" onclick="vazifaQaytar(\''+attr(v.id)+'\')">Qaytarish</button>'
+            : ''}
+          <button class="mini kul" onclick="vazifaShaxsiyMuddat('${attr(v.id)}')">Shaxsiy muddat</button>
+        </div>
+      </div>`;
+    document.getElementById('modalFon').style.display='flex';
   };
   window.vazifaHisobotOch=async function(hisobotId,xodimId){const r=await window.api('hisobotlar',{xodim:xodimId});if(!r.ok)return window.toast(r.xato||'Hisobot ochilmadi','xato');window.joriyHisobotlar=r.hisobotlar||[];window.modalOch(hisobotId);};
   window.vazifaIzohYubor=async function(id){const matn=(document.getElementById('vAdminIzoh')?.value||'').trim();if(!matn)return;const r=await window.apiPost('vazifaIzohQosh',{vazifaId:id,matn});if(!r.ok)return window.toast(r.xato||'Izoh yuborilmadi','xato');window.vazifaXodimOch(id);};

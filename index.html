@@ -1566,6 +1566,380 @@ main{ padding:16px; gap:14px; max-width:1760px; }
   color:var(--sirena);
 }
 
+
+/* =========================================================
+   V4 TASK CENTER 4.1 — MAIN + GROUP + EMPLOYEE REPORTS
+========================================================= */
+
+/* Asosiy Vazifalar sahifasida "Yangi vazifa" doim aniq ko'rinadi */
+#bPanel .taskMainHero{
+  position:sticky;
+  top:-1px;
+  z-index:8;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  flex-wrap:wrap;
+  margin:-2px -4px 16px;
+  padding:14px 16px;
+  border:1px solid var(--chiziq-kard);
+  border-radius:17px;
+  background:
+    radial-gradient(520px 180px at 100% 0%,rgba(var(--kok-rgb),.16),transparent 70%),
+    var(--bg-kard-shaffof);
+  box-shadow:0 14px 34px -26px rgba(0,0,0,.75);
+  backdrop-filter:blur(24px) saturate(1.5);
+  -webkit-backdrop-filter:blur(24px) saturate(1.5);
+}
+#bPanel .taskMainHero h3{
+  margin:0 0 5px;
+}
+#bPanel .taskMainHero .izoh{
+  margin:0!important;
+  max-width:760px;
+}
+#bPanel .taskMainActions{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-wrap:wrap;
+  flex:0 0 auto;
+}
+#bPanel .taskCreateBtn{
+  min-height:42px;
+  margin:0!important;
+  padding:0 18px;
+  white-space:nowrap;
+}
+
+/* Vazifa qatori: task nomi + kimga berilgani aniq ajraladi */
+#bPanel .taskClickableRow{
+  cursor:pointer;
+}
+#bPanel .taskClickableRow td{
+  transition:background .15s ease,border-color .15s ease;
+}
+#bPanel .taskClickableRow:hover td{
+  background:var(--bg-kard-hover);
+}
+.taskIdentity{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  min-width:250px;
+}
+.taskIdentityTop{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex-wrap:wrap;
+}
+.taskAssigneeName{
+  color:var(--kok);
+  font-weight:850;
+  font-size:12px;
+}
+.taskTargetMeta{
+  color:var(--text-ikkinchi);
+  font-size:10.5px;
+  line-height:1.45;
+}
+.taskTargetChip{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:4px 8px;
+  border-radius:999px;
+  background:var(--sirena-och);
+  color:var(--sirena);
+  font-size:9px;
+  font-weight:850;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+
+/* Guruh ichidagi xodimlar */
+.taskGroupInfo{
+  margin:18px 26px 12px;
+  padding:16px 18px;
+  border:1px solid var(--chiziq-kard);
+  border-radius:16px;
+  background:var(--bg-input);
+}
+.taskGroupInfo h4{
+  margin:0 0 7px;
+}
+.taskMemberGrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:11px;
+  padding:0 26px 26px;
+}
+.taskMemberCard{
+  position:relative;
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  min-width:0;
+  padding:15px;
+  border:1px solid var(--chiziq-kard);
+  border-radius:16px;
+  background:var(--bg-input);
+  cursor:pointer;
+  transition:transform .16s ease,background .16s ease,border-color .16s ease,box-shadow .16s ease;
+}
+.taskMemberCard:hover{
+  transform:translateY(-2px);
+  background:var(--bg-kard-hover);
+  border-color:rgba(var(--kok-rgb),.28);
+  box-shadow:0 18px 36px -28px rgba(0,0,0,.72);
+}
+.taskMemberAvatar{
+  width:42px;
+  height:42px;
+  flex:0 0 42px;
+  border-radius:13px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,var(--kok),#5B9BFF);
+  color:#fff;
+  font-weight:850;
+  font-size:11px;
+}
+.taskMemberBody{
+  flex:1;
+  min-width:0;
+}
+.taskMemberBody b{
+  display:block;
+  font-size:12.5px;
+  line-height:1.35;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.taskMemberMeta{
+  margin-top:4px;
+  color:var(--text-ikkinchi);
+  font-size:10.5px;
+  line-height:1.45;
+}
+.taskMemberFoot{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:wrap;
+  margin-top:9px;
+}
+.taskReportCount{
+  margin-left:auto;
+  color:var(--text-ikkinchi);
+  font-size:9.5px;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+/* Xodim vazifasi tafsilotlari */
+.taskEmployeeHero{
+  margin:18px 26px 0;
+  padding:17px 18px;
+  border:1px solid var(--chiziq-kard);
+  border-radius:17px;
+  background:
+    radial-gradient(480px 180px at 100% 0%,rgba(var(--kok-rgb),.13),transparent 70%),
+    var(--bg-input);
+}
+.taskEmployeeHero .taskEmployeeName{
+  color:var(--kok);
+  font-weight:850;
+  font-size:13px;
+  margin-bottom:5px;
+}
+.taskEmployeeHero .taskEmployeeTitle{
+  font-size:19px;
+  font-weight:850;
+  line-height:1.25;
+}
+.taskEmployeeHero .taskEmployeeDesc{
+  margin-top:9px;
+  white-space:pre-wrap;
+  color:var(--text-asosiy);
+  opacity:.9;
+  line-height:1.6;
+  font-size:12.5px;
+}
+.taskEmployeeBadges{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+.taskReportSectionTitle{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin:22px 26px 10px;
+}
+.taskReportSectionTitle h4{
+  margin:0;
+}
+.taskReportList{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  padding:0 26px 24px;
+}
+.taskReportCard{
+  overflow:hidden;
+  border:1px solid var(--chiziq-kard);
+  border-radius:17px;
+  background:var(--bg-input);
+}
+.taskReportCardHead{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  padding:14px 16px;
+  border-bottom:1px solid var(--chiziq);
+}
+.taskReportCardHead b{
+  display:block;
+  font-size:12.5px;
+}
+.taskReportCardHead small{
+  display:block;
+  margin-top:3px;
+  color:var(--text-ikkinchi);
+}
+.taskReportStages{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  padding:12px;
+}
+.taskReportStage{
+  min-width:0;
+  padding:12px;
+  border:1px solid var(--chiziq-kard);
+  border-radius:13px;
+  background:var(--bg-kard);
+}
+.taskReportStage.empty{
+  opacity:.5;
+}
+.taskReportStageTitle{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:7px;
+  margin-bottom:7px;
+  font-size:10.5px;
+  font-weight:850;
+}
+.taskReportStageTime{
+  color:var(--text-ikkinchi);
+  font-size:9.5px;
+  line-height:1.4;
+}
+.taskReportStageDesc{
+  margin-top:8px;
+  min-height:32px;
+  color:var(--text-asosiy);
+  font-size:11px;
+  line-height:1.5;
+  white-space:pre-wrap;
+}
+.taskReportGallery{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(72px,1fr));
+  gap:6px;
+  margin-top:9px;
+}
+.taskReportGallery img{
+  width:100%;
+  height:74px;
+  object-fit:cover;
+  border-radius:9px;
+  border:1px solid var(--chiziq);
+  cursor:zoom-in;
+  background:var(--chiziq);
+}
+.taskReportGps{
+  display:inline-flex;
+  margin-top:8px;
+  color:var(--kok);
+  font-size:9.5px;
+  font-weight:800;
+  text-decoration:none;
+}
+.taskNoReports{
+  padding:24px 18px;
+  border:1px dashed var(--chiziq);
+  border-radius:14px;
+  color:var(--text-ikkinchi);
+  text-align:center;
+  background:var(--bg-input);
+}
+.taskEmployeeExtras{
+  padding:0 26px 26px;
+}
+.taskEmployeeExtras h4{
+  margin:18px 0 9px;
+}
+.taskEmployeeActions{
+  position:sticky;
+  bottom:0;
+  z-index:4;
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  flex-wrap:wrap;
+  padding:13px 26px 16px;
+  border-top:1px solid var(--chiziq);
+  background:var(--bg-kard-shaffof);
+  backdrop-filter:blur(22px);
+  -webkit-backdrop-filter:blur(22px);
+}
+
+@media(max-width:900px){
+  .taskMemberGrid{
+    grid-template-columns:1fr;
+  }
+  .taskReportStages{
+    grid-template-columns:1fr;
+  }
+}
+@media(max-width:650px){
+  #bPanel .taskMainHero{
+    align-items:stretch;
+  }
+  #bPanel .taskMainActions{
+    width:100%;
+  }
+  #bPanel .taskMainActions button{
+    flex:1;
+  }
+  .taskGroupInfo,
+  .taskEmployeeHero,
+  .taskReportSectionTitle{
+    margin-left:16px;
+    margin-right:16px;
+  }
+  .taskMemberGrid,
+  .taskReportList,
+  .taskEmployeeExtras{
+    padding-left:16px;
+    padding-right:16px;
+  }
+  .taskEmployeeActions{
+    padding-left:16px;
+    padding-right:16px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1953,7 +2327,7 @@ main{ padding:16px; gap:14px; max-width:1760px; }
 
 <div id="pdfPrintArea"></div>
 
-<script src="./vazifalar-v4.js?v=4.0.4-mainmenu"></script>
+<script src="./vazifalar-v4.js?v=4.1.0-task-center"></script>
 <script>
 // SVG ICONS
 const SVG = {
@@ -4057,10 +4431,14 @@ async function bYukla() {
       kechikkan: vazifalar.filter(v => v.samaraliHolat === 'muddat_otdi').length
     };
     panel.innerHTML = `
-      <div class="taskDetailHead">
-        <div><h3>Maxsus vazifalar markazi</h3><div class="izoh">Kimga qanday vazifa berilgani, bajarilish bosqichi va muddati bir joyda nazorat qilinadi.</div></div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="qoshBtn" style="margin:0" onclick="vazifaForma()">${SVG.tasks} Yangi vazifa</button>
+      <div class="taskMainHero">
+        <div>
+          <h3>Maxsus vazifalar markazi</h3>
+          <div class="izoh">Vazifa berish, xodimlar kesimida bajarilishini ko‘rish va mobil ilovadan kelgan hisobotlarni shu yerda nazorat qilish.</div>
+        </div>
+        <div class="taskMainActions">
+          <button class="qoshBtn taskCreateBtn" onclick="vazifaForma()">${SVG.plus} Yangi vazifa</button>
+          <button class="mini kok" onclick="bYukla()">Yangilash</button>
           <button class="mini kok" onclick="vazifalarExcel()">${SVG.excel} Excel</button>
           <button class="mini binafsha" onclick="vazifaShablonlarOch()">Shablonlar</button>
         </div>
