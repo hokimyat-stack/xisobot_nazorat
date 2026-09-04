@@ -1549,6 +1549,23 @@ main{ padding:16px; gap:14px; max-width:1760px; }
   }
 }
 
+
+/* =========================================================
+   V4 MAIN MENU — VAZIFALAR
+========================================================= */
+#navVazifalar .navIcoBox{
+  background:rgba(var(--sirena-rgb),.08);
+}
+#navVazifalar.aktiv .navIcoBox{
+  background:linear-gradient(135deg,var(--sirena),#5EEAD4);
+  color:#fff;
+  box-shadow:0 8px 18px -8px rgba(var(--sirena-rgb),.6);
+}
+#navVazifalar.aktiv{
+  background:rgba(var(--sirena-rgb),.12);
+  color:var(--sirena);
+}
+
 </style>
 </head>
 <body>
@@ -1599,6 +1616,17 @@ main{ padding:16px; gap:14px; max-width:1760px; }
       </button>
       <button id="navQidiruv" onclick="bolimKorsat('qidiruv')">
         <span class="navIcoBox nav-pink"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> <span class="navLabel">Qidiruv</span>
+      </button>
+      <button id="navVazifalar" onclick="bolimKorsat('vazifalar')" style="display:none">
+        <span class="navIcoBox nav-teal">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="4" y="3" width="16" height="18" rx="2"/>
+            <path d="M9 3h6v4H9z"/>
+            <path d="M8 12l2 2 4-4"/>
+            <path d="M8 17h8"/>
+          </svg>
+        </span>
+        <span class="navLabel">Vazifalar</span>
       </button>
 <button id="navBoshqaruv" onclick="bolimKorsat('boshqaruv')" style="display:none">
         <span class="navIcoBox nav-amber"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span> <span class="navLabel">Boshqaruv</span>
@@ -1890,7 +1918,7 @@ main{ padding:16px; gap:14px; max-width:1760px; }
       </section>
 
 <section id="boshqaruv" class="asosiy-kard" style="display:none; padding:0; overflow:hidden; flex-direction:column;">
-        <div style="background:var(--bg-kard-shaffof); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-bottom:1px solid var(--chiziq-kard); z-index:10; padding:24px 28px 16px; flex-shrink:0;">
+        <div id="bBoshHeader" style="background:var(--bg-kard-shaffof); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-bottom:1px solid var(--chiziq-kard); z-index:10; padding:24px 28px 16px; flex-shrink:0;">
           <div class="bTabs" id="bTabsContainer" style="margin-bottom:14px;"></div>
           <div id="bSarlavhaTop" style="display:flex; flex-direction:column; gap:12px; align-items:flex-start;"></div>
         </div>
@@ -1925,7 +1953,7 @@ main{ padding:16px; gap:14px; max-width:1760px; }
 
 <div id="pdfPrintArea"></div>
 
-<script src="./vazifalar-v4.js?v=4.0.3-final"></script>
+<script src="./vazifalar-v4.js?v=4.0.4-mainmenu"></script>
 <script>
 // SVG ICONS
 const SVG = {
@@ -2228,6 +2256,20 @@ async function boshla() {
     document.getElementById('navBoshqaruv').style.display = 'inline-flex';
   }
 
+  // V4: Vazifalar asosiy menyuda mustaqil bo'lim.
+  // Ko'rinish ruxsati Boshqaruv ichidagi Vazifalar tabining qoidasi bilan bir xil.
+  const vazifaRuxsatlari = ruxsatlarniOlish(SESSIYA.ruxsatlar);
+  const vazifaMenyuBor =
+    SESSIYA.rol === 'superadmin' ||
+    vazifaRuxsatlari.includes('vazifa_boshqar') ||
+    vazifaRuxsatlari.includes('xodim_qosh') ||
+    vazifaRuxsatlari.includes('xodim_tahrir');
+
+  const navVazifalar = document.getElementById('navVazifalar');
+  if (navVazifalar) {
+    navVazifalar.style.display = vazifaMenyuBor ? 'inline-flex' : 'none';
+  }
+
   nazoratEslatmaPanelYangila();
 
   document.getElementById('chap').style.display = 'none';
@@ -2264,6 +2306,9 @@ if (k.ok && Array.isArray(k.kategoriyalar)) {
   let oxirgi = localStorage.getItem('oxirgiBolim') || 'dashboard';
   // Agar nazoratchi 'boshqaruv'da qolib ketgan bo'lsa, uni dashboardga qaytarish (xavfsizlik)
   if (SESSIYA.rol === 'nazoratchi' && oxirgi === 'boshqaruv') oxirgi = 'dashboard';
+  if (oxirgi === 'vazifalar' && document.getElementById('navVazifalar')?.style.display === 'none') {
+    oxirgi = 'dashboard';
+  }
   const nazSanaEl = document.getElementById('nazSana');
   if (nazSanaEl && !nazSanaEl.value) nazSanaEl.value = toshkentBugun();
   nazoratSanaYozuviniYangila();
@@ -2284,26 +2329,49 @@ function fillSelect(id, list, keepFirst) {
 }
 
 function bolimKorsat(nom) {
-   // Yangi: ochilgan oyna nomini xotiraga yozib qoyish
   localStorage.setItem('oxirgiBolim', nom);
-  document.getElementById('navDashboard').classList.toggle('aktiv', nom==='dashboard');
-  document.getElementById('navNazorat').classList.toggle('aktiv', nom==='nazorat');
-  document.getElementById('navXarita').classList.toggle('aktiv', nom==='xarita');
-  document.getElementById('navQidiruv').classList.toggle('aktiv', nom==='qidiruv');
+
+  const vazifalarAsosiy = nom === 'vazifalar';
+
+  document.getElementById('navDashboard').classList.toggle('aktiv', nom === 'dashboard');
+  document.getElementById('navNazorat').classList.toggle('aktiv', nom === 'nazorat');
+  document.getElementById('navXarita').classList.toggle('aktiv', nom === 'xarita');
+  document.getElementById('navQidiruv').classList.toggle('aktiv', nom === 'qidiruv');
+
+  const navVaz = document.getElementById('navVazifalar');
+  if (navVaz) navVaz.classList.toggle('aktiv', vazifalarAsosiy);
+
   const navBosh = document.getElementById('navBoshqaruv');
-  if(navBosh) navBosh.classList.toggle('aktiv', nom==='boshqaruv');
-  
-  document.getElementById('chap').style.display = nom==='nazorat' ? 'flex' : 'none';
-  document.getElementById('ong').style.display = nom==='nazorat' ? 'flex' : 'none';
-  document.getElementById('dashboardPanel').style.display = nom==='dashboard' ? 'block' : 'none';
-  document.getElementById('boshqaruv').style.display = nom==='boshqaruv' ? 'flex' : 'none';
-  document.getElementById('xaritaPanel').style.display = nom==='xarita' ? 'flex' : 'none';
-  document.getElementById('qidiruvPanel').style.display = nom==='qidiruv' ? 'block' : 'none';
-  
-  if (nom==='dashboard') dashboardYukla();
+  if (navBosh) navBosh.classList.toggle('aktiv', nom === 'boshqaruv');
+
+  document.getElementById('chap').style.display = nom === 'nazorat' ? 'flex' : 'none';
+  document.getElementById('ong').style.display = nom === 'nazorat' ? 'flex' : 'none';
+  document.getElementById('dashboardPanel').style.display = nom === 'dashboard' ? 'block' : 'none';
+
+  // Vazifalar alohida main-menu bo'limi bo'lsa ham,
+  // amaldagi barqaror V4 vazifa paneli va API logikasidan foydalanadi.
+  document.getElementById('boshqaruv').style.display =
+    (nom === 'boshqaruv' || vazifalarAsosiy) ? 'flex' : 'none';
+
+  const boshHeader = document.getElementById('bBoshHeader');
+  if (boshHeader) boshHeader.style.display = vazifalarAsosiy ? 'none' : 'block';
+
+  document.getElementById('xaritaPanel').style.display = nom === 'xarita' ? 'flex' : 'none';
+  document.getElementById('qidiruvPanel').style.display = nom === 'qidiruv' ? 'block' : 'none';
+
+  if (nom === 'dashboard') dashboardYukla();
   else toggleAIPanel(false);
-  if (nom==='boshqaruv') boshqaruvTablariniChiz();
-  if (nom==='xarita') xaritaYukla();
+
+  if (nom === 'boshqaruv') {
+    boshqaruvTablariniChiz();
+  }
+
+  if (vazifalarAsosiy) {
+    bJoriy = 'vazifalar';
+    bYukla();
+  }
+
+  if (nom === 'xarita') xaritaYukla();
 }
 
 function boshqaruvTablariniChiz() {
@@ -3917,6 +3985,10 @@ function boshqaruvFiltrTozala(tur){
   if(tur==='mfy')bMfyFiltr={q:''}; if(tur==='kategoriyalar')bKatFiltr={q:''}; bYukla();
 }
 function boshqaruvTabOch(nom){
+  if (nom === 'vazifalar') {
+    bolimKorsat('vazifalar');
+    return;
+  }
   bolimKorsat('boshqaruv');
   setTimeout(()=>{const btn=[...document.querySelectorAll('#bTabsContainer button')].find(b=>(b.getAttribute('onclick')||'').includes(`'${nom}'`)); if(btn) btn.click(); else toast('Bu bo‘limni ko‘rish uchun ruxsat yetarli emas','xato');},80);
 }
